@@ -90,7 +90,7 @@ body {
 /* Chat Message Boxes (Taller & Wider) */
 #group-chat-box, #private-chat-box {
     width: 100%;
-    height: 600px;  /* Increased height */
+    height: 500px;  /* Increased height */
     border: 1px solid #ccc;
     border-radius: 4px;
     padding: 15px;
