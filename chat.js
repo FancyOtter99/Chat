@@ -65,3 +65,4 @@ document.getElementById('room-switch').addEventListener('change', function(event
         socket.send(`/room ${currentRoom}`);
     }
 });
+
