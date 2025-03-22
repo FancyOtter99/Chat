@@ -98,14 +98,15 @@ async def handle_client(websocket, path):
 def start_websocket_server():
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
-    server = websockets.serve(handle_client, "localhost", 8765)
+    server = websockets.serve(handle_client, "0.0.0.0", 8765)  # Listen on all IPs and port 8765
     loop.run_until_complete(server)
     loop.run_forever()
 
 
 # Start Flask server in a separate thread
 def start_flask_server():
-    app.run(debug=True, use_reloader=False, port=5000)
+    port = int(os.environ.get('PORT', 8080))  # Use PORT environment variable or default to 8080
+    app.run(host='0.0.0.0', port=port, debug=True, use_reloader=False)  # Set host to 0.0.0.0 for cloud compatibility
 
 
 if __name__ == '__main__':
@@ -115,3 +116,4 @@ if __name__ == '__main__':
 
     # Run Flask server in the main thread
     start_flask_server()
+
