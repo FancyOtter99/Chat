@@ -137,3 +137,7 @@ button:hover {
     outline: none;
     border-color: #007bff;
 }
+
+#private-chat-box {
+    margin-top:10px
+}
