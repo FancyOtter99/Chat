@@ -43,6 +43,10 @@ def signup():
 
     return jsonify({'success': True, 'message': 'User signed up successfully.'})
 
+# Add a route for the root path
+@app.route('/')
+def home():
+    return jsonify({'message': 'Welcome to the WebSocket Chat App!'})
 
 # Function to handle WebSocket connections and messaging
 async def handle_client(websocket, path):
@@ -105,7 +109,7 @@ def start_websocket_server():
 
 # Start Flask server in a separate thread
 def start_flask_server():
-    port = int(os.environ.get('PORT', 8080))  # Use PORT environment variable or default to 8080
+    port = int(os.environ.get('PORT', 10000))  # Use PORT environment variable or default to 10000
     app.run(host='0.0.0.0', port=port, debug=True, use_reloader=False)  # Set host to 0.0.0.0 for cloud compatibility
 
 
@@ -116,4 +120,3 @@ if __name__ == '__main__':
 
     # Run Flask server in the main thread
     start_flask_server()
-
