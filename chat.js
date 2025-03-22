@@ -1,6 +1,6 @@
 let username = ""; // Store the user's name
 let currentRoom = 'general'; // Default room
-let socket = new WebSocket('ws://localhost:8765');  // WebSocket connection to the server
+let socket = new WebSocket('wss://chat-aia5.onrender.com:8765');  // WebSocket connection to the server
 
 // Show the name prompt when the page loads
 document.getElementById('name-prompt').style.display = 'block';
