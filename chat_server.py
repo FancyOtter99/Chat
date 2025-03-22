@@ -86,7 +86,7 @@ async def handle_client(websocket, path):
 
 async def main():
     async with websockets.serve(handle_client, "wss://chat-aia5.onrender.com", 8765):
-        print("Chat server started on wss://chat-aia5.onrender.com:8765")
+        print("Chat server started on 0.0.0.0:8765")
         await asyncio.Future()
 
 asyncio.run(main())
