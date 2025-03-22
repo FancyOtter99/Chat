@@ -43,13 +43,9 @@ def signup():
 
     return jsonify({'success': True, 'message': 'User signed up successfully.'})
 
-# Add a route for the root path
-@app.route('/')
-def home():
-    return jsonify({'message': 'Welcome to the WebSocket Chat App!'})
-
 # Function to handle WebSocket connections and messaging
 async def handle_client(websocket, path):
+    username = None
     try:
         # Receive initial username and handle login
         message = await websocket.recv()
@@ -97,21 +93,17 @@ async def handle_client(websocket, path):
             del connected_clients[username]
         print(f"{username} disconnected.")
 
-
 # Start WebSocket server in a separate thread
 def start_websocket_server():
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
-    server = websockets.serve(handle_client, "0.0.0.0", 8765)  # Listen on all IPs and port 8765
+    server = websockets.serve(handle_client, "0.0.0.0", 8765)  # Listen on all available network interfaces
     loop.run_until_complete(server)
     loop.run_forever()
 
-
-# Start Flask server in a separate thread
+# Start Flask server in the main thread
 def start_flask_server():
-    port = int(os.environ.get('PORT', 10000))  # Use PORT environment variable or default to 10000
-    app.run(host='0.0.0.0', port=port, debug=True, use_reloader=False)  # Set host to 0.0.0.0 for cloud compatibility
-
+    app.run(debug=True, use_reloader=False, port=5000)
 
 if __name__ == '__main__':
     # Run WebSocket server in a separate thread
@@ -120,3 +112,4 @@ if __name__ == '__main__':
 
     # Run Flask server in the main thread
     start_flask_server()
+
