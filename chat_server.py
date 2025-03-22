@@ -85,8 +85,8 @@ async def handle_client(websocket, path):
         print(f"{username} disconnected.")
 
 async def main():
-    async with websockets.serve(handle_client, "localhost", 8765):
-        print("Chat server started on ws://localhost:8765")
+    async with websockets.serve(handle_client, "https://chat-aia5.onrender.com", 8765):
+        print("Chat server started on https://chat-aia5.onrender.com:8765")
         await asyncio.Future()
 
 asyncio.run(main())
