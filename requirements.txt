@@ -28,7 +28,7 @@ nltk==3.8
 numpy==1.24.2
 packaging==23.0
 pipx==1.1.0
-pluggy==1.0.0+repack
+pluggy==1.0.0
 psutil==5.9.4
 py==1.11.0
 pycryptodomex==3.11.0
