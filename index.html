@@ -51,9 +51,14 @@
 
     <script>
         let username = "";
-        let socket = new WebSocket('wss://chat-aia5.onrender.com:8765');
+        let socket = new WebSocket('wss://chat-aia5.onrender.com'); // Ensure this URL is correct.
 
-        // LOGIN
+        // Wait for WebSocket connection to open
+        socket.onopen = function() {
+            console.log("WebSocket connection established!");
+        };
+
+        // Login
         document.getElementById('login-btn').addEventListener('click', function() {
             let user = document.getElementById('login-username').value.trim();
             let pass = document.getElementById('login-password').value.trim();
@@ -65,7 +70,7 @@
             }
         });
 
-        // SIGNUP
+        // Sign Up
         document.getElementById('signup-btn').addEventListener('click', function() {
             let user = document.getElementById('signup-username').value.trim();
             let pass = document.getElementById('signup-password').value.trim();
@@ -77,6 +82,7 @@
             }
         });
 
+        // Listen for messages from the server
         socket.onmessage = function(event) {
             let data = JSON.parse(event.data);
 
@@ -98,6 +104,12 @@
             } else if (data.type === "error") {
                 alert(data.message);
             }
+        };
+
+        // Handle WebSocket connection error
+        socket.onerror = function(error) {
+            console.error("WebSocket Error: ", error);
+            alert("WebSocket connection error. Please try again later.");
         };
 
         // Send group message
@@ -125,3 +137,4 @@
 
 </body>
 </html>
+
