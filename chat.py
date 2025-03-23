@@ -1,54 +1,42 @@
-from flask import Flask, request, jsonify
-from flask_socketio import SocketIO, send
-import json
-import os
+import eventlet
+eventlet.monkey_patch()
+
+from flask import Flask, render_template
+from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")  # Allow all origins
+socketio = SocketIO(app)
 
-USERS_FILE = 'users.txt'
-connected_clients = {}
+# Routes
+@app.route('/')
+def index():
+    return render_template('index.html')
 
-# Signup route
-@app.route('/signup', methods=['POST'])
-def signup():
-    data = request.get_json()
-    username = data.get('username')
-    password = data.get('password')
+# WebSocket Events
+@socketio.on('login')
+def handle_login(data):
+    # Handle login logic here
+    username = data['username']
+    password = data['password']
+    # For demo purposes, we assume login is successful
+    emit('login_success', {'username': username})
 
-    if not username or not password:
-        return jsonify({'success': False, 'message': 'Username and password are required.'}), 400
+@socketio.on('group_message')
+def handle_group_message(data):
+    room = data['room']
+    sender = data['sender']
+    message = data['message']
+    emit('group_message', {'sender': sender, 'message': message, 'room': room}, room=room)
 
-    if os.path.exists(USERS_FILE):
-        with open(USERS_FILE, 'r') as f:
-            users = json.load(f)
-    else:
-        users = []
+@socketio.on('private_message')
+def handle_private_message(data):
+    recipient = data['recipient']
+    sender = data['sender']
+    message = data['message']
+    emit('private_message', {'sender': sender, 'message': message}, room=recipient)
 
-    if any(user['username'] == username for user in users):
-        return jsonify({'success': False, 'message': 'Username already taken.'}), 400
-
-    users.append({'username': username, 'password': password})
-
-    with open(USERS_FILE, 'w') as f:
-        json.dump(users, f, indent=2)
-
-    return jsonify({'success': True, 'message': 'User signed up successfully.'})
-
-# Handle WebSocket connections
-@socketio.on('connect')
-def handle_connect():
-    print("Client connected")
-
-@socketio.on('message')
-def handle_message(message):
-    print("Received message:", message)
-    send(message, broadcast=True)  # Broadcast to all connected clients
-
+# Running the app
 if __name__ == '__main__':
-    import eventlet
-    eventlet.monkey_patch()  # Ensure eventlet can handle WebSockets properly
+    socketio.run(app, host='0.0.0.0', port=5000, debug=True)
 
-    # Ensure WebSocket and Flask run on the same port
-    socketio.run(app, host='0.0.0.0', port=5000, allow_unsafe_werkzeug=True)
 
