@@ -4,7 +4,7 @@ import json
 import os
 
 app = Flask(__name__)
-socketio = SocketIO(app, cors_allowed_origins="*")  # Enable WebSockets
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")  # Use eventlet for production
 
 USERS_FILE = 'users.txt'
 connected_clients = {}
@@ -46,6 +46,6 @@ def handle_message(message):
     send(message, broadcast=True)  # Broadcast to all connected clients
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=5000, debug=True)
-
-
+    import eventlet
+    eventlet.monkey_patch()  # Ensure eventlet works properly
+    socketio.run(app, host='0.0.0.0', port=5000)
