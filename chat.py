@@ -1,42 +1,30 @@
-import eventlet
-eventlet.monkey_patch()
-
 from flask import Flask, render_template
-from flask_socketio import SocketIO, emit
+from flask_socketio import SocketIO
+from flask_cors import CORS
 
+# Initialize Flask app
 app = Flask(__name__)
-socketio = SocketIO(app)
 
-# Routes
+# Enable CORS for specific origins (GitHub Pages and localhost)
+CORS(app, origins=["https://fancyotter99.github.io", "http://localhost:5000"])
+
+# Initialize SocketIO with Flask app, allowing specific origins for WebSocket connections
+socketio = SocketIO(app, cors_allowed_origins=["https://fancyotter99.github.io", "http://localhost:5000"])
+
+# Route to render the homepage
 @app.route('/')
 def index():
     return render_template('index.html')
 
-# WebSocket Events
-@socketio.on('login')
-def handle_login(data):
-    # Handle login logic here
-    username = data['username']
-    password = data['password']
-    # For demo purposes, we assume login is successful
-    emit('login_success', {'username': username})
+# Sample SocketIO event handler for receiving messages
+@socketio.on('message')
+def handle_message(data):
+    print('Received message:', data)
+    socketio.send('Hello from Flask!')
 
-@socketio.on('group_message')
-def handle_group_message(data):
-    room = data['room']
-    sender = data['sender']
-    message = data['message']
-    emit('group_message', {'sender': sender, 'message': message, 'room': room}, room=room)
-
-@socketio.on('private_message')
-def handle_private_message(data):
-    recipient = data['recipient']
-    sender = data['sender']
-    message = data['message']
-    emit('private_message', {'sender': sender, 'message': message}, room=recipient)
-
-# Running the app
+# Running the Flask app with SocketIO
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=5000, debug=True)
+    socketio.run(app, debug=True)
+
 
 
