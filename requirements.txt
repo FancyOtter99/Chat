@@ -1,3 +1,4 @@
+flask-socketio
 flask
 argcomplete==2.0.0
 attrs==22.2.0
