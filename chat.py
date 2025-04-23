@@ -1,80 +1,83 @@
-import asyncio
-import websockets
-import json
+from flask import Flask, request
+from flask_socketio import SocketIO, emit, join_room
 import hashlib
-import certifi
 from pymongo import MongoClient
+
+app = Flask(__name__)
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 # MongoDB setup
 client = MongoClient("mongodb+srv://pizza:Woundedscreamingbird123@chat.c2yueip.mongodb.net/?retryWrites=true&w=majority&tls=true")
 db = client["chat"]
 users_collection = db["users"]
 
-connected_clients = {}
+connected_users = {}  # username: sid
 group_messages = {"general": [], "random": [], "help": []}
 
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
 
-# Save a new user
-def save_user(username, password):
-    hashed_pw = hash_password(password)
-    users_collection.insert_one({"username": username, "password": hashed_pw})
-
-# Validate login
 def validate_login(username, password):
     hashed_pw = hash_password(password)
     return users_collection.find_one({"username": username, "password": hashed_pw}) is not None
 
-async def handle_client(websocket, path):
-    global connected_clients
-    username = None
+def save_user(username, password):
+    hashed_pw = hash_password(password)
+    users_collection.insert_one({"username": username, "password": hashed_pw})
 
-    try:
-        async for message in websocket:
-            data = json.loads(message)
+@socketio.on("signup")
+def handle_signup(data):
+    username = data["username"]
+    password = data["password"]
 
-            if data["type"] == "signup":
-                if users_collection.find_one({"username": data["username"]}):
-                    await websocket.send(json.dumps({"type": "error", "message": "Username already exists."}))
-                else:
-                    save_user(data["username"], data["password"])
-                    connected_clients[data["username"]] = websocket
-                    await websocket.send(json.dumps({"type": "login_success", "username": data["username"]}))
+    if users_collection.find_one({"username": username}):
+        emit("error", {"message": "Username already exists."})
+    else:
+        save_user(username, password)
+        connected_users[username] = request.sid
+        emit("login_success", {"username": username})
 
-            elif data["type"] == "login":
-                if validate_login(data["username"], data["password"]):
-                    connected_clients[data["username"]] = websocket
-                    username = data["username"]
-                    await websocket.send(json.dumps({"type": "login_success", "username": username}))
-                else:
-                    await websocket.send(json.dumps({"type": "error", "message": "Invalid credentials."}))
+@socketio.on("login")
+def handle_login(data):
+    username = data["username"]
+    password = data["password"]
 
-            elif data["type"] == "group_message":
-                room = data["room"]
-                msg = {"type": "group_message", "room": room, "sender": data["sender"], "message": data["message"]}
-                group_messages[room].append(msg)
+    if validate_login(username, password):
+        connected_users[username] = request.sid
+        emit("login_success", {"username": username})
+    else:
+        emit("error", {"message": "Invalid credentials."})
 
-                for user_ws in connected_clients.values():
-                    await user_ws.send(json.dumps(msg))
+@socketio.on("group_message")
+def handle_group_msg(data):
+    room = data["room"]
+    msg = {"type": "group_message", "room": room, "sender": data["sender"], "message": data["message"]}
+    group_messages[room].append(msg)
+    emit("group_message", msg, broadcast=True)
 
-            elif data["type"] == "private_message":
-                recipient = data["recipient"]
-                msg = {"type": "private_message", "sender": data["sender"], "message": data["message"]}
+@socketio.on("private_message")
+def handle_private_msg(data):
+    recipient = data["recipient"]
+    msg = {"type": "private_message", "sender": data["sender"], "message": data["message"]}
 
-                if recipient in connected_clients:
-                    await connected_clients[recipient].send(json.dumps(msg))
-                else:
-                    await websocket.send(json.dumps({"type": "error", "message": "User is not online."}))
+    if recipient in connected_users:
+        recipient_sid = connected_users[recipient]
+        emit("private_message", msg, to=recipient_sid)
+    else:
+        emit("error", {"message": "User is not online."})
 
-    except websockets.exceptions.ConnectionClosed:
-        if username and username in connected_clients:
-            del connected_clients[username]
-        print(f"{username} disconnected.")
+@socketio.on("disconnect")
+def handle_disconnect():
+    for user, sid in list(connected_users.items()):
+        if sid == request.sid:
+            del connected_users[user]
+            print(f"{user} disconnected")
+            break
 
-async def main():
-    async with websockets.serve(handle_client, "0.0.0.0", 8765):
-        print("Chat server started on ws://0.0.0.0:8765")
-        await asyncio.Future()
+@app.route("/")
+def index():
+    return "Chat server is running."
 
-asyncio.run(main())
+if __name__ == "__main__":
+    socketio.run(app, host="0.0.0.0", port=10000)
+
