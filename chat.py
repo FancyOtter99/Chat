@@ -2,10 +2,11 @@ import asyncio
 import websockets
 import json
 import hashlib
+import certifi
 from pymongo import MongoClient
 
 # MongoDB setup
-client = MongoClient("mongodb+srv://pizza:Woundedscreamingbird123@chat.c2yueip.mongodb.net/?retryWrites=true&w=majority")
+client = MongoClient("mongodb+srv://pizza:Woundedscreamingbird123@chat.c2yueip.mongodb.net/?retryWrites=true&w=majority&tls=true")
 db = client["chat"]
 users_collection = db["users"]
 
