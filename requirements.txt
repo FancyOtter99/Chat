@@ -1,5 +1,5 @@
 pymongo[srv]
-certifi
+certifi>=2024.2.2
 flask-cors
 flask-socketio
 flask
