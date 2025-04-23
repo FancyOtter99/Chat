@@ -1,4 +1,5 @@
-pymongo
+pymongo>=4.0.0
+certifi>=2020.6.20
 flask-cors
 flask-socketio
 flask
