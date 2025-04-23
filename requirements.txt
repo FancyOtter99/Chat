@@ -1,3 +1,5 @@
+pymongo
+MongoClient
 flask-cors
 flask-socketio
 flask
