@@ -2,143 +2,80 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat App</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script> <!-- Include socket.io client -->
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js" integrity="sha384-TODO" crossorigin="anonymous"></script>
 </head>
 <body>
 
-    <!-- Login / Signup Screen -->
-    <div id="auth-container">
-        <h2>Login</h2>
-        <input type="text" id="login-username" placeholder="Username">
-        <input type="password" id="login-password" placeholder="Password">
-        <button id="login-btn">Login</button>
-        
-        <h2>Sign Up</h2>
-        <input type="text" id="signup-username" placeholder="Username">
-        <input type="password" id="signup-password" placeholder="Password">
-        <button id="signup-btn">Sign Up</button>
-    </div>
+<!-- Your existing UI stays the same... -->
 
-    <!-- Chat Application -->
-    <div id="chat-container" style="display: none;">
-        <h2 id="username"></h2>
-        <div id="chat-windows">
-            <!-- Group Chat -->
-            <div id="group-chat">
-                <h3>Group Chat</h3>
-                <select id="group-room-switch">
-                    <option value="general">General</option>
-                    <option value="random">Random</option>
-                    <option value="help">Help</option>
-                </select>
-                <div id="group-chat-box"></div>
-                <input type="text" id="group-message-input" placeholder="Type a message...">
-                <button id="send-group-message">Send</button>
-            </div>
+<script>
+    const socket = io("https://chat-aia5.onrender.com"); // Update if needed
 
-            <!-- Private Chat -->
-            <div id="private-chat">
-                <h3>Private Chat</h3>
-                <input type="text" id="private-chat-partner" placeholder="Enter username">
-                <div id="private-chat-box"></div>
-                <input type="text" id="private-message-input" placeholder="Type a message...">
-                <button id="send-private-message">Send</button>
-            </div>
-        </div>
-    </div>
+    let username = "";
 
-    <script>
-        let username = "";
+    socket.on("connect", () => {
+        console.log("Connected to SocketIO server");
+    });
 
-        // WebSocket connection using Socket.io
-        let socket = io("wss://chat-aia5.onrender.com", { transports: ["websocket"] });
+    document.getElementById('login-btn').addEventListener('click', () => {
+        const user = document.getElementById('login-username').value.trim();
+        const pass = document.getElementById('login-password').value.trim();
+        if (user && pass) {
+            socket.emit("login", { username: user, password: pass });
+        }
+    });
 
-        // LOGIN
-        document.getElementById('login-btn').addEventListener('click', function() {
-            let user = document.getElementById('login-username').value.trim();
-            let pass = document.getElementById('login-password').value.trim();
+    document.getElementById('signup-btn').addEventListener('click', () => {
+        const user = document.getElementById('signup-username').value.trim();
+        const pass = document.getElementById('signup-password').value.trim();
+        if (user && pass) {
+            socket.emit("signup", { username: user, password: pass });
+        }
+    });
 
-            if (user && pass) {
-                socket.emit("login", { username: user, password: pass });
-            } else {
-                alert("Enter valid username and password.");
-            }
-        });
+    socket.on("login_success", (data) => {
+        document.getElementById('auth-container').style.display = 'none';
+        document.getElementById('chat-container').style.display = 'block';
+        document.getElementById('username').textContent = `Logged in as: ${data.username}`;
+        username = data.username;
+    });
 
-        // SIGNUP
-        document.getElementById('signup-btn').addEventListener('click', function() {
-            let user = document.getElementById('signup-username').value.trim();
-            let pass = document.getElementById('signup-password').value.trim();
+    socket.on("group_message", (data) => {
+        const room = document.getElementById('group-room-switch').value;
+        if (data.room === room) {
+            const chatBox = document.getElementById('group-chat-box');
+            chatBox.innerHTML += `<p><strong>${data.sender}:</strong> ${data.message}</p>`;
+        }
+    });
 
-            if (user && pass) {
-                fetch('https://chat-aia5.onrender.com/signup', {  // Fixed API endpoint
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: user, password: pass })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('Sign up successful!');
-                    } else {
-                        alert('Error: ' + data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error during sign up:', error);
-                });
-            } else {
-                alert("Enter valid details.");
-            }
-        });
+    socket.on("private_message", (data) => {
+        const chatBox = document.getElementById('private-chat-box');
+        chatBox.innerHTML += `<p><strong>${data.sender}:</strong> ${data.message}</p>`;
+    });
 
-        // Handle incoming messages
-        socket.on("message", (data) => {
-            if (data.type === "login_success") {
-                document.getElementById('auth-container').style.display = 'none';
-                document.getElementById('chat-container').style.display = 'block';
-                document.getElementById('username').textContent = `Logged in as: ${data.username}`;
-                username = data.username;
-            } else if (data.type === "group_message") {
-                let chatBox = document.getElementById('group-chat-box');
-                let room = document.getElementById('group-room-switch').value;
-                
-                if (room === data.room) {
-                    chatBox.innerHTML += `<p><strong>${data.sender}:</strong> ${data.message}</p>`;
-                }
-            } else if (data.type === "private_message") {
-                let chatBox = document.getElementById('private-chat-box');
-                chatBox.innerHTML += `<p><strong>${data.sender}:</strong> ${data.message}</p>`;
-            } else if (data.type === "error") {
-                alert(data.message);
-            }
-        });
+    socket.on("error", (data) => {
+        alert(data.message);
+    });
 
-        // Send group message
-        document.getElementById('send-group-message').addEventListener('click', function() {
-            let message = document.getElementById('group-message-input').value.trim();
-            let room = document.getElementById('group-room-switch').value;
-            
-            if (message) {
-                socket.emit("group_message", { sender: username, room: room, message: message });
-                document.getElementById('group-message-input').value = "";
-            }
-        });
+    document.getElementById('send-group-message').addEventListener('click', () => {
+        const message = document.getElementById('group-message-input').value.trim();
+        const room = document.getElementById('group-room-switch').value;
+        if (message) {
+            socket.emit("group_message", { sender: username, room: room, message: message });
+            document.getElementById('group-message-input').value = "";
+        }
+    });
 
-        // Send private message
-        document.getElementById('send-private-message').addEventListener('click', function() {
-            let message = document.getElementById('private-message-input').value.trim();
-            let recipient = document.getElementById('private-chat-partner').value.trim();
-
-            if (message && recipient) {
-                socket.emit("private_message", { sender: username, recipient: recipient, message: message });
-                document.getElementById('private-message-input').value = "";
-            }
-        });
-    </script>
-
+    document.getElementById('send-private-message').addEventListener('click', () => {
+        const message = document.getElementById('private-message-input').value.trim();
+        const recipient = document.getElementById('private-chat-partner').value.trim();
+        if (message && recipient) {
+            socket.emit("private_message", { sender: username, recipient: recipient, message: message });
+            document.getElementById('private-message-input').value = "";
+        }
+    });
+</script>
 </body>
 </html>
+
