@@ -8,7 +8,46 @@
 </head>
 <body>
 
-<!-- Your existing UI stays the same... -->
+  <!-- Login / Signup Screen -->
+    <div id="auth-container">
+        <h2>Login</h2>
+        <input type="text" id="login-username" placeholder="Username">
+        <input type="password" id="login-password" placeholder="Password">
+        <button id="login-btn">Login</button>
+        
+        <h2>Sign Up</h2>
+        <input type="text" id="signup-username" placeholder="Username">
+        <input type="password" id="signup-password" placeholder="Password">
+        <button id="signup-btn">Sign Up</button>
+    </div>
+
+    <!-- Chat Application -->
+    <div id="chat-container" style="display: none;">
+        <h2 id="username"></h2>
+        <div id="chat-windows">
+            <!-- Group Chat -->
+            <div id="group-chat">
+                <h3>Group Chat</h3>
+                <select id="group-room-switch">
+                    <option value="general">General</option>
+                    <option value="random">Random</option>
+                    <option value="help">Help</option>
+                </select>
+                <div id="group-chat-box"></div>
+                <input type="text" id="group-message-input" placeholder="Type a message...">
+                <button id="send-group-message">Send</button>
+            </div>
+
+            <!-- Private Chat -->
+            <div id="private-chat">
+                <h3>Private Chat</h3>
+                <input type="text" id="private-chat-partner" placeholder="Enter username">
+                <div id="private-chat-box"></div>
+                <input type="text" id="private-message-input" placeholder="Type a message...">
+                <button id="send-private-message">Send</button>
+            </div>
+        </div>
+    </div>
 
 <script>
     const socket = io("https://chat-aia5.onrender.com"); // Update if needed
