@@ -1,3 +1,4 @@
+aiohttp
 pymongo[srv]
 eventlet
 certifi>=2024.2.2
