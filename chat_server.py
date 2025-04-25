@@ -4,19 +4,6 @@ import json
 import hashlib
 import os
 
-#edit
-from aiohttp import web
-
-async def handle_ping(request):
-    return web.Response(text="pong")
-
-app = web.Application()
-app.router.add_get('/', handle_ping)
-
-if __name__ == '__main__':
-    web.run_app(app, port=10000)
-#edit
-
 USERS_FILE = "users.txt"
 connected_clients = {}  # Store username -> WebSocket mapping
 group_messages = {"general": [], "random": [], "help": []}  # Store group chat history
