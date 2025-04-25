@@ -6,7 +6,6 @@ import os
 
 #edit
 from aiohttp import web
-import asyncio
 
 async def handle_ping(request):
     return web.Response(text="pong")
@@ -16,7 +15,6 @@ app.router.add_get('/', handle_ping)
 
 if __name__ == '__main__':
     web.run_app(app, port=10000)
-
 #edit
 
 USERS_FILE = "users.txt"
