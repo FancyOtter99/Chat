@@ -143,3 +143,4 @@ app.router.add_get("/secret-users", handle_users)
 if __name__ == '__main__':
     web.run_app(app, port=10000)
 
+
