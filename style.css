@@ -9,7 +9,7 @@ body {
 
 /* Authentication Container */
 #auth-container {
-    width: 300px;
+    width: 350px; /* Increased width */
     margin: 50px auto;
     padding: 20px;
     background: white;
@@ -18,26 +18,29 @@ body {
 }
 
 #auth-container h2 {
-    margin-bottom: 10px;
+    margin-bottom: 15px; /* Increased margin */
+    font-size: 22px; /* Larger text */
 }
 
 #auth-container input {
     width: calc(100% - 20px);
-    padding: 8px;
-    margin: 5px 0;
+    padding: 12px; /* Increased padding */
+    margin: 10px 0; /* More space between inputs */
     border: 1px solid #ccc;
     border-radius: 4px;
+    font-size: 16px; /* Larger text */
 }
 
 #auth-container button {
     width: 100%;
-    padding: 10px;
-    margin-top: 10px;
+    padding: 12px; /* Increased padding */
+    margin-top: 15px; /* More space between button and inputs */
     background: #007bff;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    font-size: 16px; /* Larger text */
 }
 
 #auth-container button:hover {
@@ -55,8 +58,8 @@ body {
 
 /* Username Display */
 #username {
-    font-size: 18px;
-    margin-bottom: 10px;
+    font-size: 24px; /* Larger username display */
+    margin-bottom: 15px;
     font-weight: bold;
 }
 
@@ -65,15 +68,15 @@ body {
     display: flex;
     justify-content: space-between;
     width: 100%;
-    max-width: 900px;
-    gap: 20px;
+    max-width: 1000px; /* Increased max width */
+    gap: 30px; /* More space between chat boxes */
 }
 
 /* Individual Chat Boxes */
 #group-chat, #private-chat {
-    width: 50%;
+    width: 48%; /* Slightly reduced width for better spacing */
     background: white;
-    padding: 15px;
+    padding: 20px; /* More padding */
     border-radius: 5px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     display: flex;
@@ -82,55 +85,60 @@ body {
 }
 
 #group-chat h3, #private-chat h3 {
-    margin-bottom: 10px;
+    margin-bottom: 15px; /* More space for headings */
+    font-size: 20px; /* Larger font size */
 }
 
 /* Chat Message Boxes */
 #group-chat-box, #private-chat-box {
     width: 100%;
-    height: 400px;
+    height: 450px; /* Slightly larger box */
     border: 1px solid #ccc;
     border-radius: 4px;
-    padding: 10px;
+    padding: 15px; /* More padding */
     background: white;
     overflow-y: auto;
     text-align: left;
+    font-size: 16px; /* Larger text */
 }
 
 /* Input Fields */
 input[type="text"], select {
     width: calc(100% - 20px);
-    padding: 8px;
-    margin-top: 10px;
+    padding: 12px; /* Increased padding */
+    margin-top: 15px; /* More space */
     border: 1px solid #ccc;
     border-radius: 4px;
+    font-size: 16px; /* Larger text */
 }
 
 /* Send Buttons */
 button {
     width: 100%;
-    padding: 10px;
-    margin-top: 10px;
-    background: #28a745;
+    padding: 12px; /* Larger buttons */
+    margin-top: 15px;
+    background: #28a745; /* Green button */
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    font-size: 16px; /* Larger font */
 }
 
 button:hover {
-    background: #218838;
+    background: #218838; /* Darker green on hover */
 }
 
 /* Chat Room Dropdown */
 #group-room-switch {
     width: 100%;
-    padding: 8px;
-    margin-bottom: 10px;
+    padding: 12px; /* Larger padding */
+    margin-bottom: 15px; /* More space */
     border: 1px solid #ccc;
     border-radius: 4px;
     background: white;
     cursor: pointer;
+    font-size: 16px; /* Larger font */
 }
 
 #group-room-switch:focus {
@@ -139,7 +147,7 @@ button:hover {
 }
 
 #private-chat-partner {
-    margin-bottom:10px
+    margin-bottom: 15px; /* More space between inputs */
 }
 
 /* Ban/Unban Bar Styles */
@@ -147,50 +155,49 @@ button:hover {
     position: absolute;
     top: 10px;
     right: 10px;
-    padding: 5px;
+    padding: 15px; /* Increased padding */
     background-color: #ff6666;
     color: #fff;
     border-radius: 5px;
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 15px; /* More space between elements */
     z-index: 100;
-    font-size: 12px; /* Slightly smaller font */
-    width: 250px; 
+    font-size: 16px; /* Larger font size */
+    width: 300px; /* Increased width */
     box-sizing: border-box;
 }
 
 #ban-bar input, #ban-bar button {
-    font-size: 12px; /* Match the font size */
+    font-size: 16px; /* Larger font size for consistency */
 }
 
 #ban-bar button {
-    padding: 5px 10px;
+    padding: 12px 20px; /* Larger buttons */
     width: 100%;
-    background: #28a745;
+    background: #28a745; /* Green button */
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 18px; /* Larger text */
 }
 
 #ban-bar button:hover {
-    background: #218838;
+    background: #218838; /* Darker green on hover */
 }
+
 #ban-bar input {
     width: 100%;
-    padding: 8px;
-    margin-top: 5px;
+    padding: 12px; /* Larger input fields */
+    margin-top: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
+    font-size: 16px; /* Larger font size */
 }
 
 /* Label Adjustments for User-Friendly */
 #ban-bar span {
-    font-size: 12px;
+    font-size: 16px;
     font-weight: bold;
 }
-
-
-
