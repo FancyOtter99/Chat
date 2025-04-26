@@ -68,7 +68,7 @@ body {
     display: flex;
     justify-content: space-between;
     width: 100%;
-    max-width: 900px; /* Increased max width */
+    max-width: 1000px; /* Increased max width */
     gap: 30px; /* More space between chat boxes */
 }
 
@@ -82,6 +82,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    height: 400px; /* Shortened height */
 }
 
 #group-chat h3, #private-chat h3 {
@@ -92,7 +93,7 @@ body {
 /* Chat Message Boxes */
 #group-chat-box, #private-chat-box {
     width: 100%;
-    height: 450px; /* Slightly larger box */
+    height: 350px; /* Shortened height */
     border: 1px solid #ccc;
     border-radius: 4px;
     padding: 15px; /* More padding */
@@ -164,7 +165,7 @@ button:hover {
     gap: 15px; /* More space between elements */
     z-index: 100;
     font-size: 16px; /* Larger font size */
-    width: 300px; /* Increased width */
+    width: 250px; /* Skinnier width */
     box-sizing: border-box;
 }
 
@@ -201,3 +202,14 @@ button:hover {
     font-size: 16px;
     font-weight: bold;
 }
+
+/* Ban/Unban Username Input */
+#ban-username, #unban-username {
+    width: 100%; /* Match the width of the inputs */
+    max-width: 180px; /* Make the username input slightly less wide */
+    padding: 12px; /* Consistent padding */
+    font-size: 16px; /* Larger font */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
