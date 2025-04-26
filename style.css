@@ -167,7 +167,7 @@ button:hover {
 #ban-bar button {
     padding: 5px 10px;
     width: 100%;
-    background: #d9534f;
+    background: #28a745;
     color: white;
     border: none;
     border-radius: 4px;
@@ -176,7 +176,7 @@ button:hover {
 }
 
 #ban-bar button:hover {
-    background: #c9302c;
+    background: #218838;
 }
 #ban-bar input {
     width: 100%;
