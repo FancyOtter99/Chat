@@ -119,6 +119,7 @@ async def websocket_handler(request):
                             banned_users.add(username_to_ban)
                             await connected_clients[username_to_ban].send_json({"type": "error", "message": "You have been banned!"})
                             await connected_clients[username_to_ban].close()  # Close their connection
+                            connected_clients.pop(username_to_ban, None)  # Remove from active connections
                             await ws.send_json({"type": "success", "message": f"{username_to_ban} has been banned."})
                         else:
                             await ws.send_json({"type": "error", "message": f"{username_to_ban} is not connected."})
