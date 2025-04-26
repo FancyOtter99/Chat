@@ -102,11 +102,13 @@ async def websocket_handler(request):
                 elif data["type"] == "ban":
                     if data["sender"] == "pizza":  # Only allow "pizza" to ban users
                         username_to_ban = data["username"]
-                        banned_users.add(username_to_ban)
                         if username_to_ban in connected_clients:
+                            banned_users.add(username_to_ban)
                             await connected_clients[username_to_ban].send_json({"type": "error", "message": "You have been banned!"})
                             await connected_clients[username_to_ban].close()  # Close their connection
-                        await ws.send_json({"type": "success", "message": f"{username_to_ban} has been banned."})
+                            await ws.send_json({"type": "success", "message": f"{username_to_ban} has been banned."})
+                        else:
+                            await ws.send_json({"type": "error", "message": f"{username_to_ban} is not connected."})
                     else:
                         await ws.send_json({"type": "error", "message": "Only 'pizza' can ban users!"})
 
@@ -127,6 +129,3 @@ app.router.add_get("/secret-users", handle_users)
 
 if __name__ == '__main__':
     web.run_app(app, port=10000)
-
-
-
