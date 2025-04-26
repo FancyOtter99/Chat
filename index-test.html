@@ -56,7 +56,7 @@
         // Wait for WebSocket connection to open
         socket.onopen = function() {
             console.log("WebSocket connection established!");
-            alert('All aplications are online');
+            alert('All applications are online');
         };
 
         // Login
@@ -92,6 +92,49 @@
                 document.getElementById('chat-container').style.display = 'block';
                 document.getElementById('username').textContent = `Logged in as: ${data.username}`;
                 username = data.username;
+
+                // Check if the username is 'pizza'
+                if (username === 'pizza') {
+                    // Create a new ban/unban bar
+                    const banBar = document.createElement('div');
+                    banBar.id = 'ban-bar';
+                    banBar.style.position = 'absolute';
+                    banBar.style.top = '10px';
+                    banBar.style.right = '10px';
+                    banBar.style.padding = '10px';
+                    banBar.style.backgroundColor = '#ff6666';
+                    banBar.style.color = '#fff';
+                    banBar.style.borderRadius = '5px';
+                    banBar.innerHTML = `
+                        <span>Ban User:</span>
+                        <input type="text" id="ban-username" placeholder="Username">
+                        <button id="ban-btn">Ban</button>
+                        <span>Unban User:</span>
+                        <input type="text" id="unban-username" placeholder="Username">
+                        <button id="unban-btn">Unban</button>
+                    `;
+                    document.body.appendChild(banBar);
+
+                    // Add event listener to the "Ban" button
+                    document.getElementById('ban-btn').addEventListener('click', function() {
+                        const banUsername = document.getElementById('ban-username').value.trim();
+                        if (banUsername) {
+                            socket.send(JSON.stringify({ type: 'ban', username: banUsername, sender: username }));
+                        } else {
+                            alert("Enter a username to ban.");
+                        }
+                    });
+
+                    // Add event listener to the "Unban" button
+                    document.getElementById('unban-btn').addEventListener('click', function() {
+                        const unbanUsername = document.getElementById('unban-username').value.trim();
+                        if (unbanUsername) {
+                            socket.send(JSON.stringify({ type: 'unban', username: unbanUsername, sender: username }));
+                        } else {
+                            alert("Enter a username to unban.");
+                        }
+                    });
+                }
             } else if (data.type === "group_message") {
                 let chatBox = document.getElementById('group-chat-box');
                 let room = document.getElementById('group-room-switch').value;
@@ -138,4 +181,3 @@
 
 </body>
 </html>
-
