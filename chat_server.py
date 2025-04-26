@@ -1,92 +1,112 @@
 import asyncio
-import websockets
 import json
-import hashlib
+import base64  # 🍕 NEW: we're using this instead of hashlib
 import os
+from aiohttp import web, WSMsgType
 
 USERS_FILE = "users.txt"
-connected_clients = {}  # Store username -> WebSocket mapping
-group_messages = {"general": [], "random": [], "help": []}  # Store group chat history
+connected_clients = {}  # username -> WebSocket
+group_messages = {"general": [], "random": [], "help": []}
 
-# Load users from file
 def load_users():
     if not os.path.exists(USERS_FILE):
         return {}
-    
     with open(USERS_FILE, "r") as f:
-        users = {}
-        for line in f:
-            username, hashed_pw = line.strip().split(":")
-            users[username] = hashed_pw
-        return users
+        return dict(line.strip().split(":") for line in f)
 
-# Save a new user
 def save_user(username, password):
-    hashed_pw = hashlib.sha256(password.encode()).hexdigest()
+    encoded_pw = base64.b64encode(password.encode()).decode()
     with open(USERS_FILE, "a") as f:
-        f.write(f"{username}:{hashed_pw}\n")
+        f.write(f"{username}:{encoded_pw}\n")
 
-# Validate login
 def validate_login(username, password):
     users = load_users()
-    hashed_pw = hashlib.sha256(password.encode()).hexdigest()
-    return username in users and users[username] == hashed_pw
+    encoded_pw = base64.b64encode(password.encode()).decode()
+    return users.get(username) == encoded_pw
 
-async def handle_client(websocket, path):
-    global connected_clients
+# === HTTP endpoint ===
+async def handle_ping(request):
+    return web.Response(text="pong")
+
+# === Secret route to view users.txt ===
+async def handle_users(request):
+    if request.query.get("key") != "letmein":  # Secret key check
+        return web.Response(text="Forbidden", status=403)
+
+    if not os.path.exists(USERS_FILE):
+        return web.Response(text="users.txt not found", status=404)
+
+    with open(USERS_FILE, "r") as f:
+        content = f.read()
+
+    return web.Response(text=f"<pre>{content}</pre>", content_type='text/html')
+
+# === WebSocket handler ===
+async def websocket_handler(request):
+    ws = web.WebSocketResponse()
+    await ws.prepare(request)
+
     username = None
-
     try:
-        async for message in websocket:
-            data = json.loads(message)
+        async for msg in ws:
+            if msg.type == WSMsgType.TEXT:
+                data = json.loads(msg.data)
 
-            # Handle Signup
-            if data["type"] == "signup":
-                users = load_users()
-                if data["username"] in users:
-                    await websocket.send(json.dumps({"type": "error", "message": "Username already exists."}))
-                else:
-                    save_user(data["username"], data["password"])
-                    connected_clients[data["username"]] = websocket
-                    await websocket.send(json.dumps({"type": "login_success", "username": data["username"]}))
+                if data["type"] == "signup":
+                    users = load_users()
+                    if data["username"] in users:
+                        await ws.send_json({"type": "error", "message": "Username already exists."})
+                    else:
+                        save_user(data["username"], data["password"])
+                        connected_clients[data["username"]] = ws
+                        await ws.send_json({"type": "login_success", "username": data["username"]})
 
-            # Handle Login
-            elif data["type"] == "login":
-                if validate_login(data["username"], data["password"]):
-                    connected_clients[data["username"]] = websocket
-                    username = data["username"]
-                    await websocket.send(json.dumps({"type": "login_success", "username": username}))
-                else:
-                    await websocket.send(json.dumps({"type": "error", "message": "Invalid credentials."}))
+                elif data["type"] == "login":
+                    if validate_login(data["username"], data["password"]):
+                        connected_clients[data["username"]] = ws
+                        username = data["username"]
+                        await ws.send_json({"type": "login_success", "username": username})
+                    else:
+                        await ws.send_json({"type": "error", "message": "Invalid credentials."})
 
-            # Handle Group Messages
-            elif data["type"] == "group_message":
-                room = data["room"]
-                msg = {"type": "group_message", "room": room, "sender": data["sender"], "message": data["message"]}
-                group_messages[room].append(msg)  # Save chat history
+                elif data["type"] == "group_message":
+                    room = data["room"]
+                    msg_obj = {
+                        "type": "group_message",
+                        "room": room,
+                        "sender": data["sender"],
+                        "message": data["message"]
+                    }
+                    group_messages[room].append(msg_obj)
+                    for client_ws in connected_clients.values():
+                        await client_ws.send_json(msg_obj)
 
-                # Send to all connected clients
-                for user_ws in connected_clients.values():
-                    await user_ws.send(json.dumps(msg))
+                elif data["type"] == "private_message":
+                    recipient = data["recipient"]
+                    msg_obj = {
+                        "type": "private_message",
+                        "sender": data["sender"],
+                        "message": data["message"]
+                    }
+                    if recipient in connected_clients:
+                        await connected_clients[recipient].send_json(msg_obj)
+                    else:
+                        await ws.send_json({"type": "error", "message": "User is not online."})
 
-            # Handle Private Messages
-            elif data["type"] == "private_message":
-                recipient = data["recipient"]
-                msg = {"type": "private_message", "sender": data["sender"], "message": data["message"]}
+            elif msg.type == WSMsgType.ERROR:
+                print(f'WS connection closed with exception {ws.exception()}')
 
-                if recipient in connected_clients:
-                    await connected_clients[recipient].send(json.dumps(msg))
-                else:
-                    await websocket.send(json.dumps({"type": "error", "message": "User is not online."}))
+    finally:
+        if username:
+            connected_clients.pop(username, None)
+            print(f"{username} disconnected.")
+    return ws
 
-    except websockets.exceptions.ConnectionClosed:
-        if username and username in connected_clients:
-            del connected_clients[username]  # Remove user from active list
-        print(f"{username} disconnected.")
+# === Set up app ===
+app = web.Application()
+app.router.add_get("/", handle_ping)
+app.router.add_get("/ws", websocket_handler)
+app.router.add_get("/secret-users", handle_users)
 
-async def main():
-    async with websockets.serve(handle_client, "0.0.0.0", 8765):
-        print("Chat server started on ws://0.0.0.0:8765")
-        await asyncio.Future()
-
-asyncio.run(main())
+if __name__ == '__main__':
+    web.run_app(app, port=10000)
