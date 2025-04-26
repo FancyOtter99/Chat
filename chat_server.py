@@ -1,12 +1,13 @@
 import asyncio
 import json
-import base64  # 🍕 NEW: we're using this instead of hashlib
+import base64
 import os
 from aiohttp import web, WSMsgType
 
 USERS_FILE = "users.txt"
 connected_clients = {}  # username -> WebSocket
 group_messages = {"general": [], "random": [], "help": []}
+banned_users = set()  # Set to store banned usernames
 
 def load_users():
     if not os.path.exists(USERS_FILE):
@@ -52,6 +53,7 @@ async def websocket_handler(request):
             if msg.type == WSMsgType.TEXT:
                 data = json.loads(msg.data)
 
+                # Signup Logic
                 if data["type"] == "signup":
                     users = load_users()
                     if data["username"] in users:
@@ -61,7 +63,13 @@ async def websocket_handler(request):
                         connected_clients[data["username"]] = ws
                         await ws.send_json({"type": "login_success", "username": data["username"]})
 
+                # Login Logic
                 elif data["type"] == "login":
+                    if data["username"] in banned_users:
+                        await ws.send_json({"type": "error", "message": "You are banned!"})
+                        await ws.close()  # Close the connection for banned user
+                        return
+                    
                     if validate_login(data["username"], data["password"]):
                         connected_clients[data["username"]] = ws
                         username = data["username"]
@@ -69,7 +77,12 @@ async def websocket_handler(request):
                     else:
                         await ws.send_json({"type": "error", "message": "Invalid credentials."})
 
+                # Group Message Logic
                 elif data["type"] == "group_message":
+                    if username in banned_users:
+                        await ws.send_json({"type": "error", "message": "You are banned from sending messages."})
+                        continue
+
                     room = data["room"]
                     msg_obj = {
                         "type": "group_message",
@@ -81,7 +94,12 @@ async def websocket_handler(request):
                     for client_ws in connected_clients.values():
                         await client_ws.send_json(msg_obj)
 
+                # Private Message Logic
                 elif data["type"] == "private_message":
+                    if username in banned_users:
+                        await ws.send_json({"type": "error", "message": "You are banned from sending messages."})
+                        continue
+
                     recipient = data["recipient"]
                     msg_obj = {
                         "type": "private_message",
@@ -92,6 +110,32 @@ async def websocket_handler(request):
                         await connected_clients[recipient].send_json(msg_obj)
                     else:
                         await ws.send_json({"type": "error", "message": "User is not online."})
+
+                # Ban Logic (Only 'pizza' can ban users)
+                elif data["type"] == "ban":
+                    if data["sender"] == "pizza":  # Only allow "pizza" to ban users
+                        username_to_ban = data["username"]
+                        if username_to_ban in connected_clients:
+                            banned_users.add(username_to_ban)
+                            await connected_clients[username_to_ban].send_json({"type": "error", "message": "You have been banned!"})
+                            await connected_clients[username_to_ban].close()  # Close their connection
+                            await ws.send_json({"type": "success", "message": f"{username_to_ban} has been banned."})
+                        else:
+                            await ws.send_json({"type": "error", "message": f"{username_to_ban} is not connected."})
+                    else:
+                        await ws.send_json({"type": "error", "message": "Only 'pizza' can ban users!"})
+
+                # Unban Logic (Only 'pizza' can unban users)
+                elif data["type"] == "unban":
+                    if data["sender"] == "pizza":  # Only allow "pizza" to unban users
+                        username_to_unban = data["username"]
+                        if username_to_unban in banned_users:
+                            banned_users.remove(username_to_unban)
+                            await ws.send_json({"type": "success", "message": f"{username_to_unban} has been unbanned."})
+                        else:
+                            await ws.send_json({"type": "error", "message": f"{username_to_unban} is not banned."})
+                    else:
+                        await ws.send_json({"type": "error", "message": "Only 'pizza' can unban users!"})
 
             elif msg.type == WSMsgType.ERROR:
                 print(f'WS connection closed with exception {ws.exception()}')
@@ -110,3 +154,4 @@ app.router.add_get("/secret-users", handle_users)
 
 if __name__ == '__main__':
     web.run_app(app, port=10000)
+
