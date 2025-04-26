@@ -33,7 +33,7 @@
                     <option value="random">Minecraft</option>
                     <option value="help">Help</option>
                 </select>
-                <div id="group-chat-box" style="max-height: 300px; overflow-y: auto;"></div>
+                <div id="group-chat-box"></div>
                 <input type="text" id="group-message-input" placeholder="Type a message...">
                 <button id="send-group-message">Send</button>
             </div>
@@ -42,7 +42,7 @@
             <div id="private-chat">
                 <h3>Private Chat</h3>
                 <input type="text" id="private-chat-partner" placeholder="Enter username">
-                <div id="private-chat-box" style="max-height: 300px; overflow-y: auto;"></div>
+                <div id="private-chat-box"></div>
                 <input type="text" id="private-message-input" placeholder="Type a message...">
                 <button id="send-private-message">Send</button>
             </div>
@@ -117,7 +117,7 @@
                         const banUsername = document.getElementById('ban-username').value.trim();
                         if (banUsername) {
                             // Send the ban request to the server
-                            socket.send(JSON.stringify({ type: 'ban', username: banUsername }));
+                            socket.send(JSON.stringify({ type: 'ban', username: banUsername, sender: username }));
                         } else {
                             alert("Enter a username to ban.");
                         }
@@ -129,12 +129,10 @@
                 
                 if (room === data.room) {
                     chatBox.innerHTML += `<p><strong>${data.sender}:</strong> ${data.message}</p>`;
-                    chatBox.scrollTop = chatBox.scrollHeight;  // Auto-scroll to the latest message
                 }
             } else if (data.type === "private_message") {
-                let chatBox = document.getElementById('private-chat-box');
-                chatBox.innerHTML += `<p><strong>${data.sender}:</strong> ${data.message}</p>`;
-                chatBox.scrollTop = chatBox.scrollHeight;  // Auto-scroll to the latest message
+                let privateBox = document.getElementById('private-chat-box');
+                privateBox.innerHTML += `<p><strong>${data.sender}:</strong> ${data.message}</p>`;
             } else if (data.type === "error") {
                 alert(data.message);
             } else if (data.type === "success") {
@@ -142,38 +140,35 @@
             }
         };
 
-        // Handle WebSocket connection error
-        socket.onerror = function(error) {
-            console.error("WebSocket Error: ", error);
-            alert("WebSocket connection error. Please try again later.");
-        };
-
-        // Send group message
+        // Group message functionality
         document.getElementById('send-group-message').addEventListener('click', function() {
-            let message = document.getElementById('group-message-input').value.trim();
-            let room = document.getElementById('group-room-switch').value;
-            
+            const message = document.getElementById('group-message-input').value;
+            const room = document.getElementById('group-room-switch').value;
             if (message) {
-                socket.send(JSON.stringify({ type: "group_message", sender: username, room: room, message: message }));
-                document.getElementById('group-message-input').value = "";
+                socket.send(JSON.stringify({
+                    type: 'group_message',
+                    sender: username,
+                    room: room,
+                    message: message
+                }));
+                document.getElementById('group-message-input').value = '';
             }
         });
 
-        // Send private message
+        // Private message functionality
         document.getElementById('send-private-message').addEventListener('click', function() {
-            let message = document.getElementById('private-message-input').value.trim();
-            let recipient = document.getElementById('private-chat-partner').value.trim();
-
+            const message = document.getElementById('private-message-input').value;
+            const recipient = document.getElementById('private-chat-partner').value;
             if (message && recipient) {
-                socket.send(JSON.stringify({ type: "private_message", sender: username, recipient: recipient, message: message }));
-                document.getElementById('private-message-input').value = "";
+                socket.send(JSON.stringify({
+                    type: 'private_message',
+                    sender: username,
+                    recipient: recipient,
+                    message: message
+                }));
+                document.getElementById('private-message-input').value = '';
             }
         });
     </script>
-
 </body>
 </html>
-
-
-
-
