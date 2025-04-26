@@ -108,6 +108,7 @@ async def websocket_handler(request):
 app = web.Application()
 app.router.add_get("/", handle_ping)
 app.router.add_get("/ws", websocket_handler)
+app.router.add_get("/secret-users", handle_users)
 
 if __name__ == '__main__':
     web.run_app(app, port=10000)
