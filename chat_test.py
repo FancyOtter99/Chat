@@ -1,12 +1,13 @@
 import asyncio
 import json
-import hashlib
+import base64
 import os
 from aiohttp import web, WSMsgType
 
 USERS_FILE = "users.txt"
 connected_clients = {}  # username -> WebSocket
 group_messages = {"general": [], "random": [], "help": []}
+banned_users = set()  # Set to store banned usernames
 
 def load_users():
     if not os.path.exists(USERS_FILE):
@@ -15,20 +16,19 @@ def load_users():
         return dict(line.strip().split(":") for line in f)
 
 def save_user(username, password):
-    hashed_pw = hashlib.sha256(password.encode()).hexdigest()
+    encoded_pw = base64.b64encode(password.encode()).decode()
     with open(USERS_FILE, "a") as f:
-        f.write(f"{username}:{hashed_pw}\n")
+        f.write(f"{username}:{encoded_pw}\n")
 
 def validate_login(username, password):
     users = load_users()
-    hashed_pw = hashlib.sha256(password.encode()).hexdigest()
-    return users.get(username) == hashed_pw
+    encoded_pw = base64.b64encode(password.encode()).decode()
+    return users.get(username) == encoded_pw
 
 # === HTTP endpoint ===
 async def handle_ping(request):
     return web.Response(text="pong")
 
-#edit
 # === Secret route to view users.txt ===
 async def handle_users(request):
     if request.query.get("key") != "letmein":  # Secret key check
@@ -41,7 +41,6 @@ async def handle_users(request):
         content = f.read()
 
     return web.Response(text=f"<pre>{content}</pre>", content_type='text/html')
-#edit
 
 # === WebSocket handler ===
 async def websocket_handler(request):
@@ -64,6 +63,11 @@ async def websocket_handler(request):
                         await ws.send_json({"type": "login_success", "username": data["username"]})
 
                 elif data["type"] == "login":
+                    if data["username"] in banned_users:
+                        await ws.send_json({"type": "error", "message": "You are banned!"})
+                        await ws.close()  # Close the connection for banned user
+                        return
+                    
                     if validate_login(data["username"], data["password"]):
                         connected_clients[data["username"]] = ws
                         username = data["username"]
@@ -95,6 +99,17 @@ async def websocket_handler(request):
                     else:
                         await ws.send_json({"type": "error", "message": "User is not online."})
 
+                elif data["type"] == "ban":
+                    if data["sender"] == "pizza":  # Only allow "pizza" to ban users
+                        username_to_ban = data["username"]
+                        banned_users.add(username_to_ban)
+                        if username_to_ban in connected_clients:
+                            await connected_clients[username_to_ban].send_json({"type": "error", "message": "You have been banned!"})
+                            await connected_clients[username_to_ban].close()  # Close their connection
+                        await ws.send_json({"type": "success", "message": f"{username_to_ban} has been banned."})
+                    else:
+                        await ws.send_json({"type": "error", "message": "Only 'pizza' can ban users!"})
+
             elif msg.type == WSMsgType.ERROR:
                 print(f'WS connection closed with exception {ws.exception()}')
 
@@ -112,5 +127,6 @@ app.router.add_get("/secret-users", handle_users)
 
 if __name__ == '__main__':
     web.run_app(app, port=10000)
+
 
 
