@@ -113,7 +113,8 @@ async def websocket_handler(request):
 
                 # Ban Logic (Only 'pizza' can ban)
                 elif data["type"] == "ban":
-                    if data["sender"] == "pizza":  # Only allow "pizza" to ban users
+                    sender = data.get("sender")
+                    if sender == "pizza":  # Only allow "pizza" to ban users
                         username_to_ban = data["username"]
                         if username_to_ban in connected_clients:
                             banned_users.add(username_to_ban)
@@ -142,5 +143,6 @@ app.router.add_get("/secret-users", handle_users)
 
 if __name__ == '__main__':
     web.run_app(app, port=10000)
+
 
 
