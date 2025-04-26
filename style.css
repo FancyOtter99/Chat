@@ -68,7 +68,7 @@ body {
     display: flex;
     justify-content: space-between;
     width: 100%;
-    max-width: 1000px; /* Increased max width */
+    max-width: 900px; /* Increased max width */
     gap: 30px; /* More space between chat boxes */
 }
 
