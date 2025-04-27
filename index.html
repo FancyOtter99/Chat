@@ -106,13 +106,20 @@
                     banBar.style.borderRadius = '5px';
                     banBar.style.width = '250px';
                     banBar.innerHTML = `
-                        <span>Ban User:</span>
-                        <input type="text" id="ban-username" placeholder="Username">
-                        <button id="ban-btn">Ban</button><br>
-                        <span style="margin-top: 5px; display: inline-block;">Unban User:</span>
-                        <input type="text" id="unban-username" placeholder="Username">
-                        <button id="unban-btn">Unban</button>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <div>
+                                <span>Ban User:</span>
+                                <input type="text" id="ban-username" placeholder="Username">
+                                <button id="ban-btn">Ban</button>
+                            </div>
+                            <div>
+                                <span>Unban User:</span>
+                                <input type="text" id="unban-username" placeholder="Username">
+                                <button id="unban-btn">Unban</button>
+                            </div>
+                        </div>
                     `;
+
 
                     document.body.appendChild(banBar);
 
