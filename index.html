@@ -50,16 +50,6 @@
     </div>
 
     <script>
-        
-        Object.defineProperty(window, 'username', {
-    get: function() {
-        console.warn("Do not modify the username variable!");
-        return username;
-    },
-    set: function() {
-        console.warn("You can't change the username like that!");
-    }
-});
         (function() {
         let username = "";
         let socket = new WebSocket('wss://chat-aia5.onrender.com/ws');
