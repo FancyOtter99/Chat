@@ -1,4 +1,4 @@
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -119,56 +119,19 @@
                             </div>
                         </div>
                     `;
-
-
                     document.body.appendChild(banBar);
 
                     // Create a new banned list display
                     const bannedListBox = document.createElement('div');
                     bannedListBox.id = 'banned-list-box';
                     bannedListBox.style.position = 'absolute';
-                    bannedListBox.style.top = '320px'; // ⬅️⬅️ LOWERED this from 250px to 400px
+                    bannedListBox.style.top = '320px';
                     bannedListBox.style.right = '10px';
                     bannedListBox.innerHTML = `
                         <strong>Banned Users:</strong>
                         <div id="banned-users-list" style="margin-top: 10px;"></div>
                     `;
                     document.body.appendChild(bannedListBox);
-
-                    // Banned users array
-                    const bannedUsers = [];
-
-                    // Ban button
-                    document.getElementById('ban-btn').addEventListener('click', function() {
-                        const banUsername = document.getElementById('ban-username').value.trim();
-                        if (banUsername) {
-                            socket.send(JSON.stringify({ type: 'ban', username: banUsername, sender: username }));
-                            bannedUsers.push(banUsername);
-                            updateBannedUsersList();
-                        } else {
-                            alert("Enter a username to ban.");
-                        }
-                    });
-
-                    // Unban button
-                    document.getElementById('unban-btn').addEventListener('click', function() {
-                        const unbanUsername = document.getElementById('unban-username').value.trim();
-                        if (unbanUsername) {
-                            socket.send(JSON.stringify({ type: 'unban', username: unbanUsername, sender: username }));
-                            const index = bannedUsers.indexOf(unbanUsername);
-                            if (index !== -1) {
-                                bannedUsers.splice(index, 1);
-                            }
-                            updateBannedUsersList();
-                        } else {
-                            alert("Enter a username to unban.");
-                        }
-                    });
-
-                    function updateBannedUsersList() {
-                        const listDiv = document.getElementById('banned-users-list');
-                        listDiv.innerHTML = bannedUsers.length > 0 ? bannedUsers.map(name => `<p>${name}</p>`).join('') : `<p>No users banned</p>`;
-                    }
                 }
             } else if (data.type === "group_message") {
                 let chatBox = document.getElementById('group-chat-box');
@@ -182,6 +145,11 @@
                 chatBox.innerHTML += `<p><strong>${data.sender}:</strong> ${data.message}</p>`;
             } else if (data.type === "error") {
                 alert(data.message);
+            } else if (data.type === "banned_list") {
+                // Update banned list in real-time
+                const bannedUsers = data.users;
+                const listDiv = document.getElementById('banned-users-list');
+                listDiv.innerHTML = bannedUsers.length > 0 ? bannedUsers.map(name => `<p>${name}</p>`).join('') : `<p>No users banned</p>`;
             }
         };
 
@@ -216,4 +184,3 @@
 
 </body>
 </html>
-
