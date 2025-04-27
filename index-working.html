@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -106,26 +106,29 @@
                     banBar.style.borderRadius = '5px';
                     banBar.style.width = '250px';
                     banBar.innerHTML = `
-                        <span>Ban User:</span>
-                        <input type="text" id="ban-username" placeholder="Username">
-                        <button id="ban-btn">Ban</button><br><br>
-                        <span>Unban User:</span>
-                        <input type="text" id="unban-username" placeholder="Username">
-                        <button id="unban-btn">Unban</button>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <div>
+                                <span>Ban User:</span>
+                                <input type="text" id="ban-username" placeholder="Username">
+                                <button id="ban-btn">Ban</button>
+                            </div>
+                            <div>
+                                <span>Unban User:</span>
+                                <input type="text" id="unban-username" placeholder="Username">
+                                <button id="unban-btn">Unban</button>
+                            </div>
+                        </div>
                     `;
+
+
                     document.body.appendChild(banBar);
 
                     // Create a new banned list display
                     const bannedListBox = document.createElement('div');
                     bannedListBox.id = 'banned-list-box';
                     bannedListBox.style.position = 'absolute';
-                    bannedListBox.style.top = '450px'; // ⬅️⬅️ LOWERED this from 250px to 400px
+                    bannedListBox.style.top = '320px'; // ⬅️⬅️ LOWERED this from 250px to 400px
                     bannedListBox.style.right = '10px';
-                    bannedListBox.style.padding = '10px';
-                    bannedListBox.style.backgroundColor = '#ffc107';
-                    bannedListBox.style.color = '#000';
-                    bannedListBox.style.borderRadius = '5px';
-                    bannedListBox.style.width = '250px';
                     bannedListBox.innerHTML = `
                         <strong>Banned Users:</strong>
                         <div id="banned-users-list" style="margin-top: 10px;"></div>
