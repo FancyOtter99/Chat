@@ -94,7 +94,7 @@
                 username = data.username;
 
                 if (username === 'pizza') {
-                    // Create a new ban/unban bar
+                    // Create a new ban/unban bar for admin
                     const banBar = document.createElement('div');
                     banBar.id = 'ban-bar';
                     banBar.style.position = 'absolute';
@@ -132,6 +132,40 @@
                         <div id="banned-users-list" style="margin-top: 10px;"></div>
                     `;
                     document.body.appendChild(bannedListBox);
+
+                    let bannedUsers = [];
+
+                    // Ban button
+                    document.getElementById('ban-btn').addEventListener('click', function() {
+                        const banUsername = document.getElementById('ban-username').value.trim();
+                        if (banUsername) {
+                            socket.send(JSON.stringify({ type: 'ban', username: banUsername, sender: username }));
+                            bannedUsers.push(banUsername);
+                            updateBannedUsersList();
+                        } else {
+                            alert("Enter a username to ban.");
+                        }
+                    });
+
+                    // Unban button
+                    document.getElementById('unban-btn').addEventListener('click', function() {
+                        const unbanUsername = document.getElementById('unban-username').value.trim();
+                        if (unbanUsername) {
+                            socket.send(JSON.stringify({ type: 'unban', username: unbanUsername, sender: username }));
+                            const index = bannedUsers.indexOf(unbanUsername);
+                            if (index !== -1) {
+                                bannedUsers.splice(index, 1);
+                            }
+                            updateBannedUsersList();
+                        } else {
+                            alert("Enter a username to unban.");
+                        }
+                    });
+
+                    function updateBannedUsersList() {
+                        const listDiv = document.getElementById('banned-users-list');
+                        listDiv.innerHTML = bannedUsers.length > 0 ? bannedUsers.map(name => `<p>${name}</p>`).join('') : `<p>No users banned</p>`;
+                    }
                 }
             } else if (data.type === "group_message") {
                 let chatBox = document.getElementById('group-chat-box');
@@ -145,11 +179,6 @@
                 chatBox.innerHTML += `<p><strong>${data.sender}:</strong> ${data.message}</p>`;
             } else if (data.type === "error") {
                 alert(data.message);
-            } else if (data.type === "banned_list") {
-                // Update banned list in real-time
-                const bannedUsers = data.users;
-                const listDiv = document.getElementById('banned-users-list');
-                listDiv.innerHTML = bannedUsers.length > 0 ? bannedUsers.map(name => `<p>${name}</p>`).join('') : `<p>No users banned</p>`;
             }
         };
 
@@ -184,3 +213,4 @@
 
 </body>
 </html>
+
