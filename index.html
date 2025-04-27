@@ -50,219 +50,218 @@
     </div>
 
     <script>
-
-
         Object.defineProperty(window, 'username', {
-    get: function() {
-        console.warn("Do not modify the username variable!");
-        return username;
-    },
-    set: function() {
-        console.warn("You can't change the username like that!");
-    }
-});
+            get: function() {
+                console.warn("Do not modify the username variable!");
+                return username;
+            },
+            set: function() {
+                console.warn("You can't change the username like that!");
+            }
+        });
 
-        
         (function() {
-        let username = "";
-        let socket = new WebSocket('wss://chat-aia5.onrender.com/ws');
-        let bannedUsers = [];  // Array to store banned users
+            let username = "";
+            let socket = new WebSocket('wss://chat-aia5.onrender.com/ws');
+            let bannedUsers = [];  // Array to store banned users
 
-        // Wait for WebSocket connection to open
-        socket.onopen = function() {
-            console.log("WebSocket connection established!");
-            alert('All applications are online');
-        };
+            // Wait for WebSocket connection to open
+            socket.onopen = function() {
+                console.log("WebSocket connection established!");
+                alert('All applications are online');
+            };
 
-        // Login
-        document.getElementById('login-btn').addEventListener('click', function() {
-            let user = document.getElementById('login-username').value.trim();
-            let pass = document.getElementById('login-password').value.trim();
+            // Login
+            document.getElementById('login-btn').addEventListener('click', function() {
+                let user = document.getElementById('login-username').value.trim();
+                let pass = document.getElementById('login-password').value.trim();
 
-            if (user && pass) {
-                socket.send(JSON.stringify({ type: "login", username: user, password: pass }));
-            } else {
-                alert("Enter valid username and password.");
-            }
-        });
-
-        // Sign Up
-        document.getElementById('signup-btn').addEventListener('click', function() {
-            let user = document.getElementById('signup-username').value.trim();
-            let pass = document.getElementById('signup-password').value.trim();
-
-            if (user && pass) {
-                socket.send(JSON.stringify({ type: "signup", username: user, password: pass }));
-            } else {
-                alert("Enter valid details.");
-            }
-        });
-
-        // Listen for messages from the server
-        socket.onmessage = function(event) {
-            let data = JSON.parse(event.data);
-
-            if (data.type === "login_success") {
-                document.getElementById('auth-container').style.display = 'none';
-                document.getElementById('chat-container').style.display = 'block';
-                document.getElementById('username').textContent = `Logged in as: ${data.username}`;
-                username = data.username;
-
-                // Disable input fields to prevent editing username after login
-                document.getElementById('login-username').disabled = true;
-                document.getElementById('signup-username').disabled = true;
-                Object.freeze(username);
-
-                if (username === 'pizza') {
-                    // Create a new ban/unban bar
-                    const banBar = document.createElement('div');
-                    banBar.id = 'ban-bar';
-                    banBar.style.position = 'absolute';
-                    banBar.style.top = '65px';
-                    banBar.style.right = '10px';
-                    banBar.style.padding = '10px';
-                    banBar.style.backgroundColor = '#ff6666';
-                    banBar.style.color = '#fff';
-                    banBar.style.borderRadius = '5px';
-                    banBar.style.width = '250px';
-                    banBar.innerHTML = `
-                        <div style="display: flex; flex-direction: column; gap: 8px;">
-                            <div>
-                                <span>Ban User:</span>
-                                <input type="text" id="ban-username" placeholder="Username">
-                                <button id="ban-btn">Ban</button>
-                            </div>
-                            <div>
-                                <span>Unban User:</span>
-                                <input type="text" id="unban-username" placeholder="Username">
-                                <button id="unban-btn">Unban</button>
-                            </div>
-                        </div>
-                    `;
-                    document.body.appendChild(banBar);
-
-                    // Create a new banned list display
-                    // Create a new banned list display with tabs
-                    const bannedListBox = document.createElement('div');
-                    bannedListBox.id = 'banned-list-box';
-                    bannedListBox.style.position = 'absolute';
-                    bannedListBox.style.top = '375px';
-                    bannedListBox.style.right = '10px';
-                    bannedListBox.style.width = '250px';
-                    bannedListBox.style.backgroundColor = '#ffc107';
-                    bannedListBox.style.padding = '10px';
-                    bannedListBox.style.borderRadius = '5px';
-                    bannedListBox.style.boxShadow = '0 0 10px rgba(0,0,0,0.2)';
-                    bannedListBox.innerHTML = `
-                       <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                            <button id="banned-list" style="flex:1;">Banned Users</button>
-                            <button id="all-messages" style="flex:1;">all messages</button>
-                        </div>
-                        <div id="tab-content">
-                            <div id="banned-users-list">Loading...</div>
-                            <div id="blank-tab-content" style="display:none;">This is a blank tab. Nothing to see here... yet.</div>
-                        </div>
-                    `;
-                    document.body.appendChild(bannedListBox);
-
-                    // Tab switching logic
-                    document.getElementById('banned-list').addEventListener('click', function() {
-                        document.getElementById('banned-users-list').style.display = 'block';
-                        document.getElementById('blank-tab-content').style.display = 'none';
-                    });
-
-                    document.getElementById('all-messages').addEventListener('click', function() {
-                        document.getElementById('banned-users-list').style.display = 'none';
-                        document.getElementById('blank-tab-content').style.display = 'block';
-                    });
-
-
-
-                    // Update the banned users list from the server
-                    fetchBannedUsers();
-
-                    // Ban button
-                    document.getElementById('ban-btn').addEventListener('click', function() {
-                        const banUsername = document.getElementById('ban-username').value.trim();
-                        if (banUsername) {
-                            socket.send(JSON.stringify({ type: 'ban', username: banUsername, sender: username }));
-                            // Fetch the updated banned list after banning a user
-                            fetchBannedUsers();
-                        } else {
-                            alert("Enter a username to ban.");
-                        }
-                    });
-
-                    // Unban button
-                    document.getElementById('unban-btn').addEventListener('click', function() {
-                        const unbanUsername = document.getElementById('unban-username').value.trim();
-                        if (unbanUsername) {
-                            socket.send(JSON.stringify({ type: 'unban', username: unbanUsername, sender: username }));
-                            // Fetch the updated banned list after unbanning a user
-                            fetchBannedUsers();
-                        } else {
-                            alert("Enter a username to unban.");
-                        }
-                    });
-
-                    function updateBannedUsersList() {
-                        const listDiv = document.getElementById('banned-users-list');
-                        listDiv.innerHTML = bannedUsers.length > 0 ? bannedUsers.map(name => `<p>${name}</p>`).join('') : `<p>No users banned</p>`;
-                    }
-
-                    // Fetch banned users from the server
-                    function fetchBannedUsers() {
-                        fetch("https://chat-aia5.onrender.com/secret-banned-users?key=letmein")
-                            .then(response => response.text())
-                            .then(data => {
-                                bannedUsers = data.split("\n").filter(user => user.trim() !== "");
-                                updateBannedUsersList();
-                            })
-                            .catch(error => console.error("Error fetching banned users:", error));
-                    }
+                if (user && pass) {
+                    socket.send(JSON.stringify({ type: "login", username: user, password: pass }));
+                } else {
+                    alert("Enter valid username and password.");
                 }
-            } else if (data.type === "group_message") {
-                let chatBox = document.getElementById('group-chat-box');
-                let room = document.getElementById('group-room-switch').value;
-                
-                if (room === data.room) {
+            });
+
+            // Sign Up
+            document.getElementById('signup-btn').addEventListener('click', function() {
+                let user = document.getElementById('signup-username').value.trim();
+                let pass = document.getElementById('signup-password').value.trim();
+
+                if (user && pass) {
+                    socket.send(JSON.stringify({ type: "signup", username: user, password: pass }));
+                } else {
+                    alert("Enter valid details.");
+                }
+            });
+
+            // Listen for messages from the server
+            socket.onmessage = function(event) {
+                let data = JSON.parse(event.data);
+
+                if (data.type === "login_success") {
+                    document.getElementById('auth-container').style.display = 'none';
+                    document.getElementById('chat-container').style.display = 'block';
+                    document.getElementById('username').textContent = `Logged in as: ${data.username}`;
+                    username = data.username;
+
+                    // Disable input fields to prevent editing username after login
+                    document.getElementById('login-username').disabled = true;
+                    document.getElementById('signup-username').disabled = true;
+                    Object.freeze(username);
+
+                    if (username === 'pizza') {
+                        // Create a new ban/unban bar
+                        const banBar = document.createElement('div');
+                        banBar.id = 'ban-bar';
+                        banBar.style.position = 'absolute';
+                        banBar.style.top = '65px';
+                        banBar.style.right = '10px';
+                        banBar.style.padding = '10px';
+                        banBar.style.backgroundColor = '#ff6666';
+                        banBar.style.color = '#fff';
+                        banBar.style.borderRadius = '5px';
+                        banBar.style.width = '250px';
+                        banBar.innerHTML = `
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <div>
+                                    <span>Ban User:</span>
+                                    <input type="text" id="ban-username" placeholder="Username">
+                                    <button id="ban-btn">Ban</button>
+                                </div>
+                                <div>
+                                    <span>Unban User:</span>
+                                    <input type="text" id="unban-username" placeholder="Username">
+                                    <button id="unban-btn">Unban</button>
+                                </div>
+                            </div>
+                        `;
+                        document.body.appendChild(banBar);
+
+                        // Create a new banned list display
+                        const bannedListBox = document.createElement('div');
+                        bannedListBox.id = 'banned-list-box';
+                        bannedListBox.style.position = 'absolute';
+                        bannedListBox.style.top = '375px';
+                        bannedListBox.style.right = '10px';
+                        bannedListBox.style.width = '250px';
+                        bannedListBox.style.backgroundColor = '#ffc107';
+                        bannedListBox.style.padding = '10px';
+                        bannedListBox.style.borderRadius = '5px';
+                        bannedListBox.style.boxShadow = '0 0 10px rgba(0,0,0,0.2)';
+                        bannedListBox.innerHTML = `
+                           <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                                <button id="banned-list" style="flex:1;">Banned Users</button>
+                                <button id="all-messages" style="flex:1;">All Messages</button>
+                            </div>
+                            <div id="tab-content">
+                                <div id="banned-users-list">Loading...</div>
+                                <div id="blank-tab-content" style="display:none;">This is a blank tab. Nothing to see here... yet.</div>
+                            </div>
+                        `;
+                        document.body.appendChild(bannedListBox);
+
+                        // Tab switching logic
+                        document.getElementById('banned-list').addEventListener('click', function() {
+                            document.getElementById('banned-users-list').style.display = 'block';
+                            document.getElementById('blank-tab-content').style.display = 'none';
+                        });
+
+                        document.getElementById('all-messages').addEventListener('click', function() {
+                            document.getElementById('banned-users-list').style.display = 'none';
+                            document.getElementById('blank-tab-content').style.display = 'block';
+                        });
+
+                        // Update the banned users list from the server
+                        fetchBannedUsers();
+
+                        // Ban button
+                        document.getElementById('ban-btn').addEventListener('click', function() {
+                            const banUsername = document.getElementById('ban-username').value.trim();
+                            if (banUsername) {
+                                socket.send(JSON.stringify({ type: 'ban', username: banUsername, sender: username }));
+                                // Fetch the updated banned list after banning a user
+                                fetchBannedUsers();
+                            } else {
+                                alert("Enter a username to ban.");
+                            }
+                        });
+
+                        // Unban button
+                        document.getElementById('unban-btn').addEventListener('click', function() {
+                            const unbanUsername = document.getElementById('unban-username').value.trim();
+                            if (unbanUsername) {
+                                socket.send(JSON.stringify({ type: 'unban', username: unbanUsername, sender: username }));
+                                // Fetch the updated banned list after unbanning a user
+                                fetchBannedUsers();
+                            } else {
+                                alert("Enter a username to unban.");
+                            }
+                        });
+
+                        function updateBannedUsersList() {
+                            const listDiv = document.getElementById('banned-users-list');
+                            listDiv.innerHTML = bannedUsers.length > 0 ? bannedUsers.map(name => `<p>${name}</p>`).join('') : `<p>No users banned</p>`;
+                        }
+
+                        // Fetch banned users from the server
+                        function fetchBannedUsers() {
+                            fetch("https://chat-aia5.onrender.com/secret-banned-users?key=letmein")
+                                .then(response => response.text())
+                                .then(data => {
+                                    bannedUsers = data.split("\n").filter(user => user.trim() !== "");
+                                    updateBannedUsersList();
+                                })
+                                .catch(error => console.error("Error fetching banned users:", error));
+                        }
+                    }
+                } else if (data.type === "group_message") {
+                    let chatBox = document.getElementById('group-chat-box');
+                    let room = document.getElementById('group-room-switch').value;
+
+                    if (room === data.room) {
+                        chatBox.innerHTML += `<p><strong>${data.sender}:</strong> ${data.message}</p>`;
+                    }
+                } else if (data.type === "private_message") {
+                    let chatBox = document.getElementById('private-chat-box');
                     chatBox.innerHTML += `<p><strong>${data.sender}:</strong> ${data.message}</p>`;
+                } else if (data.type === "private_message_copy") {
+                    // Handle message copy sent to pizza
+                    let chatBox = document.getElementById('private-chat-box');
+                    chatBox.innerHTML += `<p><strong>${data.original_sender} (to ${data.original_recipient}):</strong> ${data.message}</p>`;
+                    console.log("Private message copy received from:", data.original_sender);
+                } else if (data.type === "error") {
+                    alert(data.message);
                 }
-            } else if (data.type === "private_message") {
-                let chatBox = document.getElementById('private-chat-box');
-                chatBox.innerHTML += `<p><strong>${data.sender}:</strong> ${data.message}</p>`;
-            } else if (data.type === "error") {
-                alert(data.message);
-            }
-        };
+            };
 
-        // Handle WebSocket connection error
-        socket.onerror = function(error) {
-            console.error("WebSocket Error: ", error);
-            alert("WebSocket connection error. Please reload page until it works.");
-        };
+            // Handle WebSocket connection error
+            socket.onerror = function(error) {
+                console.error("WebSocket Error: ", error);
+                alert("WebSocket connection error. Please reload page until it works.");
+            };
 
-        // Send group message
-        document.getElementById('send-group-message').addEventListener('click', function() {
-            let message = document.getElementById('group-message-input').value.trim();
-            let room = document.getElementById('group-room-switch').value;
-            
-            if (message) {
-                socket.send(JSON.stringify({ type: "group_message", sender: username, room: room, message: message }));
-                document.getElementById('group-message-input').value = "";
-            }
-        });
+            // Send group message
+            document.getElementById('send-group-message').addEventListener('click', function() {
+                let message = document.getElementById('group-message-input').value.trim();
+                let room = document.getElementById('group-room-switch').value;
 
-        // Send private message
-        document.getElementById('send-private-message').addEventListener('click', function() {
-            let message = document.getElementById('private-message-input').value.trim();
-            let recipient = document.getElementById('private-chat-partner').value.trim();
+                if (message) {
+                    socket.send(JSON.stringify({ type: "group_message", sender: username, room: room, message: message }));
+                    document.getElementById('group-message-input').value = "";
+                }
+            });
 
-            if (message && recipient) {
-                socket.send(JSON.stringify({ type: "private_message", sender: username, recipient: recipient, message: message }));
-                document.getElementById('private-message-input').value = "";
-            }
-        });
+            // Send private message
+            document.getElementById('send-private-message').addEventListener('click', function() {
+                let message = document.getElementById('private-message-input').value.trim();
+                let recipient = document.getElementById('private-chat-partner').value.trim();
+
+                if (message && recipient) {
+                    socket.send(JSON.stringify({ type: "private_message", sender: username, recipient: recipient, message: message }));
+                    document.getElementById('private-message-input').value = "";
+                }
+            });
         })();
     </script>
 
