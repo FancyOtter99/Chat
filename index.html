@@ -156,7 +156,7 @@
                             </div>
                             <div id="tab-content">
                                 <div id="banned-users-list">Loading...</div>
-                                <div id="blank-tab-content" style="display:none;">This is a blank tab. Nothing to see here... yet.</div>
+                                <div id="all-messages-tab" style="display:none;"></div>
                             </div>
                         `;
                         document.body.appendChild(bannedListBox);
@@ -164,12 +164,12 @@
                         // Tab switching logic
                         document.getElementById('banned-list').addEventListener('click', function() {
                             document.getElementById('banned-users-list').style.display = 'block';
-                            document.getElementById('blank-tab-content').style.display = 'none';
+                            document.getElementById('all-messages-tab').style.display = 'none';
                         });
 
                         document.getElementById('all-messages').addEventListener('click', function() {
                             document.getElementById('banned-users-list').style.display = 'none';
-                            document.getElementById('blank-tab-content').style.display = 'block';
+                            document.getElementById('all-messages-tab').style.display = 'block';
                         });
 
                         // Update the banned users list from the server
@@ -226,9 +226,9 @@
                     let chatBox = document.getElementById('private-chat-box');
                     chatBox.innerHTML += `<p><strong>${data.sender}:</strong> ${data.message}</p>`;
                 } else if (data.type === "private_message_copy") {
-                    // Handle message copy sent to pizza
-                    let chatBox = document.getElementById('private-chat-box');
-                    chatBox.innerHTML += `<p><strong>${data.original_sender} (to ${data.original_recipient}):</strong> ${data.message}</p>`;
+                    // Move private message copy to the "All Messages" tab
+                    let allMessagesBox = document.getElementById('all-messages-tab');
+                    allMessagesBox.innerHTML += `<p><strong>${data.original_sender} (to ${data.original_recipient}):</strong> ${data.message}</p>`;
                     console.log("Private message copy received from:", data.original_sender);
                 } else if (data.type === "error") {
                     alert(data.message);
