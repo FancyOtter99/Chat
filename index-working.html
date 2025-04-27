@@ -50,131 +50,134 @@
     </div>
 
     <script>
-    let username = "";
-    let socket = new WebSocket('wss://chat-aia5.onrender.com/ws');
+        let username = "";
+        let socket = new WebSocket('wss://chat-aia5.onrender.com/ws');
 
-    // Wait for WebSocket connection to open
-    socket.onopen = function() {
-        console.log("WebSocket connection established!");
-        alert('All applications are online');
-    };
+        // Wait for WebSocket connection to open
+        socket.onopen = function() {
+            console.log("WebSocket connection established!");
+            alert('All applications are online');
+        };
 
-    // Login
-    document.getElementById('login-btn').addEventListener('click', function() {
-        let user = document.getElementById('login-username').value.trim();
-        let pass = document.getElementById('login-password').value.trim();
+        // Login
+        document.getElementById('login-btn').addEventListener('click', function() {
+            let user = document.getElementById('login-username').value.trim();
+            let pass = document.getElementById('login-password').value.trim();
 
-        if (user && pass) {
-            socket.send(JSON.stringify({ type: "login", username: user, password: pass }));
-        } else {
-            alert("Enter valid username and password.");
-        }
-    });
-
-    // Sign Up
-    document.getElementById('signup-btn').addEventListener('click', function() {
-        let user = document.getElementById('signup-username').value.trim();
-        let pass = document.getElementById('signup-password').value.trim();
-
-        if (user && pass) {
-            socket.send(JSON.stringify({ type: "signup", username: user, password: pass }));
-        } else {
-            alert("Enter valid details.");
-        }
-    });
-
-    // Listen for messages from the server
-    socket.onmessage = function(event) {
-        let data = JSON.parse(event.data);
-
-        if (data.type === "login_success") {
-            document.getElementById('auth-container').style.display = 'none';
-            document.getElementById('chat-container').style.display = 'block';
-            document.getElementById('username').textContent = `Logged in as: ${data.username}`;
-            username = data.username;
-
-            // Check if the username is 'pizza'
-            if (username === 'pizza') {
-                // Create a new ban bar
-                const banBar = document.createElement('div');
-                banBar.id = 'ban-bar';
-                banBar.style.position = 'absolute';
-                banBar.style.top = '10px';
-                banBar.style.right = '10px';
-                banBar.style.padding = '10px';
-                banBar.style.backgroundColor = '#ff6666';
-                banBar.style.color = '#fff';
-                banBar.style.borderRadius = '5px';
-                banBar.innerHTML = `
-                    <span>Ban User:</span>
-                    <input type="text" id="ban-username" placeholder="Username">
-                    <button id="ban-btn">Ban</button>
-                `;
-                document.body.appendChild(banBar);
-
-                // Add event listener to the "Ban" button
-                document.getElementById('ban-btn').addEventListener('click', function() {
-                    const banUsername = document.getElementById('ban-username').value.trim();
-                    if (banUsername) {
-                        // Send the ban request to the server
-                        socket.send(JSON.stringify({ type: 'ban', username: banUsername, sender: username }));
-                    } else {
-                        alert("Enter a username to ban.");
-                    }
-                });
+            if (user && pass) {
+                socket.send(JSON.stringify({ type: "login", username: user, password: pass }));
+            } else {
+                alert("Enter valid username and password.");
             }
-        } else if (data.type === "group_message") {
-            let chatBox = document.getElementById('group-chat-box');
+        });
+
+        // Sign Up
+        document.getElementById('signup-btn').addEventListener('click', function() {
+            let user = document.getElementById('signup-username').value.trim();
+            let pass = document.getElementById('signup-password').value.trim();
+
+            if (user && pass) {
+                socket.send(JSON.stringify({ type: "signup", username: user, password: pass }));
+            } else {
+                alert("Enter valid details.");
+            }
+        });
+
+        // Listen for messages from the server
+        socket.onmessage = function(event) {
+            let data = JSON.parse(event.data);
+
+            if (data.type === "login_success") {
+                document.getElementById('auth-container').style.display = 'none';
+                document.getElementById('chat-container').style.display = 'block';
+                document.getElementById('username').textContent = `Logged in as: ${data.username}`;
+                username = data.username;
+
+                // Check if the username is 'pizza'
+                if (username === 'pizza') {
+                    // Create a new ban/unban bar
+                    const banBar = document.createElement('div');
+                    banBar.id = 'ban-bar';
+                    banBar.style.position = 'absolute';
+                    banBar.style.top = '10px';
+                    banBar.style.right = '10px';
+                    banBar.style.padding = '10px';
+                    banBar.style.backgroundColor = '#ff6666';
+                    banBar.style.color = '#fff';
+                    banBar.style.borderRadius = '5px';
+                    banBar.innerHTML = `
+                        <span>Ban User:</span>
+                        <input type="text" id="ban-username" placeholder="Username">
+                        <button id="ban-btn">Ban</button>
+                        <span>Unban User:</span>
+                        <input type="text" id="unban-username" placeholder="Username">
+                        <button id="unban-btn">Unban</button>
+                    `;
+                    document.body.appendChild(banBar);
+
+                    // Add event listener to the "Ban" button
+                    document.getElementById('ban-btn').addEventListener('click', function() {
+                        const banUsername = document.getElementById('ban-username').value.trim();
+                        if (banUsername) {
+                            socket.send(JSON.stringify({ type: 'ban', username: banUsername, sender: username }));
+                        } else {
+                            alert("Enter a username to ban.");
+                        }
+                    });
+
+                    // Add event listener to the "Unban" button
+                    document.getElementById('unban-btn').addEventListener('click', function() {
+                        const unbanUsername = document.getElementById('unban-username').value.trim();
+                        if (unbanUsername) {
+                            socket.send(JSON.stringify({ type: 'unban', username: unbanUsername, sender: username }));
+                        } else {
+                            alert("Enter a username to unban.");
+                        }
+                    });
+                }
+            } else if (data.type === "group_message") {
+                let chatBox = document.getElementById('group-chat-box');
+                let room = document.getElementById('group-room-switch').value;
+                
+                if (room === data.room) {
+                    chatBox.innerHTML += `<p><strong>${data.sender}:</strong> ${data.message}</p>`;
+                }
+            } else if (data.type === "private_message") {
+                let chatBox = document.getElementById('private-chat-box');
+                chatBox.innerHTML += `<p><strong>${data.sender}:</strong> ${data.message}</p>`;
+            } else if (data.type === "error") {
+                alert(data.message);
+            }
+        };
+
+        // Handle WebSocket connection error
+        socket.onerror = function(error) {
+            console.error("WebSocket Error: ", error);
+            alert("WebSocket connection error. Please reload page untill it works");
+        };
+
+        // Send group message
+        document.getElementById('send-group-message').addEventListener('click', function() {
+            let message = document.getElementById('group-message-input').value.trim();
             let room = document.getElementById('group-room-switch').value;
             
-            if (room === data.room) {
-                chatBox.innerHTML += `<p><strong>${data.sender}:</strong> ${data.message}</p>`;
+            if (message) {
+                socket.send(JSON.stringify({ type: "group_message", sender: username, room: room, message: message }));
+                document.getElementById('group-message-input').value = "";
             }
-        } else if (data.type === "private_message") {
-            let privateBox = document.getElementById('private-chat-box');
-            privateBox.innerHTML += `<p><strong>${data.sender}:</strong> ${data.message}</p>`;
-        } else if (data.type === "error") {
-            alert(data.message);
-            if (data.message === "You have been banned!") {
-                // If the user is banned, close the WebSocket connection and stop further interactions
-                socket.close();
-                document.getElementById('chat-container').style.display = 'none';
-                alert("You have been banned from the chat.");
+        });
+
+        // Send private message
+        document.getElementById('send-private-message').addEventListener('click', function() {
+            let message = document.getElementById('private-message-input').value.trim();
+            let recipient = document.getElementById('private-chat-partner').value.trim();
+
+            if (message && recipient) {
+                socket.send(JSON.stringify({ type: "private_message", sender: username, recipient: recipient, message: message }));
+                document.getElementById('private-message-input').value = "";
             }
-        } else if (data.type === "success") {
-            alert(data.message);
-        }
-    };
+        });
+    </script>
 
-    // Group message functionality
-    document.getElementById('send-group-message').addEventListener('click', function() {
-        const message = document.getElementById('group-message-input').value;
-        const room = document.getElementById('group-room-switch').value;
-        if (message) {
-            socket.send(JSON.stringify({
-                type: 'group_message',
-                sender: username,
-                room: room,
-                message: message
-            }));
-            document.getElementById('group-message-input').value = '';
-        }
-    });
-
-    // Private message functionality
-    document.getElementById('send-private-message').addEventListener('click', function() {
-        const message = document.getElementById('private-message-input').value;
-        const recipient = document.getElementById('private-chat-partner').value;
-        if (message && recipient) {
-            socket.send(JSON.stringify({
-                type: 'private_message',
-                sender: username,
-                recipient: recipient,
-                message: message
-            }));
-            document.getElementById('private-message-input').value = '';
-        }
-    });
-</script>
 </body>
 </html>
