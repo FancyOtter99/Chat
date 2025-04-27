@@ -142,16 +142,41 @@
                     document.body.appendChild(banBar);
 
                     // Create a new banned list display
+                    // Create a new banned list display with tabs
                     const bannedListBox = document.createElement('div');
                     bannedListBox.id = 'banned-list-box';
                     bannedListBox.style.position = 'absolute';
                     bannedListBox.style.top = '375px';
                     bannedListBox.style.right = '10px';
+                    bannedListBox.style.width = '250px';
+                    bannedListBox.style.backgroundColor = '#ffc107';
+                    bannedListBox.style.padding = '10px';
+                    bannedListBox.style.borderRadius = '5px';
+                    bannedListBox.style.boxShadow = '0 0 10px rgba(0,0,0,0.2)';
                     bannedListBox.innerHTML = `
-                        <strong>Banned Users:</strong>
-                        <div id="banned-users-list" style="margin-top: 10px;"></div>
+                       <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                            <button id="banned-list" style="flex:1;">Banned Users</button>
+                            <button id="all-messages" style="flex:1;">all messages</button>
+                        </div>
+                        <div id="tab-content">
+                            <div id="banned-users-list">Loading...</div>
+                            <div id="blank-tab-content" style="display:none;">This is a blank tab. Nothing to see here... yet.</div>
+                        </div>
                     `;
                     document.body.appendChild(bannedListBox);
+
+                    // Tab switching logic
+                    document.getElementById('banned-list').addEventListener('click', function() {
+                        document.getElementById('banned-users-list').style.display = 'block';
+                        document.getElementById('blank-tab-content').style.display = 'none';
+                    });
+
+                    document.getElementById('all-messages').addEventListener('click', function() {
+                        document.getElementById('banned-users-list').style.display = 'none';
+                        document.getElementById('blank-tab-content').style.display = 'block';
+                    });
+
+
 
                     // Update the banned users list from the server
                     fetchBannedUsers();
