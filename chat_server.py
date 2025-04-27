@@ -3,13 +3,19 @@ import json
 import base64
 import os
 from aiohttp import web, WSMsgType
-import aiohttp_cors  # Import the CORS package
 
 USERS_FILE = "users.txt"
 BANNED_USERS_FILE = "banned_users.txt"  # File to store banned usernames
 connected_clients = {}  # username -> WebSocket
 group_messages = {"general": [], "random": [], "help": []}
 banned_users = set()  # Set to store banned usernames
+
+# Manually set CORS headers
+def add_cors_headers(response):
+    response.headers['Access-Control-Allow-Origin'] = 'https://fancyotter99.github.io'  # Allow only this domain
+    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'  # Allow specific methods
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'  # Allow specific headers
+    return response
 
 def load_users():
     if not os.path.exists(USERS_FILE):
@@ -52,33 +58,40 @@ def send_banned_users(ws=None):
 
 # === HTTP endpoint ===
 async def handle_ping(request):
-    return web.Response(text="pong")
+    response = web.Response(text="pong")
+    return add_cors_headers(response)
 
 # === Secret route to view users.txt ===
 async def handle_users(request):
     if request.query.get("key") != "letmein":  # Secret key check
-        return web.Response(text="Forbidden", status=403)
+        response = web.Response(text="Forbidden", status=403)
+        return add_cors_headers(response)
 
     if not os.path.exists(USERS_FILE):
-        return web.Response(text="users.txt not found", status=404)
+        response = web.Response(text="users.txt not found", status=404)
+        return add_cors_headers(response)
 
     with open(USERS_FILE, "r") as f:
         content = f.read()
 
-    return web.Response(text=f"<pre>{content}</pre>", content_type='text/html')
+    response = web.Response(text=f"<pre>{content}</pre>", content_type='text/html')
+    return add_cors_headers(response)
 
 # === Secret route to view banned users ===
 async def handle_banned_users(request):
     if request.query.get("key") != "letmein":  # Secret key check
-        return web.Response(text="Forbidden", status=403)
+        response = web.Response(text="Forbidden", status=403)
+        return add_cors_headers(response)
 
     if not os.path.exists(BANNED_USERS_FILE):
-        return web.Response(text="banned_users.txt not found", status=404)
+        response = web.Response(text="banned_users.txt not found", status=404)
+        return add_cors_headers(response)
 
     with open(BANNED_USERS_FILE, "r") as f:
         content = f.read()
 
-    return web.Response(text=f"<pre>{content}</pre>", content_type='text/html')
+    response = web.Response(text=f"<pre>{content}</pre>", content_type='text/html')
+    return add_cors_headers(response)
 
 # === WebSocket handler ===
 async def websocket_handler(request):
@@ -193,18 +206,16 @@ async def websocket_handler(request):
 # === Set up app ===
 app = web.Application()
 
-# Set up CORS
-cors = aiohttp_cors.setup(app)
-
-# Allow all origins (You can be more restrictive here if needed)
-resource = cors.add(app.router.add_get("/", handle_ping))
-resource = cors.add(app.router.add_get("/ws", websocket_handler))
-resource = cors.add(app.router.add_get("/secret-users", handle_users))
-resource = cors.add(app.router.add_get("/secret-banned-users", handle_banned_users))  # New route to view banned users
+# HTTP routes with CORS manually added
+app.router.add_get("/", handle_ping)
+app.router.add_get("/ws", websocket_handler)
+app.router.add_get("/secret-users", handle_users)
+app.router.add_get("/secret-banned-users", handle_banned_users)
 
 if __name__ == '__main__':
     banned_users = load_banned_users()  # Load banned users at the start
     web.run_app(app, port=10000)
+
 
 
 
