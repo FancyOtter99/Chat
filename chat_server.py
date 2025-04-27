@@ -31,7 +31,7 @@ async def handle_ping(request):
 
 # === Secret route to view users.txt ===
 async def handle_users(request):
-    if request.query.get("key") != "letmein":  # Secret key check
+    if request.query.get("key") != "letmein":
         return web.Response(text="Forbidden", status=403)
 
     if not os.path.exists(USERS_FILE):
@@ -67,7 +67,7 @@ async def websocket_handler(request):
                 elif data["type"] == "login":
                     if data["username"] in banned_users:
                         await ws.send_json({"type": "error", "message": "You are banned!"})
-                        await ws.close()  # Close the connection for banned user
+                        await ws.close()
                         return
                     
                     if validate_login(data["username"], data["password"]):
@@ -113,21 +113,19 @@ async def websocket_handler(request):
 
                 # Ban Logic (Only 'pizza' can ban users)
                 elif data["type"] == "ban":
-                    if data["sender"] == "pizza":  # Only allow "pizza" to ban users
+                    if data["sender"] == "pizza":
                         username_to_ban = data["username"]
+                        banned_users.add(username_to_ban)
                         if username_to_ban in connected_clients:
-                            banned_users.add(username_to_ban)
                             await connected_clients[username_to_ban].send_json({"type": "error", "message": "You have been banned!"})
-                            await connected_clients[username_to_ban].close()  # Close their connection
-                            await ws.send_json({"type": "success", "message": f"{username_to_ban} has been banned."})
-                        else:
-                            await ws.send_json({"type": "error", "message": f"{username_to_ban} is not connected."})
+                            await connected_clients[username_to_ban].close()
+                        await ws.send_json({"type": "success", "message": f"{username_to_ban} has been banned."})
                     else:
                         await ws.send_json({"type": "error", "message": "Only 'pizza' can ban users!"})
 
                 # Unban Logic (Only 'pizza' can unban users)
                 elif data["type"] == "unban":
-                    if data["sender"] == "pizza":  # Only allow "pizza" to unban users
+                    if data["sender"] == "pizza":
                         username_to_unban = data["username"]
                         if username_to_unban in banned_users:
                             banned_users.remove(username_to_unban)
@@ -136,6 +134,10 @@ async def websocket_handler(request):
                             await ws.send_json({"type": "error", "message": f"{username_to_unban} is not banned."})
                     else:
                         await ws.send_json({"type": "error", "message": "Only 'pizza' can unban users!"})
+
+                # Get Banned List Logic
+                elif data["type"] == "get_banned_list":
+                    await ws.send_json({"type": "banned_list", "users": list(banned_users)})
 
             elif msg.type == WSMsgType.ERROR:
                 print(f'WS connection closed with exception {ws.exception()}')
@@ -154,4 +156,5 @@ app.router.add_get("/secret-users", handle_users)
 
 if __name__ == '__main__':
     web.run_app(app, port=10000)
+
 
