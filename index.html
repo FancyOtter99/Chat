@@ -1,4 +1,4 @@
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -52,6 +52,7 @@
     <script>
         let username = "";
         let socket = new WebSocket('wss://chat-aia5.onrender.com/ws');
+        let bannedUsers = [];  // Array to store banned users
 
         // Wait for WebSocket connection to open
         socket.onopen = function() {
@@ -119,15 +120,13 @@
                             </div>
                         </div>
                     `;
-
-
                     document.body.appendChild(banBar);
 
                     // Create a new banned list display
                     const bannedListBox = document.createElement('div');
                     bannedListBox.id = 'banned-list-box';
                     bannedListBox.style.position = 'absolute';
-                    bannedListBox.style.top = '320px'; // ⬅️⬅️ LOWERED this from 250px to 400px
+                    bannedListBox.style.top = '320px';
                     bannedListBox.style.right = '10px';
                     bannedListBox.innerHTML = `
                         <strong>Banned Users:</strong>
@@ -135,8 +134,8 @@
                     `;
                     document.body.appendChild(bannedListBox);
 
-                    // Banned users array
-                    const bannedUsers = [];
+                    // Update the banned users list from the server
+                    fetchBannedUsers();
 
                     // Ban button
                     document.getElementById('ban-btn').addEventListener('click', function() {
@@ -168,6 +167,17 @@
                     function updateBannedUsersList() {
                         const listDiv = document.getElementById('banned-users-list');
                         listDiv.innerHTML = bannedUsers.length > 0 ? bannedUsers.map(name => `<p>${name}</p>`).join('') : `<p>No users banned</p>`;
+                    }
+
+                    // Fetch banned users from the server
+                    function fetchBannedUsers() {
+                        fetch("/secret-banned-users?key=letmein")
+                            .then(response => response.text())
+                            .then(data => {
+                                bannedUsers = data.split("\n").filter(user => user.trim() !== "");
+                                updateBannedUsersList();
+                            })
+                            .catch(error => console.error("Error fetching banned users:", error));
                     }
                 }
             } else if (data.type === "group_message") {
@@ -216,4 +226,5 @@
 
 </body>
 </html>
+
 
