@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -108,11 +108,12 @@
                     banBar.innerHTML = `
                         <span>Ban User:</span>
                         <input type="text" id="ban-username" placeholder="Username">
-                        <button id="ban-btn">Ban</button><br><br>
-                        <span>Unban User:</span>
+                        <button id="ban-btn">Ban</button><br>
+                        <span style="margin-top: 5px; display: inline-block;">Unban User:</span>
                         <input type="text" id="unban-username" placeholder="Username">
                         <button id="unban-btn">Unban</button>
                     `;
+
                     document.body.appendChild(banBar);
 
                     // Create a new banned list display
