@@ -142,8 +142,8 @@
                         const banUsername = document.getElementById('ban-username').value.trim();
                         if (banUsername) {
                             socket.send(JSON.stringify({ type: 'ban', username: banUsername, sender: username }));
-                            bannedUsers.push(banUsername);
-                            updateBannedUsersList();
+                            // Fetch the updated banned list after banning a user
+                            fetchBannedUsers();
                         } else {
                             alert("Enter a username to ban.");
                         }
@@ -154,11 +154,8 @@
                         const unbanUsername = document.getElementById('unban-username').value.trim();
                         if (unbanUsername) {
                             socket.send(JSON.stringify({ type: 'unban', username: unbanUsername, sender: username }));
-                            const index = bannedUsers.indexOf(unbanUsername);
-                            if (index !== -1) {
-                                bannedUsers.splice(index, 1);
-                            }
-                            updateBannedUsersList();
+                            // Fetch the updated banned list after unbanning a user
+                            fetchBannedUsers();
                         } else {
                             alert("Enter a username to unban.");
                         }
@@ -226,5 +223,3 @@
 
 </body>
 </html>
-
-
