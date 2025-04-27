@@ -5,6 +5,7 @@ import os
 from aiohttp import web, WSMsgType
 
 USERS_FILE = "users.txt"
+BANNED_USERS_FILE = "banned_users.txt"  # File to store banned usernames
 connected_clients = {}  # username -> WebSocket
 group_messages = {"general": [], "random": [], "help": []}
 banned_users = set()  # Set to store banned usernames
@@ -19,6 +20,17 @@ def save_user(username, password):
     encoded_pw = base64.b64encode(password.encode()).decode()
     with open(USERS_FILE, "a") as f:
         f.write(f"{username}:{encoded_pw}\n")
+
+def load_banned_users():
+    if not os.path.exists(BANNED_USERS_FILE):
+        return set()
+    with open(BANNED_USERS_FILE, "r") as f:
+        return set(line.strip() for line in f)
+
+def save_banned_users():
+    with open(BANNED_USERS_FILE, "w") as f:
+        for user in banned_users:
+            f.write(f"{user}\n")
 
 def validate_login(username, password):
     users = load_users()
@@ -38,6 +50,19 @@ async def handle_users(request):
         return web.Response(text="users.txt not found", status=404)
 
     with open(USERS_FILE, "r") as f:
+        content = f.read()
+
+    return web.Response(text=f"<pre>{content}</pre>", content_type='text/html')
+
+# === Secret route to view banned users ===
+async def handle_banned_users(request):
+    if request.query.get("key") != "letmein":  # Secret key check
+        return web.Response(text="Forbidden", status=403)
+
+    if not os.path.exists(BANNED_USERS_FILE):
+        return web.Response(text="banned_users.txt not found", status=404)
+
+    with open(BANNED_USERS_FILE, "r") as f:
         content = f.read()
 
     return web.Response(text=f"<pre>{content}</pre>", content_type='text/html')
@@ -117,6 +142,7 @@ async def websocket_handler(request):
                         username_to_ban = data["username"]
                         if username_to_ban in connected_clients:
                             banned_users.add(username_to_ban)
+                            save_banned_users()  # Save the banned user to the file
                             await connected_clients[username_to_ban].send_json({"type": "error", "message": "You have been banned!"})
                             await connected_clients[username_to_ban].close()  # Close their connection
                             await ws.send_json({"type": "success", "message": f"{username_to_ban} has been banned."})
@@ -131,6 +157,7 @@ async def websocket_handler(request):
                         username_to_unban = data["username"]
                         if username_to_unban in banned_users:
                             banned_users.remove(username_to_unban)
+                            save_banned_users()  # Save the unbanned user to the file
                             await ws.send_json({"type": "success", "message": f"{username_to_unban} has been unbanned."})
                         else:
                             await ws.send_json({"type": "error", "message": f"{username_to_unban} is not banned."})
@@ -151,9 +178,12 @@ app = web.Application()
 app.router.add_get("/", handle_ping)
 app.router.add_get("/ws", websocket_handler)
 app.router.add_get("/secret-users", handle_users)
+app.router.add_get("/secret-banned-users", handle_banned_users)  # New route to view banned users
 
 if __name__ == '__main__':
+    banned_users = load_banned_users()  # Load banned users at the start
     web.run_app(app, port=10000)
+
 
 
 
