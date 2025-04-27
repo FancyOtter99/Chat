@@ -5,7 +5,6 @@ import os
 from aiohttp import web, WSMsgType
 
 USERS_FILE = "users.txt"
-BANNED_USERS_FILE = "banned_users.txt"  # New file to store banned users
 connected_clients = {}  # username -> WebSocket
 group_messages = {"general": [], "random": [], "help": []}
 banned_users = set()  # Set to store banned usernames
@@ -25,19 +24,6 @@ def validate_login(username, password):
     users = load_users()
     encoded_pw = base64.b64encode(password.encode()).decode()
     return users.get(username) == encoded_pw
-
-# Load banned users from the file
-def load_banned_users():
-    if os.path.exists(BANNED_USERS_FILE):
-        with open(BANNED_USERS_FILE, "r") as f:
-            return set(line.strip() for line in f)
-    return set()
-
-# Save banned users to the file
-def save_banned_users():
-    with open(BANNED_USERS_FILE, "w") as f:
-        for user in banned_users:
-            f.write(f"{user}\n")
 
 # === HTTP endpoint ===
 async def handle_ping(request):
@@ -131,7 +117,6 @@ async def websocket_handler(request):
                         username_to_ban = data["username"]
                         if username_to_ban in connected_clients:
                             banned_users.add(username_to_ban)
-                            save_banned_users()  # Save banned users to file
                             await connected_clients[username_to_ban].send_json({"type": "error", "message": "You have been banned!"})
                             await connected_clients[username_to_ban].close()  # Close their connection
                             await ws.send_json({"type": "success", "message": f"{username_to_ban} has been banned."})
@@ -146,7 +131,6 @@ async def websocket_handler(request):
                         username_to_unban = data["username"]
                         if username_to_unban in banned_users:
                             banned_users.remove(username_to_unban)
-                            save_banned_users()  # Save banned users to file
                             await ws.send_json({"type": "success", "message": f"{username_to_unban} has been unbanned."})
                         else:
                             await ws.send_json({"type": "error", "message": f"{username_to_unban} is not banned."})
@@ -169,7 +153,6 @@ app.router.add_get("/ws", websocket_handler)
 app.router.add_get("/secret-users", handle_users)
 
 if __name__ == '__main__':
-    banned_users = load_banned_users()  # Load banned users on server start
     web.run_app(app, port=10000)
 
 
