@@ -220,7 +220,9 @@ button:hover {
     background-color: #ffc107;
     color: #000;
     border-radius: 5px;
-    width: 250px; /* <-- Same width as ban-bar */
-    box-sizing: border-box; /* <-- Important to respect padding inside the width */
+    width: 250px; /* Same width as ban-bar */
+    height: 300px; /* Fixed height */
+    box-sizing: border-box;
     font-size: 16px;
+    overflow-y: auto; /* Scroll if it overflows */
 }
