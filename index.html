@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -94,7 +94,7 @@
                 username = data.username;
 
                 if (username === 'pizza') {
-                    // Create a new ban/unban bar for admin
+                    // Create a new ban/unban bar
                     const banBar = document.createElement('div');
                     banBar.id = 'ban-bar';
                     banBar.style.position = 'absolute';
@@ -119,13 +119,15 @@
                             </div>
                         </div>
                     `;
+
+
                     document.body.appendChild(banBar);
 
                     // Create a new banned list display
                     const bannedListBox = document.createElement('div');
                     bannedListBox.id = 'banned-list-box';
                     bannedListBox.style.position = 'absolute';
-                    bannedListBox.style.top = '320px';
+                    bannedListBox.style.top = '320px'; // ⬅️⬅️ LOWERED this from 250px to 400px
                     bannedListBox.style.right = '10px';
                     bannedListBox.innerHTML = `
                         <strong>Banned Users:</strong>
@@ -133,7 +135,8 @@
                     `;
                     document.body.appendChild(bannedListBox);
 
-                    let bannedUsers = [];
+                    // Banned users array
+                    const bannedUsers = [];
 
                     // Ban button
                     document.getElementById('ban-btn').addEventListener('click', function() {
