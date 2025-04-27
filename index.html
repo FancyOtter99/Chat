@@ -50,6 +50,7 @@
     </div>
 
     <script>
+        (function() {
         let username = "";
         let socket = new WebSocket('wss://chat-aia5.onrender.com/ws');
         let bannedUsers = [];  // Array to store banned users
@@ -224,6 +225,7 @@
                 document.getElementById('private-message-input').value = "";
             }
         });
+        })();
     </script>
 
 </body>
