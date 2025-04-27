@@ -166,15 +166,16 @@
                     document.body.appendChild(bannedListBox);
 
                     // Tab switching logic
-                    document.getElementById('tab-banned').addEventListener('click', function() {
+                    document.getElementById('banned-list').addEventListener('click', function() {
                         document.getElementById('banned-users-list').style.display = 'block';
                         document.getElementById('blank-tab-content').style.display = 'none';
                     });
 
-                    document.getElementById('tab-blank').addEventListener('click', function() {
+                    document.getElementById('all-messages').addEventListener('click', function() {
                         document.getElementById('banned-users-list').style.display = 'none';
                         document.getElementById('blank-tab-content').style.display = 'block';
                     });
+
 
 
                     // Update the banned users list from the server
