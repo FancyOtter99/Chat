@@ -111,7 +111,7 @@ async def websocket_handler(request):
                     else:
                         await ws.send_json({"type": "error", "message": "User is not online."})
 
-                # Ban Logic (Only 'pizza' can ban)
+                # Ban Logic (Only 'pizza' can ban users)
                 elif data["type"] == "ban":
                     if data["sender"] == "pizza":  # Only allow "pizza" to ban users
                         username_to_ban = data["username"]
@@ -119,12 +119,23 @@ async def websocket_handler(request):
                             banned_users.add(username_to_ban)
                             await connected_clients[username_to_ban].send_json({"type": "error", "message": "You have been banned!"})
                             await connected_clients[username_to_ban].close()  # Close their connection
-                            connected_clients.pop(username_to_ban, None)  # Remove from active connections
                             await ws.send_json({"type": "success", "message": f"{username_to_ban} has been banned."})
                         else:
                             await ws.send_json({"type": "error", "message": f"{username_to_ban} is not connected."})
                     else:
                         await ws.send_json({"type": "error", "message": "Only 'pizza' can ban users!"})
+
+                # Unban Logic (Only 'pizza' can unban users)
+                elif data["type"] == "unban":
+                    if data["sender"] == "pizza":  # Only allow "pizza" to unban users
+                        username_to_unban = data["username"]
+                        if username_to_unban in banned_users:
+                            banned_users.remove(username_to_unban)
+                            await ws.send_json({"type": "success", "message": f"{username_to_unban} has been unbanned."})
+                        else:
+                            await ws.send_json({"type": "error", "message": f"{username_to_unban} is not banned."})
+                    else:
+                        await ws.send_json({"type": "error", "message": "Only 'pizza' can unban users!"})
 
             elif msg.type == WSMsgType.ERROR:
                 print(f'WS connection closed with exception {ws.exception()}')
