@@ -226,6 +226,6 @@ button:hover {
     font-size: 16px;
     overflow-y: auto; /* Scroll if it overflows */
 }
-#tab-banned,  {
-    height: 42
+#all-messages, #banned-list  {
+    height: 40
 }
