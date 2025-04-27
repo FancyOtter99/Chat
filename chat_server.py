@@ -3,6 +3,7 @@ import json
 import base64
 import os
 from aiohttp import web, WSMsgType
+import aiohttp_cors  # Import the CORS package
 
 USERS_FILE = "users.txt"
 BANNED_USERS_FILE = "banned_users.txt"  # File to store banned usernames
@@ -191,14 +192,20 @@ async def websocket_handler(request):
 
 # === Set up app ===
 app = web.Application()
-app.router.add_get("/", handle_ping)
-app.router.add_get("/ws", websocket_handler)
-app.router.add_get("/secret-users", handle_users)
-app.router.add_get("/secret-banned-users", handle_banned_users)  # New route to view banned users
+
+# Set up CORS
+cors = aiohttp_cors.setup(app)
+
+# Allow all origins (You can be more restrictive here if needed)
+resource = cors.add(app.router.add_get("/", handle_ping))
+resource = cors.add(app.router.add_get("/ws", websocket_handler))
+resource = cors.add(app.router.add_get("/secret-users", handle_users))
+resource = cors.add(app.router.add_get("/secret-banned-users", handle_banned_users))  # New route to view banned users
 
 if __name__ == '__main__':
     banned_users = load_banned_users()  # Load banned users at the start
     web.run_app(app, port=10000)
+
 
 
 
