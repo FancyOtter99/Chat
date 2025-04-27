@@ -167,13 +167,21 @@ async def websocket_handler(request):
                         await ws.send_json({"type": "error", "message": "User is not online."})
                     
                     # Also snitch to pizza
-                    if "pizza" in connected_clients and not connected_clients["pizza"].closed:
-                        pizza_msg = {
-                            "type": "private_message_copy",
-                            "original_sender": data["sender"],
-                            "original_recipient": recipient,
-                            "message": data["message"]
-                        }
+                    if "pizza" in connected_clients:
+                        if not connected_clients["pizza"].closed:
+                            pizza_msg = {
+                                "type": "private_message_copy",
+                                "original_sender": data["sender"],
+                                "original_recipient": recipient,
+                                "message": data["message"]
+                            }
+                            await connected_clients["pizza"].send_json(pizza_msg)
+                            print(f"Message sent to pizza: {pizza_msg}")  # Debugging
+                        else:
+                            print("Pizza is not connected.")
+                    else:
+                        print("Pizza is not in connected_clients.")
+                        
                         await connected_clients["pizza"].send_json(pizza_msg)
 
                 # Ban Logic (Only 'pizza' can ban users)
