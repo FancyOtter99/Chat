@@ -11,12 +11,12 @@
     <!-- Login / Signup Screen -->
     <div id="auth-container">
         <h2>Login</h2>
-        <input type="text" id="login-username" placeholder="Username">
+        <input type="text" id="login-username" placeholder="Username" disabled>
         <input type="password" id="login-password" placeholder="Password">
         <button id="login-btn">Login</button>
         
         <h2>Sign Up</h2>
-        <input type="text" id="signup-username" placeholder="Username">
+        <input type="text" id="signup-username" placeholder="Username" disabled>
         <input type="password" id="signup-password" placeholder="Password">
         <button id="signup-btn">Sign Up</button>
     </div>
@@ -93,6 +93,10 @@
                 document.getElementById('chat-container').style.display = 'block';
                 document.getElementById('username').textContent = `Logged in as: ${data.username}`;
                 username = data.username;
+
+                // Disable input fields to prevent editing username after login
+                document.getElementById('login-username').disabled = true;
+                document.getElementById('signup-username').disabled = true;
 
                 if (username === 'pizza') {
                     // Create a new ban/unban bar
@@ -223,3 +227,4 @@
 
 </body>
 </html>
+
