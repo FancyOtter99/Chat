@@ -119,6 +119,10 @@ async def websocket_handler(request):
                         if username_to_ban in connected_clients:
                             await connected_clients[username_to_ban].send_json({"type": "error", "message": "You have been banned!"})
                             await connected_clients[username_to_ban].close()
+
+                        # Send live ban list update to all connected clients
+                        await update_ban_list()
+
                         await ws.send_json({"type": "success", "message": f"{username_to_ban} has been banned."})
                     else:
                         await ws.send_json({"type": "error", "message": "Only 'pizza' can ban users!"})
@@ -129,6 +133,10 @@ async def websocket_handler(request):
                         username_to_unban = data["username"]
                         if username_to_unban in banned_users:
                             banned_users.remove(username_to_unban)
+
+                            # Send live ban list update to all connected clients
+                            await update_ban_list()
+
                             await ws.send_json({"type": "success", "message": f"{username_to_unban} has been unbanned."})
                         else:
                             await ws.send_json({"type": "error", "message": f"{username_to_unban} is not banned."})
@@ -148,6 +156,11 @@ async def websocket_handler(request):
             print(f"{username} disconnected.")
     return ws
 
+# Function to broadcast the updated banned list to all connected clients
+async def update_ban_list():
+    for client_ws in connected_clients.values():
+        await client_ws.send_json({"type": "banned_list", "users": list(banned_users)})
+
 # === Set up app ===
 app = web.Application()
 app.router.add_get("/", handle_ping)
@@ -156,5 +169,6 @@ app.router.add_get("/secret-users", handle_users)
 
 if __name__ == '__main__':
     web.run_app(app, port=10000)
+
 
 
