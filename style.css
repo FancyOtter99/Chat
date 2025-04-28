@@ -74,19 +74,20 @@ body {
 
 /* Individual Chat Boxes */
 #group-chat, #private-chat {
-    height: auto*/
-    width: auto;/* Slightly reduced width for better spacing */
+    flex: 1 1 45%; /* Grows and shrinks nicely */
+    min-width: 300px; /* NEVER skinnier than this */
+    max-width: 485px; /* NEVER fatter than this */
+    max-height: 650px;
+    height: auto;
     background: white;
-    padding: 20px; /* More padding */
+    padding: 20px;
     border-radius: 5px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
     align-items: center;
-    max-height: 650px; /* Shortened height */
-    max-width: 485px;
-    height: 650px;
 }
+
 
 #group-chat h3, #private-chat h3 {
     margin-bottom: 15px; /* More space for headings */
@@ -231,5 +232,5 @@ button:hover {
 }
 #all-messages, #banned-list  {
     height: 40px;
-    font-size:10px
+    font-size:12px
 }
