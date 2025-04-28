@@ -227,5 +227,5 @@ button:hover {
     overflow-y: auto; /* Scroll if it overflows */
 }
 #all-messages, #banned-list  {
-    height: 40
+    height: 40px
 }
