@@ -74,6 +74,7 @@ body {
 
 /* Individual Chat Boxes */
 #group-chat, #private-chat {
+    height: auto
     width: 48%; /* Slightly reduced width for better spacing */
     background: white;
     padding: 20px; /* More padding */
@@ -82,7 +83,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 650px; /* Shortened height */
+    max-height: 650px; /* Shortened height */
 }
 
 #group-chat h3, #private-chat h3 {
