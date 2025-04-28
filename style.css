@@ -1,13 +1,10 @@
-/* General Styles */
-body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    background-color: #f4f4f4;
+/* Make sure the page actually fills the viewport */
+html, body {
+    height: 100%;
     margin: 0;
     padding: 0;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
 }
 
 /* Authentication Container */
@@ -52,43 +49,55 @@ body {
 
 /* Chat Container */
 #chat-container {
-    flex: 1;
-    width: 90%;
-    margin: 20px auto;
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-height: 0; /* <-- important to allow children to grow */
+    width: 90%;
+    height: 100%;
+    margin: 0 auto;
 }
 
-/* Chat Windows */
+/* Username Display */
+#username {
+    font-size: 24px;
+    margin: 15px 0;
+    font-weight: bold;
+}
+
+/* Chat Windows Container */
 #chat-windows {
     display: flex;
-    flex: 1; /* <-- allow chat-windows to grow */
-    justify-content: space-between;
+    flex: 1;
     width: 100%;
     max-width: 1000px;
     gap: 30px;
-    min-height: 0; /* <-- prevent overflow issue */
+    justify-content: space-between;
+    min-height: 0;
 }
 
 /* Individual Chat Boxes */
 #group-chat, #private-chat {
-    display: flex;
-    flex-direction: column;
     flex: 1 1 45%;
     min-width: 300px;
     max-width: 485px;
+    height: 100%;
     background: white;
     padding: 20px;
     border-radius: 5px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    min-height: 0; /* <-- allow chat box to shrink properly */
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+#group-chat h3, #private-chat h3 {
+    margin-bottom: 15px;
+    font-size: 20px;
 }
 
 /* Chat Message Boxes */
 #group-chat-box, #private-chat-box {
-    flex: 1; /* <-- stretch to fill available space */
+    flex: 1;
     width: 100%;
     border: 1px solid #ccc;
     border-radius: 4px;
@@ -97,7 +106,6 @@ body {
     overflow-y: auto;
     text-align: left;
     font-size: 16px;
-    min-height: 0; /* <-- important when inside flex */
 }
 
 /* Input Fields */
@@ -144,12 +152,12 @@ button:hover {
     border-color: #007bff;
 }
 
-/* Private Chat Partner */
+/* Private Chat Partner input */
 #private-chat-partner {
     margin-bottom: 15px;
 }
 
-/* Ban/Unban Bar Styles */
+/* Ban/Unban Bar */
 #ban-bar {
     position: absolute;
     top: 40px;
@@ -161,10 +169,10 @@ button:hover {
     display: flex;
     flex-direction: column;
     gap: 15px;
+    z-index: 100;
+    font-size: 16px;
     width: 250px;
     box-sizing: border-box;
-    font-size: 16px;
-    z-index: 100;
 }
 
 #ban-bar input, #ban-bar button {
@@ -192,10 +200,9 @@ button:hover {
     margin-top: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    font-size: 16px;
 }
 
-/* Label Adjustments */
+/* Ban labels */
 #ban-bar span {
     font-size: 16px;
     font-weight: bold;
@@ -211,7 +218,7 @@ button:hover {
     border-radius: 4px;
 }
 
-/* Banned List Box */
+/* Banned List */
 #banned-list-box {
     position: absolute;
     top: 320px;
@@ -227,13 +234,12 @@ button:hover {
     overflow-y: auto;
 }
 
-/* Messages and Banned List */
 #all-messages, #banned-list {
     height: 40px;
     font-size: 12px;
 }
 
-/* Media Queries */
+/* Make it stack nicely on small screens */
 @media (max-width: 700px) {
     #chat-windows {
         flex-direction: column;
@@ -242,6 +248,8 @@ button:hover {
     #group-chat, #private-chat {
         min-width: 90%;
         max-width: 90%;
+        height: auto;
     }
 }
+
 
