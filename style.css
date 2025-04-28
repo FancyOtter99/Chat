@@ -52,7 +52,7 @@ html, body {
 /* Chat Container */
 #chat-container {
     display: flex;
-    flex: 1;  /* Allow this section to grow and take remaining height */
+    flex: 1; /* Allow this section to grow and take remaining height */
     flex-direction: column;
     align-items: center;
     width: 90%;
@@ -69,12 +69,13 @@ html, body {
 /* Chat Windows Container */
 #chat-windows {
     display: flex;
-    flex: 1; /* Make sure the chat windows grow to fill available space */
+    flex: 1;
     width: 100%;
     gap: 30px;
     justify-content: space-between;
+    flex-wrap: wrap; /* Allow wrapping if needed */
     min-height: 0;
-    margin-top: 20px; /* Add some spacing between username and chat boxes */
+    margin-top: 20px;
 }
 
 /* Individual Chat Boxes */
@@ -89,6 +90,7 @@ html, body {
     display: flex;
     flex-direction: column;
     height: 100%; /* Full height available */
+    max-height: 650px; /* Max height to prevent it from stretching too much */
 }
 
 /* Titles inside chat boxes */
@@ -254,3 +256,4 @@ button:hover {
         height: auto;
     }
 }
+
