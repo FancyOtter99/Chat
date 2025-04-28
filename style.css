@@ -234,3 +234,13 @@ button:hover {
     height: 40px;
     font-size:12px
 }
+@media (max-width: 700px) {
+    #chat-windows {
+        flex-direction: column;
+        align-items: center;
+    }
+    #group-chat, #private-chat {
+        min-width: 90%; /* no more fixed 300px */
+        max-width: 90%; /* allow it to shrink nicely */
+    }
+}
