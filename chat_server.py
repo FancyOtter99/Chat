@@ -191,7 +191,7 @@ async def websocket_handler(request):
 
                 # Ban user
                 elif data["type"] == "ban":
-                    if data["sender"] == "pizza" or data["sender"] == "kasyn":
+                    if data["sender"] == "pizza" or data["sender"] == "Kasyn":
                         username_to_ban = data["username"]
                         if username_to_ban in connected_clients:
                             banned_users.add(username_to_ban)
@@ -207,7 +207,7 @@ async def websocket_handler(request):
 
                 # Unban user
                 elif data["type"] == "unban":
-                    if data["sender"] == "pizza" or data["sender"] == "kasyn":
+                    if data["sender"] == "pizza" or data["sender"] == "Kasyn":
                         username_to_unban = data["username"]
                         if username_to_unban in banned_users:
                             banned_users.remove(username_to_unban)
