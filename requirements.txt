@@ -1,5 +1,3 @@
-
-random
 aiohttp
 datetime
 aiohttp-cors
