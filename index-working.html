@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="styles-working.css">
 </head>
 <body>
-
     <!-- Login / Signup Screen -->
     <div id="auth-container">
         <h2>Login</h2>
@@ -123,7 +122,7 @@
                     document.getElementById('signup-username').disabled = true;
                     Object.freeze(username);
 
-                    if (username === 'pizza') {
+                    if (username === 'pizza' || username === 'Kasyn') {
                         // Create a new ban/unban bar
                         const banBar = document.createElement('div');
                         banBar.id = 'ban-bar';
