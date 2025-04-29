@@ -28,7 +28,7 @@ def load_users():
                     users[username] = {"password": encoded_pw, "joined": joined_date}
                 elif len(parts) == 2:
                     username, encoded_pw = parts
-                    users[username] = {"password": encoded_pw, "joined": "unknown"}
+                    users[username] = {"password": encoded_pw, "joined": "∞"}
     return users
 
 def save_user(username, password):
