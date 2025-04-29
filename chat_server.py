@@ -61,14 +61,11 @@ def validate_login(username, password):
     return False
 
 async def send_verification_email(email, code):
-    smtp_host = os.getenv("SMTP_SERVER")
-    smtp_port = int(os.getenv("SMTP_PORT", 587))
-    smtp_user = os.getenv("SMTP_USER")
-    smtp_pass = os.getenv("SMTP_PASS")
-
-    if not all([smtp_host, smtp_user, smtp_pass]):
-        print("SMTP environment variables not set properly.")
-        return
+    # Brevo SMTP configuration
+    smtp_host = "smtp-relay.brevo.com"  # Brevo SMTP server
+    smtp_port = 587  # Port for TLS
+    smtp_user = "8bbf44001@smtp-brevo.com"  # Your Brevo SMTP login
+    smtp_pass = "cQFX2xCp1794DWY3"  # Your Brevo SMTP master password
 
     message = EmailMessage()
     message["Subject"] = "Your Verification Code"
@@ -78,7 +75,7 @@ async def send_verification_email(email, code):
 
     try:
         with smtplib.SMTP(smtp_host, smtp_port) as server:
-            server.starttls()
+            server.starttls()  # Secure the connection with STARTTLS
             server.login(smtp_user, smtp_pass)
             server.send_message(message)
             print(f"Verification code sent to {email}")
