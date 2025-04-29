@@ -28,7 +28,7 @@ def load_users():
                     users[username] = {"password": encoded_pw, "joined": joined_date}
                 elif len(parts) == 2:
                     username, encoded_pw = parts
-                    users[username] = {"password": encoded_pw, "joined": "∞"}
+                    users[username] = {"password": encoded_pw, "joined": "1970-01-01"}
     return users
 
 def save_user(username, password):
@@ -123,7 +123,8 @@ async def websocket_handler(request):
                         save_user(data["username"], data["password"])
                         connected_clients[data["username"]] = ws
                         user_joined = load_users()[data["username"]]["joined"]
-                        await ws.send_json({"type": "login_success", "username": data["username"], "joined": user_joined})
+                        display_joined = "∞" if user_joined == "1970-01-01" else user_joined
+                        await ws.send_json({"type": "login_success", "username": data["username"], "joined": display_joined})
                         await send_banned_users(ws)
 
                 # Login
@@ -137,7 +138,8 @@ async def websocket_handler(request):
                         connected_clients[data["username"]] = ws
                         username = data["username"]
                         user_joined = load_users()[username]["joined"]
-                        await ws.send_json({"type": "login_success", "username": username, "joined": user_joined})
+                        display_joined = "∞" if user_joined == "1970-01-01" else user_joined
+                        await ws.send_json({"type": "login_success", "username": username, "joined": display_joined})
                         await send_banned_users(ws)
                     else:
                         await ws.send_json({"type": "error", "message": "Invalid credentials."})
@@ -238,14 +240,3 @@ app.router.add_get("/secret-banned-users", handle_banned_users)
 if __name__ == '__main__':
     banned_users = load_banned_users()
     web.run_app(app, port=10000)
-
-
-
-
-
-
-
-
-
-
-
