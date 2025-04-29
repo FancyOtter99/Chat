@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat App</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styles-working.css">
 </head>
 <body>
 
@@ -102,7 +102,20 @@
                 if (data.type === "login_success") {
                     document.getElementById('auth-container').style.display = 'none';
                     document.getElementById('chat-container').style.display = 'block';
-                    document.getElementById('username').textContent = `Logged in as: ${data.username}`;
+                    
+                    const joinedDate = data.joined;
+                    let daysJoined = "∞"; // Default to infinity if unknown
+                    
+                    if (joinedDate && joinedDate !== "unknown") {
+                        const joinDateObj = new Date(joinedDate);
+                        const now = new Date();
+                        const diffTime = Math.abs(now - joinDateObj);
+                        daysJoined = Math.floor(diffTime / (1000 * 60 * 60 * 24)); // convert ms -> days
+                    }
+                    
+                    document.getElementById('username').textContent = `Logged in as: ${data.username} (Joined ${daysJoined === "∞" ? "∞ days ago" : daysJoined + " days ago"})`;
+
+
                     username = data.username;
 
                     // Disable input fields to prevent editing username after login
