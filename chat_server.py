@@ -123,7 +123,6 @@ async def websocket_handler(request):
                         save_user(data["username"], data["password"])
                         connected_clients[data["username"]] = ws
                         user_joined = load_users()[data["username"]]["joined"]
-                        display_joined = "∞" if user_joined == "1970-01-01" else user_joined
                         await ws.send_json({"type": "login_success", "username": data["username"], "joined": display_joined})
                         await send_banned_users(ws)
 
@@ -138,7 +137,6 @@ async def websocket_handler(request):
                         connected_clients[data["username"]] = ws
                         username = data["username"]
                         user_joined = load_users()[username]["joined"]
-                        display_joined = "∞" if user_joined == "1970-01-01" else user_joined
                         await ws.send_json({"type": "login_success", "username": username, "joined": display_joined})
                         await send_banned_users(ws)
                     else:
