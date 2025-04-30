@@ -96,6 +96,38 @@ async def handle_ping(request):
     response = web.Response(text="pong")
     return add_cors_headers(response)
 
+# HTTP endpoint: view users
+async def handle_users(request):
+    if request.query.get("key") != "letmein":
+        response = web.Response(text="Forbidden", status=403)
+        return add_cors_headers(response)
+
+    if not os.path.exists(USERS_FILE):
+        response = web.Response(text="users.txt not found", status=404)
+        return add_cors_headers(response)
+
+    with open(USERS_FILE, "r") as f:
+        content = f.read()
+
+    response = web.Response(text=f"<pre>{content}</pre>", content_type='text/html')
+    return add_cors_headers(response)
+
+# HTTP endpoint: view banned users
+async def handle_banned_users(request):
+    if request.query.get("key") != "letmein":
+        response = web.Response(text="Forbidden", status=403)
+        return add_cors_headers(response)
+
+    if not os.path.exists(BANNED_USERS_FILE):
+        response = web.Response(text="banned_users.txt not found", status=404)
+        return add_cors_headers(response)
+
+    with open(BANNED_USERS_FILE, "r") as f:
+        content = f.read()
+
+    response = web.Response(text=f"<pre>{content}</pre>", content_type='text/html')
+    return add_cors_headers(response)
+
 async def websocket_handler(request):
     ws = web.WebSocketResponse()
     await ws.prepare(request)
