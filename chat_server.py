@@ -62,11 +62,10 @@ def validate_login(username, password):
     return False
 
 async def send_verification_email(email, code):
-    # Brevo SMTP configuration
-    smtp_host = "smtp.zoho.com"  # Brevo SMTP server
-    smtp_port = 587  # Port for TLS
-    smtp_user = "fancyotter99@fancyotter99.run.place"  # Your Brevo SMTP login
-    smtp_pass = "ZfxLRnvpmLcK"  # Your Brevo SMTP master password
+    smtp_host = "smtp.zoho.com"
+    smtp_port = 587
+    smtp_user = "fancyotter99@fancyotter99.run.place"
+    smtp_pass = "ZfxLRnvpmLcK"
 
     message = EmailMessage()
     message["Subject"] = "Your Verification Code"
@@ -76,14 +75,13 @@ async def send_verification_email(email, code):
 
     try:
         with smtplib.SMTP(smtp_host, smtp_port) as server:
-            server.starttls()  # Secure the connection with STARTTLS
+            server.starttls()
             server.login(smtp_user, smtp_pass)
             server.send_message(message)
             print(f"Verification code sent to {email}")
-except Exception as e:
-    print(f"Failed to send email: {e}")
-    traceback.print_exc()
-
+    except Exception as e:  # <-- make sure this is inside the function and indented!
+        print(f"Failed to send email: {e}")
+        traceback.print_exc()
 
 async def send_banned_users(ws=None):
     banned_list = list(banned_users)
