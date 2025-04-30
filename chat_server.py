@@ -172,6 +172,7 @@ async def websocket_handler(request):
                         await ws.send_json({"type": "error", "message": "Invalid or expired verification code."})
 
                 elif data["type"] == "login":
+                    print("Login request data:", data)
                     if data["username"] in banned_users:
                         await ws.send_json({"type": "error", "message": "You are banned!"})
                         await ws.close()
