@@ -10,7 +10,7 @@ body {
 /* Authentication Container */
 #auth-container {
     width: 350px; /* Increased width */
-    margin: 25px auto;
+    margin: 15px auto;
     padding: 20px;
     background: white;
     border-radius: 5px;
