@@ -21,6 +21,10 @@ body {
     margin-bottom: 15px; /* Increased margin */
     font-size: 22px; /* Larger text */
 }
+#verify button {
+    margin-top: 150px
+    padding: 15px
+}
 
 #auth-container input, #verify input {
     width: calc(100% - 20px);
