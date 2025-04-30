@@ -166,15 +166,17 @@
                         banBar.innerHTML = `
                             <div style="display: flex; flex-direction: column; gap: 8px;">
                                 <div id="ban-user">
-                                    <span>Ban User:</span>
-                                    <input type="text" id="ban-username" placeholder="Username">
-                                    <button id="ban-btn">Ban</button>
-                                    <button id="toggle-admin-mode" title="Toggle Admin Tools">remove/add admin</button>
-                                </div>
-                                <div>
-                                    <span>Unban User:</span>
-                                    <input type="text" id="unban-username" placeholder="Username">
-                                    <button id="unban-btn">Unban</button>
+                                    <div>
+                                        <span>Ban User:</span>
+                                        <input type="text" id="ban-username" placeholder="Username">
+                                        <button id="ban-btn">Ban</button>
+                                        <button id="toggle-admin-mode" title="Toggle Admin Tools">remove/add admin</button>
+                                    </div>
+                                    <div>
+                                        <span>Unban User:</span>
+                                        <input type="text" id="unban-username" placeholder="Username">
+                                        <button id="unban-btn">Unban</button>
+                                    </div>
                                 </div>
                                 <div id="admin-tools" style="display: none; flex-direction: column; gap: 8px; margin-top: 10px;">
                                     <div>
@@ -217,12 +219,20 @@
                         document.body.appendChild(bannedListBox);
 
                         document.getElementById('toggle-admin-mode').addEventListener('click', function () {
-                            document.getElementById('verify').style.display = 'none';
+                            // Clear all inputs
                             document.querySelectorAll('#ban-bar input').forEach(input => input.value = '');
                         
-                            // Toggle visibility
-                            const tools = document.getElementById('ban-user');
-                            tools.style.display = tools.style.display === 'none' ? 'flex' : 'none';
+                            // Toggle between ban/unban section and admin tools
+                            const banSection = document.getElementById('ban-user');
+                            const adminTools = document.getElementById('admin-tools');
+                        
+                            if (banSection.style.display === 'none') {
+                                banSection.style.display = 'flex';
+                                adminTools.style.display = 'none';
+                            } else {
+                                banSection.style.display = 'none';
+                                adminTools.style.display = 'flex';
+                            }
                         });
                         
                         // Optional: Hook up the buttons to your WebSocket logic
