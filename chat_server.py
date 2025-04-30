@@ -141,7 +141,7 @@ async def websocket_handler(request):
             if msg.type == WSMsgType.TEXT:
                 data = json.loads(msg.data)
 
-                if data["type"] == "signup_request":
+                if data["type"] == "signup":
                     print(f"Received signup request: {data}")
                     users = load_users()
                     if data["username"] in users:
