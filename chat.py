@@ -2,14 +2,18 @@ import asyncio
 import json
 import base64
 import os
+import smtplib
 from aiohttp import web, WSMsgType
 from datetime import datetime
+from email.message import EmailMessage
+import traceback
 
 USERS_FILE = "users.txt"
 BANNED_USERS_FILE = "banned_users.txt"
 connected_clients = {}  # username -> WebSocket
 group_messages = {"general": [], "random": [], "help": []}
 banned_users = set()
+pending_signups = {}  # email -> {"code": ..., "username": ..., "password": ...}
 
 def add_cors_headers(response):
     response.headers['Access-Control-Allow-Origin'] = 'https://fancyotter99.github.io'
@@ -23,19 +27,20 @@ def load_users():
         with open(USERS_FILE, "r") as f:
             for line in f:
                 parts = line.strip().split(":")
-                if len(parts) == 3:
-                    username, encoded_pw, joined_date = parts
-                    users[username] = {"password": encoded_pw, "joined": joined_date}
-                elif len(parts) == 2:
-                    username, encoded_pw = parts
-                    users[username] = {"password": encoded_pw, "joined": "unknown"}
+                if len(parts) == 4:
+                    username, encoded_pw, email, joined_date = parts
+                    users[username] = {
+                        "password": encoded_pw,
+                        "email": email,
+                        "joined": joined_date
+                    }
     return users
 
-def save_user(username, password):
+def save_user(username, password, email):
     encoded_pw = base64.b64encode(password.encode()).decode()
     joined_date = datetime.utcnow().strftime("%Y-%m-%d")
     with open(USERS_FILE, "a") as f:
-        f.write(f"{username}:{encoded_pw}:{joined_date}\n")
+        f.write(f"{username}:{encoded_pw}:{email}:{joined_date}\n")
 
 def load_banned_users():
     if not os.path.exists(BANNED_USERS_FILE):
@@ -56,6 +61,30 @@ def validate_login(username, password):
         return user_data["password"] == encoded_pw
     return False
 
+async def send_verification_email(email, code):
+    smtp_host = "smtp.zoho.com"
+    smtp_port = 587
+    smtp_user = "fancyotter99@fancyotter99.run.place"
+    smtp_pass = "ZfxLRnvpmLcK"
+
+    message = EmailMessage()
+    message["Subject"] = "Your Verification Code"
+    message["From"] = smtp_user
+    message["To"] = email
+    message.set_content(f"Your verification code is: {code}")
+    print(f"Attempting to send verification code to {email}")
+    try:
+        with smtplib.SMTP(smtp_host, smtp_port) as server:
+            server.starttls()
+            print("Logging in...")
+            server.login(smtp_user, smtp_pass)
+            print("Login successful.")
+            server.send_message(message)
+            print(f"Verification code sent to {email}")
+    except Exception as e:  # <-- make sure this is inside the function and indented!
+        print(f"Failed to send email: {e}")
+        traceback.print_exc()
+
 async def send_banned_users(ws=None):
     banned_list = list(banned_users)
     msg = {"type": "banned_users_list", "banned_users": banned_list}
@@ -66,7 +95,6 @@ async def send_banned_users(ws=None):
             if not client_ws.closed:
                 await client_ws.send_json(msg)
 
-# HTTP endpoint: ping
 async def handle_ping(request):
     response = web.Response(text="pong")
     return add_cors_headers(response)
@@ -103,7 +131,6 @@ async def handle_banned_users(request):
     response = web.Response(text=f"<pre>{content}</pre>", content_type='text/html')
     return add_cors_headers(response)
 
-# WebSocket handler
 async def websocket_handler(request):
     ws = web.WebSocketResponse()
     await ws.prepare(request)
@@ -114,40 +141,70 @@ async def websocket_handler(request):
             if msg.type == WSMsgType.TEXT:
                 data = json.loads(msg.data)
 
-                # Signup
                 if data["type"] == "signup":
+                    print(f"Received signup request: {data}")
                     users = load_users()
                     if data["username"] in users:
                         await ws.send_json({"type": "error", "message": "Username already exists."})
+                    elif any(u["email"] == data["email"] for u in users.values()):
+                        await ws.send_json({"type": "error", "message": "Email already registered."})
                     else:
-                        save_user(data["username"], data["password"])
-                        connected_clients[data["username"]] = ws
-                        user_joined = load_users()[data["username"]]["joined"]
-                        await ws.send_json({"type": "login_success", "username": data["username"], "joined": user_joined})
-                        await send_banned_users(ws)
+                        code = str(os.urandom(3).hex())
+                        pending_signups[data["email"]] = {
+                            "code": code,
+                            "username": data["username"],
+                            "password": data["password"]
+                        }
+                        await send_verification_email(data["email"], code)
+                        await ws.send_json({"type": "verification_sent"})
 
-                # Login
+                elif data["type"] == "verify_code":
+                    # Look up using email instead of username
+                    entry = pending_signups.get(data["email"])  # <-- Use email
+                    if entry and entry["code"] == data["code"]:
+                        # Save user with the provided email and details
+                        save_user(entry["username"], entry["password"], data["email"])
+                        
+                        # Remove the entry from pending signups
+                        del pending_signups[data["email"]]
+                        
+                        # Add to connected clients
+                        connected_clients[entry["username"]] = ws
+                        
+                        # Load user info
+                        username = entry["username"]
+                        joined = load_users()[username]["joined"]
+                        
+                        # Send success message back to frontend
+                        await ws.send_json({"type": "login_success", "username": username, "joined": joined})
+                        
+                        # Send banned users list
+                        await send_banned_users(ws)
+                    else:
+                        # Send error if code is invalid or expired
+                        await ws.send_json({"type": "error", "message": "Invalid or expired verification code."})
+                        
                 elif data["type"] == "login":
+                    print("Login request data:", data)
                     if data["username"] in banned_users:
                         await ws.send_json({"type": "error", "message": "You are banned!"})
                         await ws.close()
                         return
 
+                    users = load_users()
                     if validate_login(data["username"], data["password"]):
                         connected_clients[data["username"]] = ws
                         username = data["username"]
-                        user_joined = load_users()[username]["joined"]
-                        await ws.send_json({"type": "login_success", "username": username, "joined": user_joined})
+                        joined = users[username]["joined"]
+                        await ws.send_json({"type": "login_success", "username": username, "joined": joined})
                         await send_banned_users(ws)
                     else:
                         await ws.send_json({"type": "error", "message": "Invalid credentials."})
 
-                # Group message
                 elif data["type"] == "group_message":
                     if username in banned_users:
                         await ws.send_json({"type": "error", "message": "You are banned from sending messages."})
                         continue
-
                     room = data["room"]
                     msg_obj = {
                         "type": "group_message",
@@ -160,26 +217,22 @@ async def websocket_handler(request):
                         if not client_ws.closed:
                             await client_ws.send_json(msg_obj)
 
-                # Private message
                 elif data["type"] == "private_message":
                     if username in banned_users:
                         await ws.send_json({"type": "error", "message": "You are banned from sending messages."})
                         continue
-
                     recipient = data["recipient"]
                     msg_obj = {
                         "type": "private_message",
                         "sender": data["sender"],
                         "message": data["message"]
                     }
-
                     if recipient in connected_clients:
                         if not connected_clients[recipient].closed:
                             await connected_clients[recipient].send_json(msg_obj)
                     else:
                         await ws.send_json({"type": "error", "message": "User is not online."})
 
-                    # pizza snitching
                     if "pizza" in connected_clients and not connected_clients["pizza"].closed:
                         pizza_msg = {
                             "type": "private_message_copy",
@@ -189,33 +242,31 @@ async def websocket_handler(request):
                         }
                         await connected_clients["pizza"].send_json(pizza_msg)
 
-                # Ban user
                 elif data["type"] == "ban":
-                    if data["sender"] == "pizza" or data["sender"] == "Kasyn":
-                        username_to_ban = data["username"]
-                        if username_to_ban in connected_clients:
-                            banned_users.add(username_to_ban)
+                    if data["sender"] in ["pizza", "Kasyn", "deafkiddie"]:
+                        target = data["username"]
+                        if target in connected_clients:
+                            banned_users.add(target)
                             save_banned_users()
-                            await connected_clients[username_to_ban].send_json({"type": "error", "message": "You have been banned!"})
-                            await connected_clients[username_to_ban].close()
-                            await ws.send_json({"type": "success", "message": f"{username_to_ban} has been banned."})
+                            await connected_clients[target].send_json({"type": "error", "message": "You have been banned!"})
+                            await connected_clients[target].close()
+                            await ws.send_json({"type": "success", "message": f"{target} has been banned."})
                             await send_banned_users()
                         else:
-                            await ws.send_json({"type": "error", "message": f"{username_to_ban} is not connected."})
+                            await ws.send_json({"type": "error", "message": f"{target} is not connected."})
                     else:
                         await ws.send_json({"type": "error", "message": "Only 'Admins' can ban users!"})
 
-                # Unban user
                 elif data["type"] == "unban":
-                    if data["sender"] == "pizza" or data["sender"] == "Kasyn":
-                        username_to_unban = data["username"]
-                        if username_to_unban in banned_users:
-                            banned_users.remove(username_to_unban)
+                    if data["sender"] in ["pizza", "Kasyn", "deafkiddie"]:
+                        target = data["username"]
+                        if target in banned_users:
+                            banned_users.remove(target)
                             save_banned_users()
-                            await ws.send_json({"type": "success", "message": f"{username_to_unban} has been unbanned."})
+                            await ws.send_json({"type": "success", "message": f"{target} has been unbanned."})
                             await send_banned_users()
                         else:
-                            await ws.send_json({"type": "error", "message": f"{username_to_unban} is not banned."})
+                            await ws.send_json({"type": "error", "message": f"{target} is not banned."})
                     else:
                         await ws.send_json({"type": "error", "message": "Only 'pizza' can unban users!"})
 
@@ -228,7 +279,6 @@ async def websocket_handler(request):
             print(f"{username} disconnected.")
     return ws
 
-# Set up app
 app = web.Application()
 app.router.add_get("/", handle_ping)
 app.router.add_get("/ws", websocket_handler)
