@@ -8,6 +8,15 @@ from datetime import datetime
 from email.message import EmailMessage
 import traceback
 
+def load_admins():
+    try:
+        with open("admins.json", "r") as f:
+            return set(json.load(f))
+    except FileNotFoundError:
+        return set()
+
+admins = load_admins()
+
 USERS_FILE = "users.txt"
 BANNED_USERS_FILE = "banned_users.txt"
 connected_clients = {}  # username -> WebSocket
@@ -243,7 +252,7 @@ async def websocket_handler(request):
                         await connected_clients["pizza"].send_json(pizza_msg)
 
                 elif data["type"] == "ban":
-                    if data["sender"] in ["pizza", "Kasyn", "deafkiddie"]:
+                    if data["sender"] in admins:
                         target = data["username"]
                         if target in connected_clients:
                             banned_users.add(target)
@@ -258,7 +267,7 @@ async def websocket_handler(request):
                         await ws.send_json({"type": "error", "message": "Only 'Admins' can ban users!"})
 
                 elif data["type"] == "unban":
-                    if data["sender"] in ["pizza", "Kasyn", "deafkiddie"]:
+                    if data["sender"] in admins:
                         target = data["username"]
                         if target in banned_users:
                             banned_users.remove(target)
