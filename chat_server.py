@@ -8,12 +8,17 @@ from datetime import datetime
 from email.message import EmailMessage
 import traceback
 
+import json
+
 def load_admins():
     try:
         with open("admins.json", "r") as f:
-            return set(json.load(f))
-    except FileNotFoundError:
+            data = json.load(f)
+            return {entry["username"] for entry in data if entry.get("role") == "admin"}
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        print(f"Failed to load admins: {e}")
         return set()
+
 
 admins = load_admins()
 
