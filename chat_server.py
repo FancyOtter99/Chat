@@ -76,7 +76,9 @@ async def send_verification_email(email, code):
     try:
         with smtplib.SMTP(smtp_host, smtp_port) as server:
             server.starttls()
+            print("Logging in...")
             server.login(smtp_user, smtp_pass)
+            print("Login successful.")
             server.send_message(message)
             print(f"Verification code sent to {email}")
     except Exception as e:  # <-- make sure this is inside the function and indented!
