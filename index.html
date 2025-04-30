@@ -216,6 +216,40 @@
                         `;
                         document.body.appendChild(bannedListBox);
 
+                        document.getElementById('toggle-admin-mode').addEventListener('click', function () {
+                            // Reset all inputs
+                            document.querySelectorAll('#ban-bar input').forEach(input => input.value = '');
+                        
+                            // Toggle visibility
+                            const tools = document.getElementById('admin-tools');
+                            tools.style.display = tools.style.display === 'none' ? 'flex' : 'none';
+                        });
+                        
+                        // Optional: Hook up the buttons to your WebSocket logic
+                        document.getElementById('add-admin-btn').addEventListener('click', function () {
+                            const username = document.getElementById('add-admin-username').value.trim();
+                            if (username) {
+                                socket.send(JSON.stringify({
+                                    type: 'admin-update',
+                                    username: username,
+                                    role: 'admin',
+                                    sender: currentUsername
+                                }));
+                            }
+                        });
+                        
+                        document.getElementById('remove-admin-btn').addEventListener('click', function () {
+                            const username = document.getElementById('remove-admin-username').value.trim();
+                            if (username) {
+                                socket.send(JSON.stringify({
+                                    type: 'admin-remove',
+                                    username: username,
+                                    sender: currentUsername
+                                }));
+                            }
+                        });
+
+
                         // Tab switching logic
                         document.getElementById('banned-list').addEventListener('click', function() {
                             document.getElementById('banned-users-list').style.display = 'block';
