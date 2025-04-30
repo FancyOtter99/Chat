@@ -178,10 +178,11 @@ async def websocket_handler(request):
                         await ws.close()
                         return
 
+                    users = load_users()
                     if validate_login(data["username"], data["password"]):
                         connected_clients[data["username"]] = ws
                         username = data["username"]
-                        joined = load_users()[username]["joined"]
+                        joined = users[username]["joined"]
                         await ws.send_json({"type": "login_success", "username": username, "joined": joined})
                         await send_banned_users(ws)
                     else:
