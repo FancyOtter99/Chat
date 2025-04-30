@@ -121,7 +121,7 @@
                     const joinedDate = data.joined;
                     let daysJoined = "∞"; // Default to infinity if unknown
                     
-                    if (joinedDate && joinedDate !== "unknown") {
+                    if (joinedDate && joinedDate !== "1999-09-09") {
                         const joinDateObj = new Date(joinedDate);
                         const now = new Date();
                         const diffTime = Math.abs(now - joinDateObj);
