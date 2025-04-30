@@ -1,17 +1,15 @@
-/* Ensure the body and html are full height */
-html, body {
-    height: 100%;
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f4f4f4;
     margin: 0;
     padding: 0;
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    display: flex;
-    flex-direction: column;
 }
 
 /* Authentication Container */
 #auth-container {
-    width: 350px;
+    width: 350px; /* Increased width */
     margin: 50px auto;
     padding: 20px;
     background: white;
@@ -20,29 +18,29 @@ html, body {
 }
 
 #auth-container h2 {
-    margin-bottom: 15px;
-    font-size: 22px;
+    margin-bottom: 15px; /* Increased margin */
+    font-size: 22px; /* Larger text */
 }
 
 #auth-container input {
     width: calc(100% - 20px);
-    padding: 12px;
-    margin: 10px 0;
+    padding: 12px; /* Increased padding */
+    margin: 10px 0; /* More space between inputs */
     border: 1px solid #ccc;
     border-radius: 4px;
-    font-size: 16px;
+    font-size: 16px; /* Larger text */
 }
 
 #auth-container button {
     width: 100%;
-    padding: 12px;
-    margin-top: 15px;
+    padding: 12px; /* Increased padding */
+    margin-top: 15px; /* More space between button and inputs */
     background: #007bff;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 16px; /* Larger text */
 }
 
 #auth-container button:hover {
@@ -51,105 +49,101 @@ html, body {
 
 /* Chat Container */
 #chat-container {
-    display: flex;
-    flex: 1; /* Allow this section to grow and take remaining height */
-    flex-direction: column;
-    align-items: center;
     width: 90%;
     margin: 20px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 /* Username Display */
 #username {
-    font-size: 20px;
-    margin: 15px 0;
+    font-size: 24px; /* Larger username display */
+    margin-bottom: 15px;
     font-weight: bold;
 }
 
-/* Chat Windows Container */
+/* Chat Windows */
 #chat-windows {
     display: flex;
-    flex: 1;
-    width: 100%;
-    gap: 30px;
     justify-content: space-between;
-    flex-wrap: wrap; /* Allow wrapping if needed */
-    min-height: 0;
-    margin-top: 20px;
+    width: 100%;
+    max-width: 1000px; /* Increased max width */
+    gap: 30px; /* More space between chat boxes */
 }
 
 /* Individual Chat Boxes */
 #group-chat, #private-chat {
-    flex: 1 1 45%; /* Allow flexibility */
-    min-width: 300px;
-    max-width: 485px;
+    flex: 1 1 45%; /* Grows and shrinks nicely */
+    min-width: 300px; /* NEVER skinnier than this */
+    max-width: 485px; /* NEVER fatter than this */
+    max-height: 650px;
+    height: auto;
     background: white;
     padding: 20px;
     border-radius: 5px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
-    height: 100%; /* Full height available */
-    max-height: 650px; /* Max height to prevent it from stretching too much */
+    align-items: center;
 }
 
-/* Titles inside chat boxes */
+
 #group-chat h3, #private-chat h3 {
-    margin-bottom: 15px;
-    font-size: 20px;
+    margin-bottom: 15px; /* More space for headings */
+    font-size: 20px; /* Larger font size */
 }
 
 /* Chat Message Boxes */
 #group-chat-box, #private-chat-box {
-    flex: 1; /* Allow these to expand */
     width: 100%;
-    height: 100%;
+    height: 600px; /* Shortened height */
     border: 1px solid #ccc;
     border-radius: 4px;
-    padding: 15px;
+    padding: 15px; /* More padding */
     background: white;
     overflow-y: auto;
     text-align: left;
-    font-size: 16px;
+    font-size: 16px; /* Larger text */
 }
 
 /* Input Fields */
 input[type="text"], select {
     width: calc(100% - 20px);
-    padding: 12px;
-    margin-top: 15px;
+    padding: 12px; /* Increased padding */
+    margin-top: 15px; /* More space */
     border: 1px solid #ccc;
     border-radius: 4px;
-    font-size: 16px;
+    font-size: 16px; /* Larger text */
 }
 
 /* Send Buttons */
 button {
     width: 100%;
-    padding: 12px;
+    padding: 12px; /* Larger buttons */
     margin-top: 15px;
-    background: #28a745;
+    background: #28a745; /* Green button */
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 16px; /* Larger font */
 }
 
 button:hover {
-    background: #218838;
+    background: #218838; /* Darker green on hover */
 }
 
 /* Chat Room Dropdown */
 #group-room-switch {
     width: 100%;
-    padding: 12px;
-    margin-bottom: 15px;
+    padding: 12px; /* Larger padding */
+    margin-bottom: 15px; /* More space */
     border: 1px solid #ccc;
     border-radius: 4px;
     background: white;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 16px; /* Larger font */
 }
 
 #group-room-switch:focus {
@@ -157,73 +151,71 @@ button:hover {
     border-color: #007bff;
 }
 
-/* Private Chat Partner input */
 #private-chat-partner {
-    margin-bottom: 15px;
+    margin-bottom: 15px; /* More space between inputs */
 }
 
-/* Ban/Unban Bar */
+/* Ban/Unban Bar Styles */
 #ban-bar {
     position: absolute;
     top: 40px;
     right: 10px;
-    padding: 15px;
+    padding: 15px; /* Increased padding */
     background-color: #ff6666;
     color: #fff;
     border-radius: 5px;
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 15px; /* More space between elements */
     z-index: 100;
-    font-size: 16px;
-    width: 250px;
+    font-size: 16px; /* Larger font size */
+    width: 250px; /* Skinnier width */
     box-sizing: border-box;
 }
 
 #ban-bar input, #ban-bar button {
-    font-size: 16px;
+    font-size: 16px; /* Larger font size for consistency */
 }
 
 #ban-bar button {
-    padding: 12px 20px;
+    padding: 12px 20px; /* Larger buttons */
     width: 100%;
-    background: #28a745;
+    background: #28a745; /* Green button */
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 18px;
+    font-size: 18px; /* Larger text */
 }
 
 #ban-bar button:hover {
-    background: #218838;
+    background: #218838; /* Darker green on hover */
 }
 
 #ban-bar input {
     width: 100%;
-    padding: 12px;
+    padding: 12px; /* Larger input fields */
     margin-top: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
+    font-size: 16px; /* Larger font size */
 }
 
-/* Ban labels */
+/* Label Adjustments for User-Friendly */
 #ban-bar span {
     font-size: 16px;
     font-weight: bold;
 }
 
-/* Ban/Unban Username Inputs */
+/* Ban/Unban Username Input */
 #ban-username, #unban-username {
-    width: 100%;
-    max-width: 180px;
-    padding: 12px;
-    font-size: 16px;
+    width: 100%; /* Match the width of the inputs */
+    max-width: 180px; /* Make the username input slightly less wide */
+    padding: 12px; /* Consistent padding */
+    font-size: 16px; /* Larger font */
     border: 1px solid #ccc;
     border-radius: 4px;
 }
-
-/* Banned List */
 #banned-list-box {
     position: absolute;
     top: 320px;
@@ -232,28 +224,24 @@ button:hover {
     background-color: #ffc107;
     color: #000;
     border-radius: 5px;
-    width: 250px;
-    height: 380px;
+    width: 250px; /* Same width as ban-bar */
+    height: 380px; /* Fixed height */
     box-sizing: border-box;
     font-size: 16px;
-    overflow-y: auto;
+    overflow-y: auto; /* Scroll if it overflows */
 }
-
-#all-messages, #banned-list {
+#all-messages, #banned-list  {
     height: 40px;
-    font-size: 12px;
+    font-size:12px
 }
-
-/* Make it stack nicely on small screens */
 @media (max-width: 700px) {
     #chat-windows {
         flex-direction: column;
         align-items: center;
     }
     #group-chat, #private-chat {
-        min-width: 90%;
-        max-width: 90%;
-        height: auto;
+        min-width: 90%; /* no more fixed 300px */
+        max-width: 90%; /* allow it to shrink nicely */
     }
 }
 
