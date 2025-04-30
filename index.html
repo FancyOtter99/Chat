@@ -98,7 +98,7 @@
                 let email = document.getElementById('signup-email').value.trim();
                 signupclicked = signupclicked + 1
 
-                if (user && pass && email &&) {
+                if (user && pass && email) {
                     socket.send(JSON.stringify({ type: "signup", username: user, password: pass, email: email }));
                     alert('Please verify your email by entering the code you were emailed into the input bar below. if you cant find it pleas check your spam/junk folder');
                 } else {
