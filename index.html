@@ -128,6 +128,7 @@
 
                 if (data.type === "login_success") {
                     document.getElementById('auth-container').style.display = 'none';
+                    document.getElementById('verify').style.display = 'none';
                     document.getElementById('chat-container').style.display = 'block';
                     
                     const joinedDate = data.joined;
