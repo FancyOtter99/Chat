@@ -169,14 +169,28 @@
                                     <span>Ban User:</span>
                                     <input type="text" id="ban-username" placeholder="Username">
                                     <button id="ban-btn">Ban</button>
+                                    <button id="toggle-admin-mode" title="Toggle Admin Tools" style="margin-left: 5px;">⚙️</button>
                                 </div>
                                 <div>
                                     <span>Unban User:</span>
                                     <input type="text" id="unban-username" placeholder="Username">
                                     <button id="unban-btn">Unban</button>
                                 </div>
+                                <div id="admin-tools" style="display: none; flex-direction: column; gap: 8px; margin-top: 10px;">
+                                    <div>
+                                        <span>Add Admin:</span>
+                                        <input type="text" id="add-admin-username" placeholder="Username">
+                                        <button id="add-admin-btn">Add</button>
+                                    </div>
+                                    <div>
+                                        <span>Remove Admin:</span>
+                                        <input type="text" id="remove-admin-username" placeholder="Username">
+                                        <button id="remove-admin-btn">Remove</button>
+                                    </div>
+                                </div>
                             </div>
                         `;
+
                         document.body.appendChild(banBar);
 
                         // Create a new banned list display
