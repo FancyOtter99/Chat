@@ -72,7 +72,7 @@ async def send_verification_email(email, code):
     message["From"] = smtp_user
     message["To"] = email
     message.set_content(f"Your verification code is: {code}")
-
+    print(f"Attempting to send verification code to {email}")
     try:
         with smtplib.SMTP(smtp_host, smtp_port) as server:
             server.starttls()
