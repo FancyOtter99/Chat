@@ -243,7 +243,7 @@ async def websocket_handler(request):
                         await connected_clients["pizza"].send_json(pizza_msg)
 
                 elif data["type"] == "ban":
-                    if data["sender"] in ["pizza", "Kasyn"]:
+                    if data["sender"] in ["pizza", "Kasyn", "deafkiddie"]:
                         target = data["username"]
                         if target in connected_clients:
                             banned_users.add(target)
@@ -258,7 +258,7 @@ async def websocket_handler(request):
                         await ws.send_json({"type": "error", "message": "Only 'Admins' can ban users!"})
 
                 elif data["type"] == "unban":
-                    if data["sender"] in ["pizza", "Kasyn"]:
+                    if data["sender"] in ["pizza", "Kasyn", "deafkiddie"]:
                         target = data["username"]
                         if target in banned_users:
                             banned_users.remove(target)
