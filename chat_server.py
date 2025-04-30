@@ -197,6 +197,73 @@ async def websocket_handler(request):
                     else:
                         # Send error if code is invalid or expired
                         await ws.send_json({"type": "error", "message": "Invalid or expired verification code."})
+
+                  elif data["type"] == "admin-remove":
+                    if data["sender"] not in admins:
+                        await ws.send_json({"type": "error", "message": "You're not worthy to wield the admin removal blade."})
+                        return
+
+                    remove_user = data.get("username")
+                    if not remove_user:
+                        await ws.send_json({"type": "error", "message": "Missing username to remove."})
+                        return
+
+                    try:
+                        with open("admins.json", "r") as f:
+                            current_admins = json.load(f)
+                    except (FileNotFoundError, json.JSONDecodeError):
+                        current_admins = []
+
+                    updated_admins = [entry for entry in current_admins if entry.get("username") != remove_user]
+
+                    if len(updated_admins) == len(current_admins):
+                        await ws.send_json({"type": "error", "message": f"{remove_user} is not an admin."})
+                        return
+
+                    with open("admins.json", "w") as f:
+                        json.dump(updated_admins, f, indent=2)
+
+                    # Update in-memory admin set
+                    admins.clear()
+                    admins.update({entry["username"] for entry in updated_admins if entry.get("role") == "admin"})
+
+                    await ws.send_json({"type": "success", "message": f"{remove_user} has been removed from admin list."})
+
+                elif data["type"] == "admin-update":
+                    if data["sender"] not in admins:
+                        await ws.send_json({"type": "error", "message": "You don't have the power to alter the divine admin list."})
+                        return
+
+                    new_admin = data.get("username")
+                    new_role = data.get("role", "admin")
+
+                    if not new_admin:
+                        await ws.send_json({"type": "error", "message": "Missing username for admin update."})
+                        return
+
+                    try:
+                        with open("admins.json", "r") as f:
+                            current_admins = json.load(f)
+                    except (FileNotFoundError, json.JSONDecodeError):
+                        current_admins = []
+
+                    # Check if user already in admin list
+                    for entry in current_admins:
+                        if entry.get("username") == new_admin:
+                            entry["role"] = new_role
+                            break
+                    else:
+                        current_admins.append({"username": new_admin, "role": new_role})
+
+                    with open("admins.json", "w") as f:
+                        json.dump(current_admins, f, indent=2)
+
+                    # Update in-memory admin set
+                    admins.clear()
+                    admins.update({entry["username"] for entry in current_admins if entry.get("role") == "admin"})
+
+                    await ws.send_json({"type": "success", "message": f"{new_admin} is now a(n) {new_role}."})
+
                         
                 elif data["type"] == "login":
                     print("Login request data:", data)
@@ -214,6 +281,7 @@ async def websocket_handler(request):
                         await send_banned_users(ws)
                     else:
                         await ws.send_json({"type": "error", "message": "Invalid credentials."})
+
 
                 elif data["type"] == "group_message":
                     if username in banned_users:
