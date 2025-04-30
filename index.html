@@ -97,18 +97,18 @@
                 } else {
                     alert("Enter valid details.");
                 }
-            });
-            // verify code
+            
+            //verfy code
             document.getElementById('verify-btn').addEventListener('click', function() {
-            let user = document.getElementById('signup-username').value.trim();
-            let code = document.getElementById('verification-code').value.trim();
-        
-            if (user && code) {
-                socket.send(JSON.stringify({ type: "verify_code", username: user, code: code }));
-            } else {
-                alert("Enter your username and the code.");
-            }
-        });
+                let email = document.getElementById('signup-email').value.trim();  // <-- Send the email here
+                let code = document.getElementById('verification-code').value.trim();
+            
+                if (email && code) {
+                    socket.send(JSON.stringify({ type: "verify_code", email: email, code: code }));  // <-- Send email
+                } else {
+                    alert("Enter your email and the code.");
+                }
+            });
             
             // Listen for messages from the server
             socket.onmessage = function(event) {
