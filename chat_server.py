@@ -62,10 +62,10 @@ def validate_login(username, password):
 
 async def send_verification_email(email, code):
     # Brevo SMTP configuration
-    smtp_host = "smtp-relay.brevo.com"  # Brevo SMTP server
+    smtp_host = "smtp.zoho.com"  # Brevo SMTP server
     smtp_port = 587  # Port for TLS
-    smtp_user = "8bbf44001@smtp-brevo.com"  # Your Brevo SMTP login
-    smtp_pass = "cQFX2xCp1794DWY3"  # Your Brevo SMTP master password
+    smtp_user = "fancyotter99@fancyotter99.run.place"  # Your Brevo SMTP login
+    smtp_pass = "ZfxLRnvpmLcK"  # Your Brevo SMTP master password
 
     message = EmailMessage()
     message["Subject"] = "Your Verification Code"
