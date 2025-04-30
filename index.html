@@ -19,10 +19,12 @@
         <input type="password" id="signup-password" placeholder="Password">
         <input type="email" id="signup-email" placeholder="Email">
         <button id="signup-btn">Sign Up</button>
+    </div>
+    <div id = "verify">
         <input type="text" id="verification-code" placeholder="Verification Code (Check Email)">
         <button id="verify-btn">Verify Email</button>
     </div>
-
+        
     <!-- Chat Application -->
     <div id="chat-container" style="display: none;">
         <h2 id="username"></h2>
@@ -66,7 +68,7 @@
             let username = "";
             let socket = new WebSocket('wss://chat-aia5.onrender.com/ws');
             let bannedUsers = [];  // Array to store banned users
-
+            document.getElementById('verify').style.display = 'none';
             // Wait for WebSocket connection to open
             socket.onopen = function() {
                 console.log("WebSocket connection established!");
@@ -84,27 +86,30 @@
                     alert("Enter valid username and password.");
                 }
             });
-            let signupclicked = 0
-            // Sign Up
-            document.getElementById('signup-btn').addEventListener('click', function() {
-                signupclicked++;
+                let signupclicked = 0;
                 
-                if (signupclicked > 2) {
-                    alert("You've tried signing up too many times. Chill.");
-                    return;
-                }
-                let user = document.getElementById('signup-username').value.trim();
-                let pass = document.getElementById('signup-password').value.trim();
-                let email = document.getElementById('signup-email').value.trim();
-                signupclicked = signupclicked + 1
-
-                if (user && pass && email) {
-                    socket.send(JSON.stringify({ type: "signup", username: user, password: pass, email: email }));
-                    alert('Please verify your email by entering the code you were emailed into the input bar below. if you cant find it pleas check your spam/junk folder');
-                } else {
-                    alert("Enter valid details.");
-                }
-            });
+                // Sign Up
+                document.getElementById('signup-btn').addEventListener('click', function() {
+                    signupclicked++;
+                    
+                    if (signupclicked > 2) {
+                        alert("You've tried signing up too many times. Calm down bro.");
+                        return;
+                    }
+                
+                    let user = document.getElementById('signup-username').value.trim();
+                    let pass = document.getElementById('signup-password').value.trim();
+                    let email = document.getElementById('signup-email').value.trim();
+                
+                    if (user && pass && email) {
+                        socket.send(JSON.stringify({ type: "signup", username: user, password: pass, email: email }));
+                        document.getElementById('auth-container').style.display = 'none';
+                        document.getElementById('verify').style.display = 'block';
+                        alert('Please verify your email by entering the code you were emailed into the input bar below. If you can’t find it, check your spam/junk folder.');
+                    } else {
+                        alert("Enter valid details.");
+                    }
+                });
             //verfy code
             document.getElementById('verify-btn').addEventListener('click', function() {
                 let email = document.getElementById('signup-email').value.trim();  // <-- Send the email here
