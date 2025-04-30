@@ -142,6 +142,7 @@ async def websocket_handler(request):
                 data = json.loads(msg.data)
 
                 if data["type"] == "signup_request":
+                    print(f"Received signup request: {data}")
                     users = load_users()
                     if data["username"] in users:
                         await ws.send_json({"type": "error", "message": "Username already exists."})
