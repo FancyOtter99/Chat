@@ -1,4 +1,5 @@
 aiohttp
+traceback
 datetime
 aiohttp-cors
 pymongo[srv]
