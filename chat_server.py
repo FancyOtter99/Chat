@@ -159,18 +159,31 @@ async def websocket_handler(request):
                         await ws.send_json({"type": "verification_sent"})
 
                 elif data["type"] == "verify_code":
-                    entry = pending_signups.get(data["email"])
+                    # Look up using email instead of username
+                    entry = pending_signups.get(data["email"])  # <-- Use email
                     if entry and entry["code"] == data["code"]:
+                        # Save user with the provided email and details
                         save_user(entry["username"], entry["password"], data["email"])
+                        
+                        # Remove the entry from pending signups
                         del pending_signups[data["email"]]
+                        
+                        # Add to connected clients
                         connected_clients[entry["username"]] = ws
+                        
+                        # Load user info
                         username = entry["username"]
                         joined = load_users()[username]["joined"]
+                        
+                        # Send success message back to frontend
                         await ws.send_json({"type": "login_success", "username": username, "joined": joined})
+                        
+                        # Send banned users list
                         await send_banned_users(ws)
                     else:
+                        # Send error if code is invalid or expired
                         await ws.send_json({"type": "error", "message": "Invalid or expired verification code."})
-
+                        
                 elif data["type"] == "login":
                     print("Login request data:", data)
                     if data["username"] in banned_users:
