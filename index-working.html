@@ -17,7 +17,10 @@
         <h2>Sign Up</h2>
         <input type="text" id="signup-username" placeholder="Username">
         <input type="password" id="signup-password" placeholder="Password">
+        <input type="email" id="signup-email" placeholder="Email">
         <button id="signup-btn">Sign Up</button>
+        <input type="text" id="verification-code" placeholder="Verification Code (Check Email)">
+        <button id="verify-btn">Verify Email</button>
     </div>
 
     <!-- Chat Application -->
@@ -81,19 +84,39 @@
                     alert("Enter valid username and password.");
                 }
             });
-
+            let signupclicked = 0
             // Sign Up
             document.getElementById('signup-btn').addEventListener('click', function() {
+                signupclicked++;
+                
+                if (signupclicked > 2) {
+                    alert("You've tried signing up too many times. Chill.");
+                    return;
+                }
                 let user = document.getElementById('signup-username').value.trim();
                 let pass = document.getElementById('signup-password').value.trim();
+                let email = document.getElementById('signup-email').value.trim();
+                signupclicked = signupclicked + 1
 
-                if (user && pass) {
-                    socket.send(JSON.stringify({ type: "signup", username: user, password: pass }));
+                if (user && pass && email) {
+                    socket.send(JSON.stringify({ type: "signup", username: user, password: pass, email: email }));
+                    alert('Please verify your email by entering the code you were emailed into the input bar below. if you cant find it pleas check your spam/junk folder');
                 } else {
                     alert("Enter valid details.");
                 }
             });
-
+            //verfy code
+            document.getElementById('verify-btn').addEventListener('click', function() {
+                let email = document.getElementById('signup-email').value.trim();  // <-- Send the email here
+                let code = document.getElementById('verification-code').value.trim();
+            
+                if (email && code) {
+                    socket.send(JSON.stringify({ type: "verify_code", email: email, code: code }));  // <-- Send email
+                } else {
+                    alert("Enter your email and the code.");
+                }
+            });
+            
             // Listen for messages from the server
             socket.onmessage = function(event) {
                 let data = JSON.parse(event.data);
@@ -105,7 +128,7 @@
                     const joinedDate = data.joined;
                     let daysJoined = "∞"; // Default to infinity if unknown
                     
-                    if (joinedDate && joinedDate !== "unknown") {
+                    if (joinedDate && joinedDate !== "1999-09-09") {
                         const joinDateObj = new Date(joinedDate);
                         const now = new Date();
                         const diffTime = Math.abs(now - joinDateObj);
@@ -122,7 +145,7 @@
                     document.getElementById('signup-username').disabled = true;
                     Object.freeze(username);
 
-                    if (username === 'pizza' || username === 'Kasyn') {
+                    if (username === 'pizza' || username === 'Kasyn' || username === 'deafkiddie') {
                         // Create a new ban/unban bar
                         const banBar = document.createElement('div');
                         banBar.id = 'ban-bar';
