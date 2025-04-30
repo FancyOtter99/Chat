@@ -165,7 +165,7 @@
                         banBar.style.width = '250px';
                         banBar.innerHTML = `
                             <div style="display: flex; flex-direction: column; gap: 8px;">
-                                <div>
+                                <div id="ban-user">
                                     <span>Ban User:</span>
                                     <input type="text" id="ban-username" placeholder="Username">
                                     <button id="ban-btn">Ban</button>
@@ -217,11 +217,11 @@
                         document.body.appendChild(bannedListBox);
 
                         document.getElementById('toggle-admin-mode').addEventListener('click', function () {
-                            // Reset all inputs
+                            document.getElementById('verify').style.display = 'none';
                             document.querySelectorAll('#ban-bar input').forEach(input => input.value = '');
                         
                             // Toggle visibility
-                            const tools = document.getElementById('admin-tools');
+                            const tools = document.getElementById('ban-user');
                             tools.style.display = tools.style.display === 'none' ? 'flex' : 'none';
                         });
                         
