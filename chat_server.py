@@ -6,6 +6,7 @@ import smtplib
 from aiohttp import web, WSMsgType
 from datetime import datetime
 from email.message import EmailMessage
+import traceback
 
 USERS_FILE = "users.txt"
 BANNED_USERS_FILE = "banned_users.txt"
@@ -79,8 +80,10 @@ async def send_verification_email(email, code):
             server.login(smtp_user, smtp_pass)
             server.send_message(message)
             print(f"Verification code sent to {email}")
-    except Exception as e:
-        print(f"Failed to send email: {e}")
+except Exception as e:
+    print(f"Failed to send email: {e}")
+    traceback.print_exc()
+
 
 async def send_banned_users(ws=None):
     banned_list = list(banned_users)
