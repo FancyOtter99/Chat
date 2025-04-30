@@ -7,9 +7,9 @@ body {
     padding: 0;
 }
 
-/* Authentication Container */
-#auth-container {
-    width: 350px; /* Increased width */
+/* Authentication and Verification Containers */
+#auth-container, #verify {
+    width: 350px;
     margin: 50px auto;
     padding: 20px;
     background: white;
@@ -18,34 +18,37 @@ body {
 }
 
 #auth-container h2 {
-    margin-bottom: 15px; /* Increased margin */
-    font-size: 22px; /* Larger text */
+    margin-bottom: 15px;
+    font-size: 22px;
 }
 
-#auth-container input {
+/* Inputs */
+#auth-container input, #verify input {
     width: calc(100% - 20px);
-    padding: 12px; /* Increased padding */
-    margin: 10px 0; /* More space between inputs */
+    padding: 12px;
+    margin: 30px 0;
     border: 1px solid #ccc;
     border-radius: 4px;
-    font-size: 16px; /* Larger text */
+    font-size: 16px;
 }
 
-#auth-container button {
+/* Buttons */
+#auth-container button, #verify button {
     width: 100%;
-    padding: 12px; /* Increased padding */
-    margin-top: 15px; /* More space between button and inputs */
+    padding: 12px;
+    margin-top: 15px;
     background: #007bff;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 16px; /* Larger text */
+    font-size: 16px;
 }
 
-#auth-container button:hover {
+#auth-container button:hover, #verify button:hover {
     background: #0056b3;
 }
+
 
 /* Chat Container */
 #chat-container {
