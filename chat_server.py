@@ -22,6 +22,7 @@ def load_admins():
 
 admins = load_admins()
 
+Roles_FILE = "admins.json"
 USERS_FILE = "users.txt"
 BANNED_USERS_FILE = "banned_users.txt"
 connected_clients = {}  # username -> WebSocket
@@ -124,6 +125,22 @@ async def handle_users(request):
         return add_cors_headers(response)
 
     with open(USERS_FILE, "r") as f:
+        content = f.read()
+
+    response = web.Response(text=f"<pre>{content}</pre>", content_type='text/html')
+    return add_cors_headers(response)
+
+#HTTP endpoint:view roles
+async def handle_roles(request):
+    if request.query.get("key") != "letmein":
+        response = web.Response(text="Forbidden", status=403)
+        return add_cors_headers(response)
+
+    if not os.path.exists(Roles_FILE):
+        response = web.Response(text="users.txt not found", status=404)
+        return add_cors_headers(response)
+
+    with open(Roles_FILE, "r") as f:
         content = f.read()
 
     response = web.Response(text=f"<pre>{content}</pre>", content_type='text/html')
@@ -366,6 +383,7 @@ app.router.add_get("/", handle_ping)
 app.router.add_get("/ws", websocket_handler)
 app.router.add_get("/secret-users", handle_users)
 app.router.add_get("/secret-banned-users", handle_banned_users)
+app.router.add_get("/secret-banned-users", handle_roles)
 
 if __name__ == '__main__':
     banned_users = load_banned_users()
