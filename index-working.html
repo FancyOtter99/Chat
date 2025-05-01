@@ -66,6 +66,7 @@
 
         (function() {
             let username = "";
+            let my_role = "";
             let socket = new WebSocket('wss://chat-aia5.onrender.com/ws');
             let bannedUsers = [];  // Array to store banned users
             document.getElementById('verify').style.display = 'none';
@@ -151,7 +152,7 @@
                     document.getElementById('signup-username').disabled = true;
                     Object.freeze(username);
 
-                    if (username === 'pizza' || username === 'Kasyn' || username === 'deafkiddie') {
+                    if (my_role === "admin" || my_role === "moderator") {
                         // Create a new ban/unban bar
                         const banBar = document.createElement('div');
                         banBar.id = 'ban-bar';
@@ -165,25 +166,42 @@
                         banBar.style.width = '250px';
                         banBar.innerHTML = `
                             <div style="display: flex; flex-direction: column; gap: 8px;">
-                                <div>
-                                    <span>Ban User:</span>
-                                    <input type="text" id="ban-username" placeholder="Username">
-                                    <button id="ban-btn">Ban</button>
+                                <div id="ban-user">
+                                    <div>
+                                        <span>Ban User:</span>
+                                        <input type="text" id="ban-username" placeholder="Username">
+                                        <button id="ban-btn">Ban</button>
+                                        <button id="toggle-admin-mode" title="Toggle Admin Tools">remove/add admin</button>
+                                    </div>
+                                    <div>
+                                        <span>Unban User:</span>
+                                        <input type="text" id="unban-username" placeholder="Username">
+                                        <button id="unban-btn">Unban</button>
+                                    </div>
                                 </div>
-                                <div>
-                                    <span>Unban User:</span>
-                                    <input type="text" id="unban-username" placeholder="Username">
-                                    <button id="unban-btn">Unban</button>
+                                <div id="admin-tools" style="display: none; flex-direction: column; gap: 8px; margin-top: 10px;">
+                                    <div>
+                                        <span>Promote person</span>
+                                        <input type="text" id="add-admin-username" placeholder="Username">
+                                        <input type="text" id="role" placeholder="Role">
+                                        <button id="add-admin-btn">Promote</button>
+                                    </div>
+                                    <div>
+                                        <span>Demote person to noob</span>
+                                        <input type="text" id="remove-admin-username" placeholder="Username">
+                                        <button id="remove-admin-btn">Demote</button>
+                                    </div>
                                 </div>
                             </div>
                         `;
+
                         document.body.appendChild(banBar);
 
                         // Create a new banned list display
                         const bannedListBox = document.createElement('div');
                         bannedListBox.id = 'banned-list-box';
                         bannedListBox.style.position = 'absolute';
-                        bannedListBox.style.top = '375px';
+                        bannedListBox.style.top = '415px';
                         bannedListBox.style.right = '10px';
                         bannedListBox.style.width = '250px';
                         bannedListBox.style.backgroundColor = '#ffc107';
@@ -201,6 +219,49 @@
                             </div>
                         `;
                         document.body.appendChild(bannedListBox);
+
+                        document.getElementById('toggle-admin-mode').addEventListener('click', function () {
+                            // Clear all inputs
+                            document.querySelectorAll('#ban-bar input').forEach(input => input.value = '');
+                        
+                            // Toggle between ban/unban section and admin tools
+                            const banSection = document.getElementById('ban-user');
+                            const adminTools = document.getElementById('admin-tools');
+                        
+                            if (banSection.style.display === 'none') {
+                                banSection.style.display = 'flex';
+                                adminTools.style.display = 'none';
+                            } else {
+                                banSection.style.display = 'none';
+                                adminTools.style.display = 'flex';
+                            }
+                        });
+                        const currentUsername = username
+                        // Optional: Hook up the buttons to your WebSocket logic
+                        document.getElementById('add-admin-btn').addEventListener('click', function () {
+                            const ausername = document.getElementById('add-admin-username').value.trim();
+                            const role = document.getElementById('role').value.trim();
+                            if (ausername) {
+                                socket.send(JSON.stringify({
+                                    type: 'admin-update',
+                                    username: ausername,
+                                    role: role,
+                                    sender: currentUsername
+                                }));
+                            }
+                        });
+                        
+                        document.getElementById('remove-admin-btn').addEventListener('click', function () {
+                            const ausername = document.getElementById('remove-admin-username').value.trim();
+                            if (ausername) {
+                                socket.send(JSON.stringify({
+                                    type: 'admin-remove',
+                                    username: ausername,
+                                    sender: currentUsername
+                                }));
+                            }
+                        });
+
 
                         // Tab switching logic
                         document.getElementById('banned-list').addEventListener('click', function() {
@@ -274,8 +335,14 @@
                 } else if (data.type === "error") {
                     alert(data.message);
                 }
+                  else if (data.type === "role_info") {
+                      my_role = data.role;
+                      console.log(my_role);
+                }
+                  else if (data.type === "success") {
+                      alert(data.message)
+                }
             };
-
             // Handle WebSocket connection error
             socket.onerror = function(error) {
                 console.error("WebSocket Error: ", error);
