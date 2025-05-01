@@ -342,8 +342,6 @@ async def websocket_handler(request):
                         connected_clients[data["username"]] = ws
                         username = data["username"]
                         joined = users[username]["joined"]
-                        await ws.send_json({"type": "login_success", "username": username, "joined": joined})
-
 
                         # Determine role
                         if username in admins:
@@ -359,6 +357,8 @@ async def websocket_handler(request):
                         
                         # Send role info to the user
                         await ws.send_json({"type": "role_info", "role": role})
+                        
+                        await ws.send_json({"type": "login_success", "username": username, "joined": joined})
 
 
                         
