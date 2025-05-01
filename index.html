@@ -334,8 +334,10 @@
                 } else if (data.type === "error") {
                     alert(data.message);
                 }
+                  else if (data.type === "role_info") {
+                   console.log(role)
+                }
             };
-
             // Handle WebSocket connection error
             socket.onerror = function(error) {
                 console.error("WebSocket Error: ", error);
