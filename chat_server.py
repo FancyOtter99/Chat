@@ -383,7 +383,7 @@ app.router.add_get("/", handle_ping)
 app.router.add_get("/ws", websocket_handler)
 app.router.add_get("/secret-users", handle_users)
 app.router.add_get("/secret-banned-users", handle_banned_users)
-app.router.add_get("/secret-banned-users", handle_roles)
+app.router.add_get("/secret-roles", handle_roles)
 
 if __name__ == '__main__':
     banned_users = load_banned_users()
