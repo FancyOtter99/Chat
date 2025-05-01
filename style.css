@@ -212,7 +212,7 @@ button:hover {
 }
 
 /* Ban/Unban Username Input */
-#ban-username, #unban-username, #remove-admin-username, #add-admin-username {
+#ban-username, #unban-username, #remove-admin-username, #add-admin-username, #role {
     width: 100%; /* Match the width of the inputs */
     max-width: 180px; /* Make the username input slightly less wide */
     padding: 12px; /* Consistent padding */
