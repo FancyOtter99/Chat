@@ -27,6 +27,7 @@ def get_role_set(role):
 admins = get_role_set("admin")
 moderators = get_role_set("moderator")
 pros = get_role_set("pro")
+middles = get_role_set("middle")
 plebes = get_role_set("plebe")
 
 def refresh_roles():
@@ -38,6 +39,9 @@ def refresh_roles():
 
     pros.clear()
     pros.update(get_role_set("pro"))
+
+    middles.clear()
+    middles.update(get_role_set("middle"))
 
     plebes.clear()
     plebes.update(get_role_set("plebe"))
@@ -237,6 +241,8 @@ async def websocket_handler(request):
                             role = "moderator"
                         elif username in pros:
                             role = "pro"
+                        elif username in middles;
+                            role = "middle"
                         elif username in plebes:
                             role = "plebe"
                         else:
@@ -349,6 +355,8 @@ async def websocket_handler(request):
                             role = "moderator"
                         elif username in pros:
                             role = "pro"
+                        elif username in middles:
+                            role = "middle"
                         elif username in plebes:
                             role = "plebe"
                         else:
