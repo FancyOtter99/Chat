@@ -422,12 +422,12 @@ async def websocket_handler(request):
                         else:
                             await ws.send_json({"type": "error", "message": f"{target} is not connected or is an admin/moderator."})
                     else:
-                        await ws.send_json({"type": "error", "message": "Only 'Admins' can ban users!"})
+                        await ws.send_json({"type": "error", "message": "Only 'Admins and mods' can ban users!"})
 
                 elif data["type"] == "unban":
                     if data["sender"] in admins or data["sender"] in moderators:
                         target = data["username"]
-                        if target in connected_clients and target not in admins and target not in moderators:
+                        if target in banned_users
 
                             banned_users.remove(target)
                             save_banned_users()
@@ -436,7 +436,7 @@ async def websocket_handler(request):
                         else:
                             await ws.send_json({"type": "error", "message": f"{target} is not banned."})
                     else:
-                        await ws.send_json({"type": "error", "message": "Only 'pizza' can unban users!"})
+                        await ws.send_json({"type": "error", "message": "Only 'admins and mods' can unban users!"})
 
             elif msg.type == WSMsgType.ERROR:
                 print(f'WS connection closed with exception {ws.exception()}')
