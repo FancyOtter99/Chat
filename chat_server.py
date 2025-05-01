@@ -29,7 +29,6 @@ moderators = get_role_set("moderator")
 pros = get_role_set("pro")
 plebes = get_role_set("plebe")
 
-
 def refresh_roles():
     admins.clear()
     admins.update(get_role_set("admin"))
@@ -241,7 +240,7 @@ async def websocket_handler(request):
                         elif username in plebes:
                             role = "plebe"
                         else:
-                            role = "unknown"  # For the lost souls wandering role-less
+                            role = "noob"  # For the lost souls wandering role-less
                         
                         # Send role info to the user
                         await ws.send_json({"type": "role_info", "role": role})
@@ -353,7 +352,7 @@ async def websocket_handler(request):
                         elif username in plebes:
                             role = "plebe"
                         else:
-                            role = "unknown"  # For the lost souls wandering role-less
+                            role = "noob"  # For the lost souls wandering role-less
                         
                         # Send role info to the user
                         await ws.send_json({"type": "role_info", "role": role})
@@ -427,7 +426,7 @@ async def websocket_handler(request):
                 elif data["type"] == "unban":
                     if data["sender"] in admins or data["sender"] in moderators:
                         target = data["username"]
-                        if target in banned_users
+                        if target in banned_users:
 
                             banned_users.remove(target)
                             save_banned_users()
