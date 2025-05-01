@@ -182,12 +182,13 @@
                                     <div>
                                         <span>Add Admin:</span>
                                         <input type="text" id="add-admin-username" placeholder="Username">
-                                        <button id="add-admin-btn">Add</button>
+                                        <button id="add-admin-btn">Promote</button>
                                     </div>
+                                    <input type="text" id="role" placeholder="Role">
                                     <div>
                                         <span>Remove Admin:</span>
                                         <input type="text" id="remove-admin-username" placeholder="Username">
-                                        <button id="remove-admin-btn">Remove</button>
+                                        <button id="remove-admin-btn">Demote</button>
                                     </div>
                                 </div>
                             </div>
@@ -234,26 +235,27 @@
                                 adminTools.style.display = 'flex';
                             }
                         });
-                        
+                        const currentUsername = username
                         // Optional: Hook up the buttons to your WebSocket logic
                         document.getElementById('add-admin-btn').addEventListener('click', function () {
-                            const username = document.getElementById('add-admin-username').value.trim();
-                            if (username) {
+                            const ausername = document.getElementById('add-admin-username').value.trim();
+                            const role = document.getElementById('role').value.trim();
+                            if (ausername) {
                                 socket.send(JSON.stringify({
                                     type: 'admin-update',
-                                    username: username,
-                                    role: 'admin',
+                                    username: ausername,
+                                    role: role,
                                     sender: currentUsername
                                 }));
                             }
                         });
                         
                         document.getElementById('remove-admin-btn').addEventListener('click', function () {
-                            const username = document.getElementById('remove-admin-username').value.trim();
-                            if (username) {
+                            const ausername = document.getElementById('remove-admin-username').value.trim();
+                            if (ausername) {
                                 socket.send(JSON.stringify({
                                     type: 'admin-remove',
-                                    username: username,
+                                    username: ausername,
                                     sender: currentUsername
                                 }));
                             }
