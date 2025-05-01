@@ -155,11 +155,12 @@
                     if (my_role === "moderator") {
                         // Small remove/add admin button for mods only
                         const toggleAdminBtn = document.createElement('button');
-                        toggleAdminBtn.id = 'toggle-admin-btn';
+                        toggleAdminBtn.id = 'toggle-admin-mode';
                         toggleAdminBtn.textContent = "Remove/Add Admin";
                         toggleAdminBtn.style.position = 'absolute';
-                        toggleAdminBtn.style.top = '40px';
+                        toggleAdminBtn.style.top = '35px';
                         toggleAdminBtn.style.right = '10px';
+                        toggleAdminBtn.style.width = '50px';
                         toggleAdminBtn.style.padding = '10px';
                         toggleAdminBtn.style.borderRadius = '5px';
                     
@@ -184,7 +185,6 @@
                                         <span>Ban User:</span>
                                         <input type="text" id="ban-username" placeholder="Username">
                                         <button id="ban-btn">Ban</button>
-                                        <button id="toggle-admin-mode" title="Toggle Admin Tools">remove/add admin</button>
                                     </div>
                                     <div>
                                         <span>Unban User:</span>
