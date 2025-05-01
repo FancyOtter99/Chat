@@ -152,6 +152,19 @@
                     document.getElementById('signup-username').disabled = true;
                     Object.freeze(username);
 
+                    if (my_role === "moderator") {
+                        // Small remove/add admin button for mods only
+                        const toggleAdminBtn = document.createElement('button');
+                        toggleAdminBtn.id = 'toggle-admin-btn';
+                        toggleAdminBtn.textContent = "Remove/Add Admin";
+                        toggleAdminBtn.style.position = 'absolute';
+                        toggleAdminBtn.style.top = '40px';
+                        toggleAdminBtn.style.right = '10px';
+                        toggleAdminBtn.style.padding = '10px';
+                        toggleAdminBtn.style.borderRadius = '5px';
+                    
+                        document.body.appendChild(toggleAdminBtn);
+                    }
                     if (my_role === "admin" || my_role === "moderator") {
                         // Create a new ban/unban bar
                         const banBar = document.createElement('div');
