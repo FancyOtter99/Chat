@@ -338,6 +338,9 @@
                       let my_role = data.role;
                       console.log(my_role);
                 }
+                  else if (data.type === "success") {
+                      alert(data.message)
+                }
             };
             // Handle WebSocket connection error
             socket.onerror = function(error) {
