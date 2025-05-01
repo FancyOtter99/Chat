@@ -152,7 +152,7 @@
                     document.getElementById('signup-username').disabled = true;
                     Object.freeze(username);
 
-                    if (my_role === admin || my_role === moderator) {
+                    if (my_role === "admin" || my_role === "moderator") {
                         // Create a new ban/unban bar
                         const banBar = document.createElement('div');
                         banBar.id = 'ban-bar';
