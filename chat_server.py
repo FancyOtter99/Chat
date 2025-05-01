@@ -419,7 +419,7 @@ async def websocket_handler(request):
                             await ws.send_json({"type": "success", "message": f"{target} has been banned."})
                             await send_banned_users()
                         else:
-                            await ws.send_json({"type": "error", "message": f"{target} is not connected."})
+                            await ws.send_json({"type": "error", "message": f"{target} is not connected or is an admin/moderator."})
                     else:
                         await ws.send_json({"type": "error", "message": "Only 'Admins' can ban users!"})
 
