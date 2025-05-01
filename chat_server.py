@@ -32,16 +32,17 @@ plebes = get_role_set("plebe")
 
 def refresh_roles():
     admins.clear()
-    admins.update(load_admins())
+    admins.update(get_role_set("admin"))
 
     moderators.clear()
-    moderators.update(load_moderators())
+    moderators.update(get_role_set("moderator"))
 
     pros.clear()
-    pros.update(load_pros())
+    pros.update(get_role_set("pro"))
 
     plebes.clear()
-    plebes.update(load_plebes())
+    plebes.update(get_role_set("plebe"))
+
 
 
 
