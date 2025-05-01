@@ -407,11 +407,12 @@ async def websocket_handler(request):
                         }
                         await connected_clients["pizza"].send_json(pizza_msg)
 
-                elif data["type"] == "ban":
-                    if data["sender"] in admins or data["sender"] in moderators:
-                        target = data["username"]
-                        if target in connected_clients and target not in admins and target not in moderators:
 
+                elif data["type"] == "ban":
+                    target = data["username"]
+                    sender = data["sender"]
+                    if sender in admins:
+                        if target in connected_clients and target not in admins and target not in moderators:
                             banned_users.add(target)
                             save_banned_users()
                             await connected_clients[target].send_json({"type": "error", "message": "You have been banned!"})
@@ -420,8 +421,19 @@ async def websocket_handler(request):
                             await send_banned_users()
                         else:
                             await ws.send_json({"type": "error", "message": f"{target} is not connected or is an admin/moderator."})
+                
+                    elif sender in moderators:
+                        if target in connected_clients:
+                            banned_users.add(target)
+                            save_banned_users()
+                            await connected_clients[target].send_json({"type": "error", "message": "You have been banned!"})
+                            await connected_clients[target].close()
+                            await ws.send_json({"type": "success", "message": f"{target} has been banned."})
+                            await send_banned_users()
+                        else:
+                            await ws.send_json({"type": "error", "message": f"{target} is not connected."})
                     else:
-                        await ws.send_json({"type": "error", "message": "Only 'Admins and mods' can ban users!"})
+                        await ws.send_json({"type": "error", "message": "Only admins and moderators can ban users."})
 
                 elif data["type"] == "unban":
                     if data["sender"] in admins or data["sender"] in moderators:
