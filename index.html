@@ -66,6 +66,7 @@
 
         (function() {
             let username = "";
+            let my_role = "";
             let socket = new WebSocket('wss://chat-aia5.onrender.com/ws');
             let bannedUsers = [];  // Array to store banned users
             document.getElementById('verify').style.display = 'none';
@@ -151,7 +152,7 @@
                     document.getElementById('signup-username').disabled = true;
                     Object.freeze(username);
 
-                    if (username === 'pizza' || username === 'Kasyn' || username === 'deafkiddie' || username === 'jo') {
+                    if (my_role === admin || my_role === moderator) {
                         // Create a new ban/unban bar
                         const banBar = document.createElement('div');
                         banBar.id = 'ban-bar';
@@ -180,13 +181,13 @@
                                 </div>
                                 <div id="admin-tools" style="display: none; flex-direction: column; gap: 8px; margin-top: 10px;">
                                     <div>
-                                        <span>Add Admin:</span>
+                                        <span>Promote person</span>
                                         <input type="text" id="add-admin-username" placeholder="Username">
+                                        <input type="text" id="role" placeholder="Role">
                                         <button id="add-admin-btn">Promote</button>
                                     </div>
-                                    <input type="text" id="role" placeholder="Role">
                                     <div>
-                                        <span>Remove Admin:</span>
+                                        <span>Demote person to noob</span>
                                         <input type="text" id="remove-admin-username" placeholder="Username">
                                         <button id="remove-admin-btn">Demote</button>
                                     </div>
