@@ -10,17 +10,41 @@ import traceback
 
 import json
 
-def load_admins():
+
+
+
+def get_role_set(role):
     try:
         with open("admins.json", "r") as f:
             data = json.load(f)
-            return {entry["username"] for entry in data if entry.get("role") == "admin"}
+            return {entry["username"] for entry in data if entry.get("role") == role}
     except (FileNotFoundError, json.JSONDecodeError) as e:
         print(f"Failed to load admins: {e}")
         return set()
 
 
-admins = load_admins()
+
+admins = get_role_set("admin")
+moderators = get_role_set("moderator")
+pros = get_role_set("pro")
+plebes = get_role_set("plebe")
+
+
+def refresh_roles():
+    admins.clear()
+    admins.update(load_admins())
+
+    moderators.clear()
+    moderators.update(load_moderators())
+
+    pros.clear()
+    pros.update(load_pros())
+
+    plebes.clear()
+    plebes.update(load_plebes())
+
+
+
 
 Roles_FILE = "admins.json"
 USERS_FILE = "users.txt"
@@ -209,6 +233,23 @@ async def websocket_handler(request):
                         # Send success message back to frontend
                         await ws.send_json({"type": "login_success", "username": username, "joined": joined})
                         
+                        # Determine role
+                        if username in admins:
+                            role = "admin"
+                        elif username in moderators:
+                            role = "moderator"
+                        elif username in pros:
+                            role = "pro"
+                        elif username in plebes:
+                            role = "plebe"
+                        else:
+                            role = "unknown"  # For the lost souls wandering role-less
+                        
+                        # Send role info to the user
+                        await ws.send_json({"type": "role_info", "role": role})
+
+                        
+                        
                         # Send banned users list
                         await send_banned_users(ws)
                     else:
@@ -216,7 +257,7 @@ async def websocket_handler(request):
                         await ws.send_json({"type": "error", "message": "Invalid or expired verification code."})
 
                 elif data["type"] == "admin-remove":
-                    if data["sender"] not in admins:
+                    if data["sender"] not in moderators:
                         await ws.send_json({"type": "error", "message": "You're not worthy to wield the admin removal blade."})
                         return
 
@@ -244,10 +285,13 @@ async def websocket_handler(request):
                     admins.clear()
                     admins.update({entry["username"] for entry in updated_admins if entry.get("role") == "admin"})
 
+                    refresh_roles()
+
+
                     await ws.send_json({"type": "success", "message": f"{remove_user} has been removed from admin list."})
 
                 elif data["type"] == "admin-update":
-                    if data["sender"] not in admins:
+                    if data["sender"] not in moderators:
                         await ws.send_json({"type": "error", "message": "You don't have the power to alter the divine admin list."})
                         return
 
@@ -279,6 +323,9 @@ async def websocket_handler(request):
                     admins.clear()
                     admins.update({entry["username"] for entry in current_admins if entry.get("role") == "admin"})
 
+                    refresh_roles()
+
+
                     await ws.send_json({"type": "success", "message": f"{new_admin} is now a(n) {new_role}."})
 
                         
@@ -295,6 +342,25 @@ async def websocket_handler(request):
                         username = data["username"]
                         joined = users[username]["joined"]
                         await ws.send_json({"type": "login_success", "username": username, "joined": joined})
+
+
+                        # Determine role
+                        if username in admins:
+                            role = "admin"
+                        elif username in moderators:
+                            role = "moderator"
+                        elif username in pros:
+                            role = "pro"
+                        elif username in plebes:
+                            role = "plebe"
+                        else:
+                            role = "unknown"  # For the lost souls wandering role-less
+                        
+                        # Send role info to the user
+                        await ws.send_json({"type": "role_info", "role": role})
+
+
+                        
                         await send_banned_users(ws)
                     else:
                         await ws.send_json({"type": "error", "message": "Invalid credentials."})
@@ -342,9 +408,10 @@ async def websocket_handler(request):
                         await connected_clients["pizza"].send_json(pizza_msg)
 
                 elif data["type"] == "ban":
-                    if data["sender"] in admins:
+                    if data["sender"] in admins or data["sender"] in moderators:
                         target = data["username"]
-                        if target in connected_clients:
+                        if target in connected_clients and target not in admins and target not in moderators:
+
                             banned_users.add(target)
                             save_banned_users()
                             await connected_clients[target].send_json({"type": "error", "message": "You have been banned!"})
@@ -357,9 +424,10 @@ async def websocket_handler(request):
                         await ws.send_json({"type": "error", "message": "Only 'Admins' can ban users!"})
 
                 elif data["type"] == "unban":
-                    if data["sender"] in admins:
+                    if data["sender"] in admins or data["sender"] in moderators:
                         target = data["username"]
-                        if target in banned_users:
+                        if target in connected_clients and target not in admins and target not in moderators:
+
                             banned_users.remove(target)
                             save_banned_users()
                             await ws.send_json({"type": "success", "message": f"{target} has been unbanned."})
