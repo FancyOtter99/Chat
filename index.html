@@ -335,7 +335,8 @@
                     alert(data.message);
                 }
                   else if (data.type === "role_info") {
-                   console.log(role)
+                      let my_role = data.role;
+                      console.log(my_role);
                 }
             };
             // Handle WebSocket connection error
