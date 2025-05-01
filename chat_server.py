@@ -198,7 +198,7 @@ async def websocket_handler(request):
                         # Send error if code is invalid or expired
                         await ws.send_json({"type": "error", "message": "Invalid or expired verification code."})
 
-               elif data["type"] == "admin-remove":
+                elif data["type"] == "admin-remove":
                 if data["sender"] not in admins:
                     await ws.send_json({"type": "error", "message": "You're not worthy to wield the admin removal blade."})
                     return
@@ -229,6 +229,7 @@ async def websocket_handler(request):
 
                 await ws.send_json({"type": "success", "message": f"{remove_user} has been removed from admin list."})
 
+                
                 elif data["type"] == "admin-update":
                     if data["sender"] not in admins:
                         await ws.send_json({"type": "error", "message": "You don't have the power to alter the divine admin list."})
