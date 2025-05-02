@@ -152,6 +152,39 @@
                     document.getElementById('signup-username').disabled = true;
                     Object.freeze(username);
 
+                    if (my_role === "moderator") {
+                        // Small remove/add admin button for mods only
+                        const toggleAdminBtn = document.createElement('button');
+                        toggleAdminBtn.id = 'toggle-admin-mode';
+                        toggleAdminBtn.textContent = "Remove/Add Admin";
+                        toggleAdminBtn.style.position = 'absolute';
+                        toggleAdminBtn.style.top = '5px';
+                        toggleAdminBtn.style.right = '10px';
+                        toggleAdminBtn.style.width = '250px';
+                        toggleAdminBtn.style.padding = '10px';
+                        toggleAdminBtn.style.borderRadius = '5px';
+                    
+                        document.body.appendChild(toggleAdminBtn);
+                            toggleAdminBtn.addEventListener('click', function () {
+                            // Clear all inputs
+                            document.querySelectorAll('#ban-bar input').forEach(input => input.value = '');
+                    
+                            const banSection = document.getElementById('ban-user');
+                            const adminTools = document.getElementById('admin-tools');
+                    
+                            if (banSection.style.display === 'none') {
+                                toggleAdminBtn.textContent = "Remove/Add Admin";
+                                banSection.style.display = 'block';
+                                adminTools.style.display = 'none';
+                            } else {
+                                toggleAdminBtn.textContent = "Ban/Unban";
+                                banSection.style.display = 'none';
+                                adminTools.style.display = 'flex';
+                            }
+                        });
+                    }
+
+
                     if (my_role === "admin" || my_role === "moderator") {
                         // Create a new ban/unban bar
                         const banBar = document.createElement('div');
@@ -171,7 +204,6 @@
                                         <span>Ban User:</span>
                                         <input type="text" id="ban-username" placeholder="Username">
                                         <button id="ban-btn">Ban</button>
-                                        <button id="toggle-admin-mode" title="Toggle Admin Tools">remove/add admin</button>
                                     </div>
                                     <div>
                                         <span>Unban User:</span>
@@ -220,22 +252,8 @@
                         `;
                         document.body.appendChild(bannedListBox);
 
-                        document.getElementById('toggle-admin-mode').addEventListener('click', function () {
-                            // Clear all inputs
-                            document.querySelectorAll('#ban-bar input').forEach(input => input.value = '');
                         
-                            // Toggle between ban/unban section and admin tools
-                            const banSection = document.getElementById('ban-user');
-                            const adminTools = document.getElementById('admin-tools');
-                        
-                            if (banSection.style.display === 'none') {
-                                banSection.style.display = 'flex';
-                                adminTools.style.display = 'none';
-                            } else {
-                                banSection.style.display = 'none';
-                                adminTools.style.display = 'flex';
-                            }
-                        });
+
                         const currentUsername = username
                         // Optional: Hook up the buttons to your WebSocket logic
                         document.getElementById('add-admin-btn').addEventListener('click', function () {
@@ -317,6 +335,38 @@
                                 .catch(error => console.error("Error fetching banned users:", error));
                         }
                     }
+                        const toggleAdmin = document.createElement('button');
+                        toggleAdmin.id = 'turn-off-admin';
+                        toggleAdmin.textContent = "Turn off Admin";
+                        toggleAdmin.style.position = 'absolute';
+                        toggleAdmin.style.top = '5px';
+                        toggleAdmin.style.right = '1045px';
+                        toggleAdmin.style.width = '250px';
+                        toggleAdmin.style.padding = '10px';
+                        toggleAdmin.style.borderRadius = '5px';
+                    
+                        document.body.appendChild(toggleAdmin);
+                            toggleAdmin.addEventListener('click', function () {
+                            // Clear all inputs
+                            document.querySelectorAll('#ban-bar input').forEach(input => input.value = '');                            
+                    
+                            const banSection = document.getElementById('ban-bar');
+                            const bannedpeople = document.getElementById('banned-list-box');
+                            const switchbutton = document.getElementById('toggle-admin-mode');
+                    
+                            if (banSection.style.display === 'none') {
+                                toggleAdmin.textContent = "Turn off Admin";
+                                bannedpeople.style.display = 'block';
+                                banSection.style.display = 'block';
+                                switchbutton.style.display = 'block';
+                            } else {
+                                toggleAdmin.textContent = "Turn on Admin";
+                                bannedpeople.style.display = 'none';
+                                banSection.style.display = 'none';
+                                switchbutton.style.display = 'none';
+                            }
+                        });
+                    
                 } else if (data.type === "group_message") {
                     let chatBox = document.getElementById('group-chat-box');
                     let room = document.getElementById('group-room-switch').value;
