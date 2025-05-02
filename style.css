@@ -238,12 +238,12 @@ button:hover {
     height: 40px;
     font-size:12px
 }
-#username-hover {
+.username-hover {
     position: relative;
     display: inline-block;
 }
 
-#tooltip {
+.tooltip {
     display: none;
     position: absolute;
     background-color: #333;
@@ -257,7 +257,7 @@ button:hover {
     font-size: 14px;
 }
 
-#username-hover:hover #tooltip {
+.username-hover:hover .tooltip {
     display: block;
 }
 
