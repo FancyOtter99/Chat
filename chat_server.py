@@ -241,7 +241,7 @@ async def websocket_handler(request):
                             role = "moderator"
                         elif username in pros:
                             role = "pro"
-                        elif username in middles;
+                        elif username in middles:
                             role = "middle"
                         elif username in plebes:
                             role = "plebe"
