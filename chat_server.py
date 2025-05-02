@@ -453,8 +453,8 @@ async def websocket_handler(request):
                         target = data["username"]
                         sender = data["sender"]
                         if sender in banned_users:
-                        await ws.send_json({"type": "error", "message": "You're banned. No unbanning powers for you."})
-                        return
+                            await ws.send_json({"type": "error", "message": "You're banned. No unbanning powers for you."})
+                            return
 
                         
                         if target in banned_users:
