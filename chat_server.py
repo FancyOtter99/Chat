@@ -421,12 +421,15 @@ async def websocket_handler(request):
                 elif data["type"] == "ban":
                     target = data["username"]
                     sender = data["sender"]
+                    if sender in banned_users:
+                        await ws.send_json({"type": "error", "message": "You're banned. No unbanning powers for you."})
+                        return
                     if sender in admins:
                         if target in connected_clients and target not in admins and target not in moderators:
                             banned_users.add(target)
                             save_banned_users()
                             await connected_clients[target].send_json({"type": "error", "message": "You have been banned!"})
-                            await connected_clients[target].close()
+                            #await connected_clients[target].close()
                             await ws.send_json({"type": "success", "message": f"{target} has been banned."})
                             await send_banned_users()
                         else:
@@ -437,7 +440,7 @@ async def websocket_handler(request):
                             banned_users.add(target)
                             save_banned_users()
                             await connected_clients[target].send_json({"type": "error", "message": "You have been banned!"})
-                            await connected_clients[target].close()
+                            #await connected_clients[target].close()
                             await ws.send_json({"type": "success", "message": f"{target} has been banned."})
                             await send_banned_users()
                         else:
@@ -448,6 +451,12 @@ async def websocket_handler(request):
                 elif data["type"] == "unban":
                     if data["sender"] in admins or data["sender"] in moderators:
                         target = data["username"]
+                        sender = data["sender"]
+                        if sender in banned_users:
+                        await ws.send_json({"type": "error", "message": "You're banned. No unbanning powers for you."})
+                        return
+
+                        
                         if target in banned_users:
 
                             banned_users.remove(target)
