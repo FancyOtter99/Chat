@@ -84,6 +84,23 @@
                 alert('All applications are online');
             };
 
+            // Send group message on Enter
+            document.getElementById("group-message-input").addEventListener("keydown", function(event) {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    document.getElementById("send-group-message").click();
+                }
+            });
+            
+            // Send private message on Enter
+            document.getElementById("private-message-input").addEventListener("keydown", function(event) {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    document.getElementById("send-private-message").click();
+                }
+            });
+
+
             // Login
             document.getElementById('login-btn').addEventListener('click', function() {
                 let user = document.getElementById('login-username').value.trim();
