@@ -351,16 +351,19 @@
                             document.querySelectorAll('#ban-bar input').forEach(input => input.value = '');                            
                     
                             const banSection = document.getElementById('ban-bar');
-                            const bannedpeople = 
+                            const bannedpeople = document.getElementById('banned-list-box');
+                            const switchbutton = document.getElementById('toggle-admin-mode');
                     
                             if (banSection.style.display === 'none') {
-                                toggleAdminBtn.textContent = "Remove/Add Admin";
+                                toggleAdmin.textContent = "Turn on Admin";
+                                bannedpeople.style.display = 'block';
                                 banSection.style.display = 'block';
-                                adminTools.style.display = 'block';
+                                switchbutton.style.display = 'block';
                             } else {
-                                toggleAdminBtn.textContent = "Ban/Unban";
+                                toggleAdmin.textContent = "Turn off Admin";
+                                bannedpeople.style.display = 'none';
                                 banSection.style.display = 'none';
-                                adminTools.style.display = 'flex';
+                                switchbutton.style.display = 'none';
                             }
                         });
                     
