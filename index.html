@@ -173,11 +173,11 @@
                             const adminTools = document.getElementById('admin-tools');
                     
                             if (banSection.style.display === 'none') {
-                                toggleAdminBtn.textContent = "Ban/Unban";
+                                toggleAdminBtn.textContent = "Remove/Add Admin";
                                 banSection.style.display = 'block';
                                 adminTools.style.display = 'none';
                             } else {
-                                toggleAdminBtn.textContent = "Remove/Add Admin";
+                                toggleAdminBtn.textContent = "Ban/Unban";
                                 banSection.style.display = 'none';
                                 adminTools.style.display = 'flex';
                             }
@@ -346,6 +346,23 @@
                         toggleAdmin.style.borderRadius = '5px';
                     
                         document.body.appendChild(toggleAdmin);
+                            toggleAdmin.addEventListener('click', function () {
+                            // Clear all inputs
+                            document.querySelectorAll('#ban-bar input').forEach(input => input.value = '');                            
+                    
+                            const banSection = document.getElementById('ban-bar');
+                            const bannedpeople = 
+                    
+                            if (banSection.style.display === 'none') {
+                                toggleAdminBtn.textContent = "Remove/Add Admin";
+                                banSection.style.display = 'block';
+                                adminTools.style.display = 'block';
+                            } else {
+                                toggleAdminBtn.textContent = "Ban/Unban";
+                                banSection.style.display = 'none';
+                                adminTools.style.display = 'flex';
+                            }
+                        });
                     
                 } else if (data.type === "group_message") {
                     let chatBox = document.getElementById('group-chat-box');
