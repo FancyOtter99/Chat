@@ -429,7 +429,7 @@ async def websocket_handler(request):
                             banned_users.add(target)
                             save_banned_users()
                             await connected_clients[target].send_json({"type": "error", "message": "You have been completely weakened!"})
-                            await connected_clients[target].close()
+                            #await connected_clients[target].close()
                             await ws.send_json({"type": "success", "message": f"{target} has been banned."})
                             await send_banned_users()
                         else:
@@ -440,7 +440,7 @@ async def websocket_handler(request):
                             banned_users.add(target)
                             save_banned_users()
                             await connected_clients[target].send_json({"type": "error", "message": "You have been completely weakened!"})
-                            await connected_clients[target].close()
+                            #await connected_clients[target].close()
                             await ws.send_json({"type": "success", "message": f"{target} has been banned."})
                             await send_banned_users()
                         else:
