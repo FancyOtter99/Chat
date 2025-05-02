@@ -1,6 +1,15 @@
 [
-  { "username": "pizza", "role": "moderator" },
-  { "username": "Kasyn", "role": "admin" },
-  { "username": "deafkiddie", "role": "admin" }
+  {
+    "username": "pizza",
+    "role": "moderator"
+  },
+  {
+    "username": "Kasyn",
+    "role": "admin"
+  },
+  {
+    "username": "deafkiddie",
+    "role": "admin"
+  }
 ]
 
