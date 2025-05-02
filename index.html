@@ -76,7 +76,7 @@
             const screenWidth = window.innerWidth;
             const buttonWidth = 250;
             const idealRight = 1045;
-            const rightPosition = Math.min(idealRight, screenWidth - buttonWidth - 10);
+            const rightPosition = Math.min(idealRight, screenWidth - buttonWidth - 30);
             document.getElementById('verify').style.display = 'none';
             // Wait for WebSocket connection to open
             socket.onopen = function() {
