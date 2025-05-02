@@ -249,6 +249,7 @@ async def websocket_handler(request):
                         
                         # Send role info to the user
                         await ws.send_json({"type": "role_info", "role": role})
+                        print(f"Sent role '{role}' to user '{username}'")
                         
                         # Send success message back to frontend
                         await ws.send_json({"type": "login_success", "username": username, "joined": joined})
@@ -363,7 +364,7 @@ async def websocket_handler(request):
                         
                         # Send role info to the user
                         await ws.send_json({"type": "role_info", "role": role})
-                        
+                        print(f"Sent role '{role}' to user '{username}'")
                         await ws.send_json({"type": "login_success", "username": username, "joined": joined})
 
 
