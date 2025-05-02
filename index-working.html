@@ -27,7 +27,10 @@
         
     <!-- Chat Application -->
     <div id="chat-container" style="display: none;">
-        <h2 id="username"></h2>
+        <h2 id="username" class="username-hover">
+            <span id="username-text"></span>
+            <div class="tooltip" id="username-tooltip">Loading user info...</div>
+        </h2>
 
         <div id="chat-windows">
             <!-- Group Chat -->
@@ -70,12 +73,33 @@
             let my_role = "";
             let socket = new WebSocket('wss://chat-aia5.onrender.com/ws');
             let bannedUsers = [];  // Array to store banned users
+            const screenWidth = window.innerWidth;
+            const buttonWidth = 250;
+            const idealRight = 1045;
+            const rightPosition = Math.min(idealRight, screenWidth - buttonWidth - 30);
             document.getElementById('verify').style.display = 'none';
             // Wait for WebSocket connection to open
             socket.onopen = function() {
                 console.log("WebSocket connection established!");
                 alert('All applications are online');
             };
+
+            // Send group message on Enter
+            document.getElementById("group-message-input").addEventListener("keydown", function(event) {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    document.getElementById("send-group-message").click();
+                }
+            });
+            
+            // Send private message on Enter
+            document.getElementById("private-message-input").addEventListener("keydown", function(event) {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    document.getElementById("send-private-message").click();
+                }
+            });
+
 
             // Login
             document.getElementById('login-btn').addEventListener('click', function() {
@@ -144,7 +168,7 @@
                     }
                     
                     document.getElementById('username').textContent = `Logged in as: ${data.username} (Joined ${daysJoined === "∞" ? "∞ days ago" : daysJoined + " days ago"})`;
-
+                    //document.getElementById('username-tooltip').textContent = `sup`;
 
                     username = data.username;
 
@@ -341,7 +365,9 @@
                         toggleAdmin.textContent = "Turn off Admin";
                         toggleAdmin.style.position = 'absolute';
                         toggleAdmin.style.top = '5px';
-                        toggleAdmin.style.right = '1045px';
+                        toggleAdmin.style.left = '70px';
+                        //toggleAdmin.style.right = `${rightPosition}px`;
+                        //toggleAdmin.style.right = '1045px';
                         toggleAdmin.style.width = '250px';
                         toggleAdmin.style.padding = '10px';
                         toggleAdmin.style.borderRadius = '5px';
