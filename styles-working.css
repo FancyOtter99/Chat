@@ -212,7 +212,7 @@ button:hover {
 }
 
 /* Ban/Unban Username Input */
-#ban-username, #unban-username {
+#ban-username, #unban-username, #remove-admin-username, #add-admin-username, #role {
     width: 100%; /* Match the width of the inputs */
     max-width: 180px; /* Make the username input slightly less wide */
     padding: 12px; /* Consistent padding */
@@ -229,7 +229,7 @@ button:hover {
     color: #000;
     border-radius: 5px;
     width: 250px; /* Same width as ban-bar */
-    height: 380px; /* Fixed height */
+    height: 337px; /* Fixed height */
     box-sizing: border-box;
     font-size: 16px;
     overflow-y: auto; /* Scroll if it overflows */
@@ -238,6 +238,7 @@ button:hover {
     height: 40px;
     font-size:12px
 }
+
 @media (max-width: 700px) {
     #chat-windows {
         flex-direction: column;
