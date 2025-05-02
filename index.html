@@ -73,6 +73,10 @@
             let my_role = "";
             let socket = new WebSocket('wss://chat-aia5.onrender.com/ws');
             let bannedUsers = [];  // Array to store banned users
+            const screenWidth = window.innerWidth;
+            const buttonWidth = 250;
+            const idealRight = 1045;
+            const rightPosition = Math.min(idealRight, screenWidth - buttonWidth - 10);
             document.getElementById('verify').style.display = 'none';
             // Wait for WebSocket connection to open
             socket.onopen = function() {
@@ -344,7 +348,8 @@
                         toggleAdmin.textContent = "Turn off Admin";
                         toggleAdmin.style.position = 'absolute';
                         toggleAdmin.style.top = '5px';
-                        toggleAdmin.style.right = '1045px';
+                        toggleAdmin.style.right = `${rightPosition}px`;
+                        //toggleAdmin.style.right = '1045px';
                         toggleAdmin.style.width = '250px';
                         toggleAdmin.style.padding = '10px';
                         toggleAdmin.style.borderRadius = '5px';
