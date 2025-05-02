@@ -244,9 +244,11 @@
                             const adminTools = document.getElementById('admin-tools');
                         
                             if (banSection.style.display === 'none') {
+                                toggleAdminBtn.textContent = "Ban/Unban";
                                 banSection.style.display = 'flex';
                                 adminTools.style.display = 'none';
                             } else {
+                                toggleAdminBtn.textContent = "Remove/Add Admin";
                                 banSection.style.display = 'none';
                                 adminTools.style.display = 'flex';
                             }
