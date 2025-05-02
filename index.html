@@ -252,6 +252,8 @@
                         `;
                         document.body.appendChild(bannedListBox);
 
+                        
+
                         const currentUsername = username
                         // Optional: Hook up the buttons to your WebSocket logic
                         document.getElementById('add-admin-btn').addEventListener('click', function () {
@@ -333,6 +335,18 @@
                                 .catch(error => console.error("Error fetching banned users:", error));
                         }
                     }
+                        const toggleAdmin = document.createElement('button');
+                        toggleAdmin.id = 'turn-off-admin';
+                        toggleAdmin.textContent = "Turn off Admin";
+                        toggleAdmin.style.position = 'absolute';
+                        toggleAdmin.style.top = '5px';
+                        toggleAdmin.style.right = '775px';
+                        toggleAdmin.style.width = '250px';
+                        toggleAdmin.style.padding = '10px';
+                        toggleAdmin.style.borderRadius = '5px';
+                    
+                        document.body.appendChild(toggleAdminBtn);
+                    
                 } else if (data.type === "group_message") {
                     let chatBox = document.getElementById('group-chat-box');
                     let room = document.getElementById('group-room-switch').value;
