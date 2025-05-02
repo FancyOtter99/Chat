@@ -136,6 +136,7 @@
                     let daysJoined = "∞"; // Default to infinity if unknown
                     
                     if (joinedDate && joinedDate !== "1999-09-09") {
+                        print(f"Logged in as {username}. Role: {role}")
                         const joinDateObj = new Date(joinedDate);
                         const now = new Date();
                         const diffTime = Math.abs(now - joinDateObj);
