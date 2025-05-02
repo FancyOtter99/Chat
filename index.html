@@ -240,24 +240,6 @@
                             // Toggle between ban/unban section and admin tools
                             const banSection = document.getElementById('ban-user');
                             const adminTools = document.getElementById('admin-tools');
-                        
-                            if (banSection.style.display === 'none') {
-                                banSection.style.display = 'flex';
-                                adminTools.style.display = 'none';
-                            } else {
-                                banSection.style.display = 'none';
-                                adminTools.style.display = 'flex';
-                            }
-                        });
-
-
-                        document.getElementById('atoggle-admin-mode').addEventListener('click', function () {
-                            // Clear all inputs
-                            document.querySelectorAll('#ban-bar input').forEach(input => input.value = '');
-                        
-                            // Toggle between ban/unban section and admin tools
-                            const banSection = document.getElementById('ban-user');
-                            const adminTools = document.getElementById('admin-tools');
                             const switchButton = document.getElementById('toggle-admin-mode')
                         
                             if (banSection.style.display === 'none') {
@@ -270,6 +252,9 @@
                                 adminTools.style.display = 'flex';
                             }
                         });
+
+
+
 
                         
                         const currentUsername = username
@@ -406,7 +391,7 @@
                     document.getElementById('private-message-input').value = "";
                 }
             });
-        }/*might bea  ) here*/();
+        })();
     </script>
 
 </body>
