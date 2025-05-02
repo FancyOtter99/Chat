@@ -357,8 +357,17 @@
                     alert(data.message);
                 }
                   else if (data.type === "role_info") {
-                      my_role = data.role;
-                      console.log(my_role);
+                    my_role = data.role;
+                    console.log(my_role);
+                
+                    // Check role and display moderator/admin tools
+                    if (my_role === "moderator"){
+                        document.getElementById('toggle-admin-mode').style.display = 'block'; // Show toggle button
+                    }
+                    if (my_role === "moderator" || my_role === "admin") {
+                        document.getElementById('ban-bar').style.display = 'block'; // Show ban/unban bar
+                        document.getElementById('banned-list-box').style.display = 'block'; // Show banned list box
+                    }
                 }
                   else if (data.type === "success") {
                       alert(data.message)
