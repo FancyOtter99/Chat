@@ -238,28 +238,6 @@ button:hover {
     height: 40px;
     font-size:12px
 }
-.username-hover {
-    position: relative;
-    display: inline-block;
-}
-
-.tooltip {
-    display: none;
-    position: absolute;
-    background-color: #333;
-    color: #fff;
-    padding: 8px;
-    border-radius: 6px;
-    top: 120%;
-    left: 0;
-    z-index: 1000;
-    white-space: nowrap;
-    font-size: 14px;
-}
-
-.username-hover:hover .tooltip {
-    display: block;
-}
 
 
 @media (max-width: 700px) {
