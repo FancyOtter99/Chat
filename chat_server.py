@@ -8,7 +8,6 @@ from datetime import datetime
 from email.message import EmailMessage
 import traceback
 
-import json
 
 
 
