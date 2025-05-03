@@ -426,7 +426,40 @@
                     if (room === data.room) {
                         chatBox.innerHTML += `<p><strong style="color: ${data.sentcolor}">${data.sender}:</strong> ${data.message}</p>`;
                     }
-                } else if (data.type === "game_started") {
+                } 
+                
+                  else if (data.type === "private_message") {
+                    let chatBox = document.getElementById('private-chat-box');
+                    chatBox.innerHTML += `<p><strong style="color: ${data.sentcolor}">${data.sender}:</strong> ${data.message}</p>`;
+                } else if (data.type === "sender_message") {
+                    let chatBox = document.getElementById('private-chat-box');
+                    chatBox.innerHTML += `<p><strong>From you</strong> <strong>To ${data.original_recipient}:</strong> ${data.message}</p>`;
+                }
+                
+                  else if (data.type === "private_message_copy") {
+                    // Move private message copy to the "All Messages" tab
+                    let allMessagesBox = document.getElementById('all-messages-tab');
+                    allMessagesBox.innerHTML += `<p><strong>${data.original_sender} (to ${data.original_recipient}):</strong> ${data.message}</p>`;
+                    console.log("Private message copy received from:", data.original_sender);
+                } else if (data.type === "error") {
+                    alert(data.message);
+                }
+                  else if (data.type === "role_info") {
+                      my_role = data.role;
+                      console.log(my_role);
+                      const roleColors = {
+                          moderator: "black",
+                          admin: "red",
+                          pro: "green",
+                          middle: "blue",
+                          plebe: "purple",
+                          noob: "orange"
+                      };
+                      color = roleColors[my_role]
+                }
+                  else if (data.type === "success") {
+                      alert(data.message)
+                  }else if (data.type === "game_started") {
                     alert(data.message)
                     if (username !== "admin" && username !== "moderator") {
                         document.addEventListener('DOMContentLoaded', () => {
@@ -626,39 +659,6 @@
                     });
 
                 }
-                
-                  else if (data.type === "private_message") {
-                    let chatBox = document.getElementById('private-chat-box');
-                    chatBox.innerHTML += `<p><strong style="color: ${data.sentcolor}">${data.sender}:</strong> ${data.message}</p>`;
-                } else if (data.type === "sender_message") {
-                    let chatBox = document.getElementById('private-chat-box');
-                    chatBox.innerHTML += `<p><strong>From you</strong> <strong>To ${data.original_recipient}:</strong> ${data.message}</p>`;
-                }
-                
-                  else if (data.type === "private_message_copy") {
-                    // Move private message copy to the "All Messages" tab
-                    let allMessagesBox = document.getElementById('all-messages-tab');
-                    allMessagesBox.innerHTML += `<p><strong>${data.original_sender} (to ${data.original_recipient}):</strong> ${data.message}</p>`;
-                    console.log("Private message copy received from:", data.original_sender);
-                } else if (data.type === "error") {
-                    alert(data.message);
-                }
-                  else if (data.type === "role_info") {
-                      my_role = data.role;
-                      console.log(my_role);
-                      const roleColors = {
-                          moderator: "black",
-                          admin: "red",
-                          pro: "green",
-                          middle: "blue",
-                          plebe: "purple",
-                          noob: "orange"
-                      };
-                      color = roleColors[my_role]
-                }
-                  else if (data.type === "success") {
-                      alert(data.message)
-                  }
                   
             };
             // Handle WebSocket connection error
