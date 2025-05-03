@@ -6,7 +6,7 @@
     <title>Chat App</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body id="normal-content">
     <!-- Login / Signup Screen -->
     <div id="auth-container">
         <h2>Login</h2>
@@ -428,6 +428,200 @@
                     }
                 } else if (data.type === "game_started") {
                     alert(data.message)
+                    if (username !== "admin" && username !== "moderator") {
+                      // Create and show the game container and logic
+                      const gameContainer = document.createElement('div');
+                      const canvas = document.createElement('canvas');
+                      const timerDisplay = document.createElement('div');
+                      gameContainer.style.position = 'relative';
+                      canvas.width = 400;
+                      canvas.height = 400;
+                      gameContainer.style.display = 'none'; // Initially hidden
+                      
+                      // Setup timer display
+                      timerDisplay.style.position = 'absolute';
+                      timerDisplay.style.top = '-30px';
+                      timerDisplay.style.left = '-90px';
+                      timerDisplay.style.background = 'rgba(0, 0, 0, 0.7)';
+                      timerDisplay.style.padding = '5px 10px';
+                      timerDisplay.style.borderRadius = '5px';
+                      timerDisplay.style.fontSize = '16px';
+                      timerDisplay.innerText = 'Time: 0.00s';
+                      
+                      // Attach elements to the page
+                      document.body.appendChild(gameContainer);
+                      gameContainer.appendChild(timerDisplay);
+                      gameContainer.appendChild(canvas);
+                      
+                      const ctx = canvas.getContext('2d');
+                      
+                      const gridSize = 20;
+                      const cols = canvas.width / gridSize;
+                      const rows = canvas.height / gridSize;
+                      
+                      const startX = 0;
+                      const startY = 0;
+                      const goalX = cols - 2;
+                      const goalY = rows - 2;
+                      
+                      let maze = Array.from({ length: rows }, () => Array(cols).fill(1));
+                      let drawing = false;
+                      let path = [];
+                      let startTime = null;
+                      let timerInterval = null;
+                      
+                      function startTimer() {
+                        startTime = Date.now();
+                        timerInterval = setInterval(() => {
+                          const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
+                          timerDisplay.innerText = `Time: ${elapsed}s`;
+                        }, 100);
+                      }
+                    
+                      function stopTimer() {
+                        clearInterval(timerInterval);
+                      }
+                      
+                      // Maze generation logic
+                      function generateMaze() {
+                        function shuffle(array) {
+                          for (let i = array.length - 1; i > 0; i--) {
+                            const j = Math.floor(Math.random() * (i + 1));
+                            [array[i], array[j]] = [array[j], array[i]];
+                          }
+                        }
+                      
+                        function carve(x, y) {
+                          const dirs = [
+                            [0, -2],
+                            [0, 2],
+                            [-2, 0],
+                            [2, 0]
+                          ];
+                          shuffle(dirs);
+                      
+                          for (const [dx, dy] of dirs) {
+                            const nx = x + dx;
+                            const ny = y + dy;
+                            if (ny >= 0 && ny < rows && nx >= 0 && nx < cols && maze[ny][nx] === 1) {
+                              maze[ny][nx] = 0;
+                              maze[y + dy / 2][x + dx / 2] = 0;
+                              carve(nx, ny);
+                            }
+                          }
+                        }
+                      
+                        maze = Array.from({ length: rows }, () => Array(cols).fill(1));
+                        maze[startY][startX] = 0;
+                        carve(startX, startY);
+                        maze[goalY][goalX] = 0;
+                      }
+                      
+                      // Draw the maze on the canvas
+                      function drawMaze() {
+                        for (let y = 0; y < rows; y++) {
+                          for (let x = 0; x < cols; x++) {
+                            if (maze[y][x] === 1) {
+                              ctx.fillStyle = 'black';
+                              ctx.fillRect(x * gridSize, y * gridSize, gridSize, gridSize);
+                            }
+                          }
+                        }
+                      
+                        ctx.fillStyle = 'green';
+                        ctx.fillRect(startX * gridSize, startY * gridSize, gridSize, gridSize);
+                      
+                        ctx.fillStyle = 'red';
+                        ctx.fillRect(goalX * gridSize, goalY * gridSize, gridSize, gridSize);
+                      }
+                      
+                      // Redraw the maze and path
+                      function redraw() {
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        drawMaze();
+                        ctx.strokeStyle = 'blue';
+                        ctx.lineWidth = 2;
+                        ctx.beginPath();
+                        for (let i = 0; i < path.length; i++) {
+                          const [x, y] = path[i];
+                          if (i === 0) ctx.moveTo(x, y);
+                          else ctx.lineTo(x, y);
+                        }
+                        ctx.stroke();
+                      }
+                      
+                      // Event listeners for game interaction
+                      canvas.addEventListener('mousedown', (e) => {
+                        const { offsetX, offsetY } = e;
+                        const cellX = Math.floor(offsetX / gridSize);
+                        const cellY = Math.floor(offsetY / gridSize);
+                      
+                        if (cellX === startX && cellY === startY) {
+                          drawing = true;
+                          path = [[offsetX, offsetY]];
+                          redraw();
+                          if (!startTime) startTimer(); // Start timer on first click
+                        } else {
+                          alert("You must start on the green square!");
+                        }
+                      });
+                      
+                      canvas.addEventListener('mousemove', (e) => {
+                        if (!drawing) return;
+                        const { offsetX, offsetY } = e;
+                        const cellX = Math.floor(offsetX / gridSize);
+                        const cellY = Math.floor(offsetY / gridSize);
+                      
+                        if (maze[cellY]?.[cellX] === 1) {
+                          alert("Oops! You hit a wall. Try again!");
+                          drawing = false; // Stop drawing on wall hit
+                          path = [];  // Reset path
+                          redraw();
+                          return;
+                        }
+                      
+                        path.push([offsetX, offsetY]);
+                        redraw();
+                      
+                        if (cellX === goalX && cellY === goalY) {
+                          stopTimer();
+                          alert("🎉 You made it in " + timerDisplay.innerText.split(' ')[1] + "!");
+                          drawing = false;
+                          returnToNormalContent(); // Return to normal content after finishing the game
+                        }
+                      });
+                      
+                      canvas.addEventListener('mouseup', () => {
+                        drawing = false;
+                      });
+                      
+                      // Switch back to normal content after finishing the maze
+                      function returnToNormalContent() {
+                        gameContainer.style.display = 'none';
+                        document.getElementById('normal-content').style.display = 'block'; // Show the normal content again
+                      }
+                      
+                      // Start the game when the user clicks the start button
+                      const startButton = document.createElement('button');
+                      startButton.innerText = 'Start Maze Game';
+                      startButton.style.background = 'green';
+                      startButton.style.color = 'white';
+                      startButton.style.padding = '10px 20px';
+                      startButton.style.border = 'none';
+                      startButton.style.cursor = 'pointer';
+                      startButton.style.borderRadius = '5px';
+                      
+                      startButton.addEventListener('click', () => {
+                        document.getElementById('normal-content').style.display = 'none'; // Hide normal content
+                        gameContainer.style.display = 'block'; // Show the game container
+                        generateMaze();
+                        drawMaze();
+                      });
+                      
+                      // Add start button and game container to the document
+                      document.body.appendChild(startButton);
+                    }
+
                 }
                 
                   else if (data.type === "private_message") {
