@@ -353,14 +353,14 @@ async def websocket_handler(request):
                     
                 elif data["type"] == "finished_game":
                     print("Someone finished the game")
-                    if (data["game"] == "maze"){
+                    if (data["game"] == "maze"):
                         await send_to_admins_and_mods({
                             "type": "game_finished",
                             "finisher": data["sender"],
                             "game": data["game"],
                             "time": data["time"]
                         })
-                    }elif data["game"] == "guess_the_pin":
+                     elif data["game"] == "guess_the_pin":
                         for user, client_ws in connected_clients.items():
                             if not client_ws.closed:
                                 await client_ws.send_json({"type": "1game_finished", "finisher": data["sender"], "game": data["game"], "correctPin": data["realPin"] })
