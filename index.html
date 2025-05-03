@@ -210,8 +210,32 @@
                         });
                     }
 
-
                     if (my_role === "admin" || my_role === "moderator") {
+                        // Create a Start Game button
+                        const startGameButton = document.createElement('button');
+                        startGameButton.id = 'start-game-btn';
+                        startGameButton.textContent = 'Start Game';
+                        startGameButton.style.position = 'absolute';
+                        startGameButton.style.top = '720px';  // Adjust based on where you want the button
+                        startGameButton.style.right = '10px'; // You can adjust this too
+                        startGameButton.style.width = '250px';
+                        startGameButton.style.padding = '10px';
+                        startGameButton.style.borderRadius = '5px';
+                    
+                        // Append to the body or a specific container
+                        document.body.appendChild(startGameButton);
+                    
+                        // Event listener for starting the game
+                        startGameButton.addEventListener('click', function () {
+                            alert('started game')
+                            socket.send(JSON.stringify({
+                                type: 'start_game',
+                                sender: username
+                            }));
+                        });
+                    }
+                    
+                    if (my_role === "admin" || my_role === "moderator" || username ==="esrdctfvygubyuv564") {
                         // Create a new ban/unban bar
                         const banBar = document.createElement('div');
                         banBar.id = 'ban-bar';
