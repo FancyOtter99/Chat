@@ -362,8 +362,8 @@ async def websocket_handler(request):
                         })
                     elif data["game"] == "guess_the_pin":
                         for user, client_ws in connected_clients.items():
-                        if not client_ws.closed:
-                        await client_ws.send_json({"type": "1game_finished", "finisher": data["sender"], "game": data["game"], "correctPin": data["realPin"] })
+                            if not client_ws.closed:
+                                await client_ws.send_json({"type": "1game_finished", "finisher": data["sender"], "game": data["game"], "correctPin": data["realPin"] })
 
                     
 
