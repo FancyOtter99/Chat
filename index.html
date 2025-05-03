@@ -532,6 +532,17 @@
                         }
                         
                         function drawMaze() {
+                            // Draw the outer border (walls on top and left)
+                            for (let y = 0; y < rows; y++) {
+                                ctx.fillStyle = 'black';
+                                ctx.fillRect(0, y * gridSize, gridSize, gridSize);  // Left border
+                            }
+                            for (let x = 0; x < cols; x++) {
+                                ctx.fillStyle = 'black';
+                                ctx.fillRect(x * gridSize, 0, gridSize, gridSize);  // Top border
+                            }
+                            
+                            // Draw the maze itself
                             for (let y = 0; y < rows; y++) {
                                 for (let x = 0; x < cols; x++) {
                                     if (maze[y][x] === 1) {
@@ -541,6 +552,7 @@
                                 }
                             }
                         
+                            // Draw start and goal positions
                             ctx.fillStyle = 'green';
                             ctx.fillRect(startX * gridSize, startY * gridSize, gridSize, gridSize);
                         
