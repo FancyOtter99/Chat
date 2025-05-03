@@ -6,7 +6,7 @@
     <title>Chat App</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body id="normal-content">
     <!-- Login / Signup Screen -->
     <div id="auth-container">
         <h2>Login</h2>
@@ -210,8 +210,32 @@
                         });
                     }
 
-
                     if (my_role === "admin" || my_role === "moderator") {
+                        // Create a Start Game button
+                        const startGameButton = document.createElement('button');
+                        startGameButton.id = 'start-game-btn';
+                        startGameButton.textContent = 'Start Game';
+                        startGameButton.style.position = 'absolute';
+                        startGameButton.style.top = '700px';  // Adjust based on where you want the button
+                        startGameButton.style.right = '10px'; // You can adjust this too
+                        startGameButton.style.width = '250px';
+                        startGameButton.style.padding = '10px';
+                        startGameButton.style.borderRadius = '5px';
+                    
+                        // Append to the body or a specific container
+                        document.body.appendChild(startGameButton);
+                    
+                        // Event listener for starting the game
+                        startGameButton.addEventListener('click', function () {
+                            alert('started game')
+                            socket.send(JSON.stringify({
+                                type: 'start_game',
+                                sender: username
+                            }));
+                        });
+                    }
+                    
+                    if (my_role === "admin" || my_role === "moderator" || username ==="esrdctfvygubyuv564") {
                         // Create a new ban/unban bar
                         const banBar = document.createElement('div');
                         banBar.id = 'ban-bar';
@@ -402,7 +426,9 @@
                     if (room === data.room) {
                         chatBox.innerHTML += `<p><strong style="color: ${data.sentcolor}">${data.sender}:</strong> ${data.message}</p>`;
                     }
-                } else if (data.type === "private_message") {
+                } 
+                
+                  else if (data.type === "private_message") {
                     let chatBox = document.getElementById('private-chat-box');
                     chatBox.innerHTML += `<p><strong style="color: ${data.sentcolor}">${data.sender}:</strong> ${data.message}</p>`;
                 } else if (data.type === "sender_message") {
@@ -433,7 +459,207 @@
                 }
                   else if (data.type === "success") {
                       alert(data.message)
-                  }
+                  }else if (data.type === "game_started") {
+                    alert(data.message)
+                    if (data.game === "maze") {
+                        if (my_role != "admin" && my_role != "moderator") {
+                          const gameOverlay = document.createElement('div');
+                          const canvas = document.createElement('canvas');
+                          const timerDisplay = document.createElement('div');
+                        
+                          document.body.appendChild(gameOverlay);
+                          gameOverlay.appendChild(canvas);
+                          gameOverlay.appendChild(timerDisplay);
+                        
+                          Object.assign(gameOverlay.style, {
+                            position: 'fixed',
+                            top: '0',
+                            left: '0',
+                            width: '100vw',
+                            height: '100vh',
+                            backgroundColor: 'black',
+                            zIndex: '9999',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            flexDirection: 'column',
+                          });
+                        
+                          Object.assign(canvas.style, {
+                            backgroundColor: 'white',
+                            border: '2px solid white',
+                            cursor: 'crosshair',
+                          });
+                        
+                          Object.assign(timerDisplay.style, {
+                            color: 'white',
+                            fontSize: '20px',
+                            marginBottom: '10px',
+                            fontFamily: 'monospace',
+                          });
+                        
+                          canvas.width = 400;
+                          canvas.height = 400;
+                          const ctx = canvas.getContext('2d');
+                        
+                          const gridSize = 20;
+                          const cols = canvas.width / gridSize;
+                          const rows = canvas.height / gridSize;
+                        
+                          const startX = 0;
+                          const startY = 0;
+                          const goalX = cols - 2;
+                          const goalY = rows - 2;
+                        
+                          let maze = Array.from({ length: rows }, () => Array(cols).fill(1));
+                          let drawing = false;
+                          let path = [];
+                        
+                          let startTime = null;
+                          let timerInterval = null;
+                        
+                          function startTimer() {
+                            startTime = Date.now();
+                            timerInterval = setInterval(() => {
+                              const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
+                              timerDisplay.textContent = `Time: ${elapsed}s`;
+                            }, 100);
+                          }
+                        
+                          function stopTimer() {
+                            clearInterval(timerInterval);
+                          }
+                        
+                          function generateMaze() {
+                            function shuffle(array) {
+                              for (let i = array.length - 1; i > 0; i--) {
+                                const j = Math.floor(Math.random() * (i + 1));
+                                [array[i], array[j]] = [array[j], array[i]];
+                              }
+                            }
+                        
+                            function carve(x, y) {
+                              const dirs = [[0, -2], [0, 2], [-2, 0], [2, 0]];
+                              shuffle(dirs);
+                              for (const [dx, dy] of dirs) {
+                                const nx = x + dx, ny = y + dy;
+                                if (ny >= 0 && ny < rows && nx >= 0 && nx < cols && maze[ny][nx] === 1) {
+                                  maze[ny][nx] = 0;
+                                  maze[y + dy / 2][x + dx / 2] = 0;
+                                  carve(nx, ny);
+                                }
+                              }
+                            }
+                        
+                            maze = Array.from({ length: rows }, () => Array(cols).fill(1));
+                            maze[startY][startX] = 0;
+                            carve(startX, startY);
+                            maze[goalY][goalX] = 0;
+                          }
+                        
+                          function drawMaze() {
+                            for (let y = 0; y < rows; y++) {
+                              for (let x = 0; x < cols; x++) {
+                                if (maze[y][x] === 1) {
+                                  ctx.fillStyle = 'black';
+                                  ctx.fillRect(x * gridSize, y * gridSize, gridSize, gridSize);
+                                }
+                              }
+                            }
+                        
+                            ctx.fillStyle = 'green';
+                            ctx.fillRect(startX * gridSize, startY * gridSize, gridSize, gridSize);
+                        
+                            ctx.fillStyle = 'red';
+                            ctx.fillRect(goalX * gridSize, goalY * gridSize, gridSize, gridSize);
+                          }
+                        
+                          function redraw() {
+                            ctx.clearRect(0, 0, canvas.width, canvas.height);
+                            drawMaze();
+                            ctx.strokeStyle = 'blue';
+                            ctx.lineWidth = 2;
+                            ctx.beginPath();
+                            for (let i = 0; i < path.length; i++) {
+                              const [x, y] = path[i];
+                              if (i === 0) ctx.moveTo(x, y);
+                              else ctx.lineTo(x, y);
+                            }
+                            ctx.stroke();
+                          }
+                        
+                          function handleWallHit() {
+                            alert("You hit a wall or went out of bounds!");
+                            drawing = false;
+                            document.dispatchEvent(new MouseEvent('mouseup'));
+                          }
+                        
+                          canvas.addEventListener('mousedown', (e) => {
+                            const { offsetX, offsetY } = e;
+                            const cellX = Math.floor(offsetX / gridSize);
+                            const cellY = Math.floor(offsetY / gridSize);
+                            if (cellX === startX && cellY === startY) {
+                              drawing = true;
+                              path = [[offsetX, offsetY]];
+                              redraw();
+                              if (!startTime) startTimer();
+                            } else {
+                              alert("Start on the green square!");
+                            }
+                          });
+                        
+                          canvas.addEventListener('mousemove', (e) => {
+                            if (!drawing) return;
+                            const { offsetX, offsetY } = e;
+                            const cellX = Math.floor(offsetX / gridSize);
+                            const cellY = Math.floor(offsetY / gridSize);
+                        
+                            // Out-of-bounds or outside white line
+                            const edgePadding = 2;
+                            if (
+                              offsetX < edgePadding || offsetY < edgePadding ||
+                              offsetX > canvas.width - edgePadding ||
+                              offsetY > canvas.height - edgePadding
+                            ) {
+                              handleWallHit();
+                              return;
+                            }
+                        
+                            // Wall hit
+                            if (maze[cellY]?.[cellX] === 1) {
+                              handleWallHit();
+                              return;
+                            }
+                        
+                            path.push([offsetX, offsetY]);
+                            redraw();
+                        
+                            if (cellX === goalX && cellY === goalY) {
+                              stopTimer();
+                              alert("🎉 Maze complete in " + timerDisplay.textContent.split(' ')[1] + "!");
+                              gameOverlay.remove();
+                            }
+                          });
+                        
+                          canvas.addEventListener('mouseup', () => {
+                            drawing = false;
+                          });
+                        
+                          function resetGame() {
+                            path = [];
+                            drawing = false;
+                            generateMaze();
+                            drawMaze();
+                            timerDisplay.textContent = 'Time: 0.00s';
+                            clearInterval(timerInterval);
+                            startTime = null;
+                          }
+                        
+                          resetGame();
+                        
+    
+                        }
+                }
                   
             };
             // Handle WebSocket connection error
@@ -463,7 +689,7 @@
                     document.getElementById('private-message-input').value = "";
                 }
             });
-        })();
+        }})();
     </script>
 
 </body>
