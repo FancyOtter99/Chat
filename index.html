@@ -73,6 +73,7 @@
             let color = ""
             let username = "";
             let my_role = "";
+            let playGame = ""
             let socket = new WebSocket('wss://chat-aia5.onrender.com/ws');
             let bannedUsers = [];  // Array to store banned users
             const screenWidth = window.innerWidth;
@@ -497,8 +498,9 @@
                       alert(data.message)
                   }else if (data.type === "game_started") {
                     alert(data.message)
+                    playGame = prompt(`Would you like to play the ${data.game} game? yes/no`);
                     if (data.game === "maze") {
-                        if (my_role != "admin" && my_role != "moderator") {
+                        if (playGame === "yes") {
                           const gameOverlay = document.createElement('div');
                           const canvas = document.createElement('canvas');
                           const timerDisplay = document.createElement('div');
