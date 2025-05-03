@@ -709,12 +709,17 @@
                             // Create a new div for the guess box
                             let guessBox = document.createElement('div');
                             guessBox.style.width = '300px';
-                            guessBox.style.margin = '20px auto';
                             guessBox.style.padding = '20px';
                             guessBox.style.backgroundColor = 'white';
                             guessBox.style.borderRadius = '5px';
                             guessBox.style.boxShadow = '0px 0px 10px rgba(0, 0, 0, 0.1)';
                             guessBox.style.textAlign = 'center';
+                            
+                            // Position the box on the right side
+                            guessBox.style.position = 'fixed';  // or 'absolute' if you prefer
+                            guessBox.style.top = '50%';  // Centers vertically
+                            guessBox.style.right = '20px';  // Moves it 20px from the right edge
+                            guessBox.style.transform = 'translateY(-50%)'; // Adjust for exact vertical center
                             
                             // Create the input field
                             let inputField = document.createElement('input');
@@ -754,6 +759,7 @@
                             
                             // Append the guess box to the body (or any other container you prefer)
                             document.body.appendChild(guessBox);
+
 
                         }
                     }
