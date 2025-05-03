@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -361,7 +360,6 @@
                                 })
                                 .catch(error => console.error("Error fetching banned users:", error));
                         }
-                    }
                         const toggleAdmin = document.createElement('button');
                         toggleAdmin.id = 'turn-off-admin';
                         toggleAdmin.textContent = "Turn off Admin";
@@ -375,14 +373,14 @@
                         toggleAdmin.style.borderRadius = '5px';
                     
                         document.body.appendChild(toggleAdmin);
-                            toggleAdmin.addEventListener('click', function () {
+                        toggleAdmin.addEventListener('click', function () {
                             // Clear all inputs
                             document.querySelectorAll('#ban-bar input').forEach(input => input.value = '');                            
-                    
+                        
                             const banSection = document.getElementById('ban-bar');
                             const bannedpeople = document.getElementById('banned-list-box');
                             const switchbutton = document.getElementById('toggle-admin-mode');
-                    
+                        
                             if (banSection.style.display === 'none') {
                                 toggleAdmin.textContent = "Turn off Admin";
                                 bannedpeople.style.display = 'block';
@@ -395,6 +393,7 @@
                                 switchbutton.style.display = 'none';
                             }
                         });
+                    }
                     
                 } else if (data.type === "group_message") {
                     let chatBox = document.getElementById('group-chat-box');
@@ -406,7 +405,12 @@
                 } else if (data.type === "private_message") {
                     let chatBox = document.getElementById('private-chat-box');
                     chatBox.innerHTML += `<p><strong style="color: ${data.sentcolor}">${data.sender}:</strong> ${data.message}</p>`;
-                } else if (data.type === "private_message_copy") {
+                } else if (data.type === "sender_message") {
+                    let chatBox = document.getElementById('private-chat-box');
+                    chatBox.innerHTML += `<p><strong>From you</strong> <strong>To ${data.original_recipient}:</strong> ${data.message}</p>`;
+                }
+                
+                  else if (data.type === "private_message_copy") {
                     // Move private message copy to the "All Messages" tab
                     let allMessagesBox = document.getElementById('all-messages-tab');
                     allMessagesBox.innerHTML += `<p><strong>${data.original_sender} (to ${data.original_recipient}):</strong> ${data.message}</p>`;
