@@ -495,7 +495,7 @@
                         function stopTimer() {
                             clearInterval(timerInterval);
                         }
-                        
+                    
                         // Maze generation logic
                         function generateMaze() {
                             function shuffle(array) {
@@ -526,9 +526,9 @@
                             }
                         
                             maze = Array.from({ length: rows }, () => Array(cols).fill(1));
-                            maze[startY][startX] = 0;
-                            carve(startX, startY);
-                            maze[goalY][goalX] = 0;
+                            maze[startY][startX] = 0; // Mark the start position
+                            maze[goalY][goalX] = 0;   // Mark the goal position
+                            carve(startX, startY);     // Generate path from start to goal
                         }
                         
                         function drawMaze() {
