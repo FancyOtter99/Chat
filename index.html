@@ -498,7 +498,7 @@
                       alert(data.message)
                   }else if (data.type === "game_started") {
                     alert(data.message)
-                    playGame = prompt(`Would you like to play the ${data.game} game? yes/no`);
+                    playGame = prompt(`Would you like to play the ${data.game} game for Chatterbucks? yes/no`);
                     if (data.game === "maze") {
                         if (playGame === "yes") {
                           const gameOverlay = document.createElement('div');
@@ -674,7 +674,7 @@
                         
                             if (cellX === goalX && cellY === goalY) {
                               stopTimer();
-                              socket.send(JSON.stringify({ type: "finished_game", sender: username, game: "maze" }));
+                              socket.send(JSON.stringify({ type: "finished_game", sender: username, game: "maze", time: timerDisplay.textContent.split(' ')[1] }));
                               alert("🎉 Maze complete in " + timerDisplay.textContent.split(' ')[1] + "!");
                               gameOverlay.remove();
                             }
