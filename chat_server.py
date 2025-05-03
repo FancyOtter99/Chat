@@ -381,11 +381,13 @@ async def websocket_handler(request):
                         await ws.send_json({"type": "error", "message": "You are too weak send messages."})
                         continue
                     room = data["room"]
+                    
                     msg_obj = {
                         "type": "group_message",
                         "room": room,
                         "sender": data["sender"],
                         "message": data["message"]
+                        "sentcolor": data["color"]
                     }
                     group_messages[room].append(msg_obj)
                     for client_ws in connected_clients.values():
