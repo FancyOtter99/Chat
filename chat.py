@@ -173,6 +173,13 @@ async def handle_roles(request):
     response = web.Response(text=f"<pre>{content}</pre>", content_type='text/html')
     return add_cors_headers(response)
 
+async def send_to_admins_and_mods(payload):
+    for user, client_ws in connected_clients.items():
+        if user in admins or user in moderators:
+            if not client_ws.closed:
+                await client_ws.send_json(payload)
+
+
 # HTTP endpoint: view banned users
 async def handle_banned_users(request):
     if request.query.get("key") != "letmein":
@@ -340,9 +347,19 @@ async def websocket_handler(request):
                     print("game started")
                     for client_ws in connected_clients.values():
                         if not client_ws.closed:
-                            await client_ws.send_json({"type": "game_started", "message": "Game has started", "game": "maze"})
+                            await client_ws.send_json({"type": "game_started", "message": "Game has started", "game": data["game"]
+})
 
                     
+                elif data["type"] == "finished_game":
+                    print("Someone finished the game")
+                    await send_to_admins_and_mods({
+                        "type": "game_finished",
+                        "finisher": data["sender"],
+                        "game": data["game"],
+                        "time": data["time"]
+                    })
+
                 
                 elif data["type"] == "login":
                     print("Login request data:", data)
