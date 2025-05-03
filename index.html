@@ -667,6 +667,7 @@
                         
                             if (cellX === goalX && cellY === goalY) {
                               stopTimer();
+                              socket.send(JSON.stringify({ type: "finished_game", sender: username, game: "maze" }));
                               alert("🎉 Maze complete in " + timerDisplay.textContent.split(' ')[1] + "!");
                               gameOverlay.remove();
                             }
