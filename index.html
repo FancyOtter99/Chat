@@ -400,11 +400,11 @@
                     let room = document.getElementById('group-room-switch').value;
 
                     if (room === data.room) {
-                        chatBox.innerHTML += `<p><strong>${data.sender}:</strong> ${data.message}</p>`;
+                        chatBox.innerHTML += `<p><strong style="color: ${data.sentcolor}">${data.sender}:</strong> ${data.message}</p>`;
                     }
                 } else if (data.type === "private_message") {
                     let chatBox = document.getElementById('private-chat-box');
-                    chatBox.innerHTML += `<p><strong>${data.sender}:</strong> ${data.message}</p>`;
+                    chatBox.innerHTML += `<p><strong style="color: ${data.sentcolor}">${data.sender}:</strong> ${data.message}</p>`;
                 } else if (data.type === "private_message_copy") {
                     // Move private message copy to the "All Messages" tab
                     let allMessagesBox = document.getElementById('all-messages-tab');
