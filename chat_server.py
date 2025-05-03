@@ -386,7 +386,7 @@ async def websocket_handler(request):
                         "type": "group_message",
                         "room": room,
                         "sender": data["sender"],
-                        "message": data["message"]
+                        "message": data["message"],
                         "sentcolor": data["color"]
                     }
                     group_messages[room].append(msg_obj)
@@ -402,7 +402,7 @@ async def websocket_handler(request):
                     msg_obj = {
                         "type": "private_message",
                         "sender": data["sender"],
-                        "message": data["message"]
+                        "message": data["message"],
                         "sentcolor": data["color"]
                     }
                     if recipient in connected_clients:
