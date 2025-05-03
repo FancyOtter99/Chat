@@ -429,198 +429,201 @@
                 } else if (data.type === "game_started") {
                     alert(data.message)
                     if (username !== "admin" && username !== "moderator") {
-                        // Create the overlay and canvas for the maze game
-                        const overlay = document.createElement('div');
-                        const canvas = document.createElement('canvas');
-                        const timerDisplay = document.createElement('div');
-                        
-                        // Style the overlay
-                        overlay.style.position = 'fixed';
-                        overlay.style.top = '0';
-                        overlay.style.left = '0';
-                        overlay.style.width = '100%';
-                        overlay.style.height = '100%';
-                        overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)'; // Semi-transparent black
-                        overlay.style.zIndex = '9999'; // Ensure it's above everything else
-                        overlay.style.display = 'flex';
-                        overlay.style.justifyContent = 'center';
-                        overlay.style.alignItems = 'center';
-                        
-                        // Style the canvas
-                        canvas.width = 400;
-                        canvas.height = 400;
-                        
-                        // Style the timer display
-                        timerDisplay.style.position = 'absolute';
-                        timerDisplay.style.top = '-30px';
-                        timerDisplay.style.left = '-90px';
-                        timerDisplay.style.background = 'rgba(0, 0, 0, 0.7)';
-                        timerDisplay.style.padding = '5px 10px';
-                        timerDisplay.style.borderRadius = '5px';
-                        timerDisplay.style.fontSize = '16px';
-                        timerDisplay.innerText = 'Time: 0.00s';
-                        
-                        // Append elements to overlay
-                        overlay.appendChild(timerDisplay);
-                        overlay.appendChild(canvas);
-                        
-                        // Attach overlay to the body
-                        document.body.appendChild(overlay);
-                        
-                        const ctx = canvas.getContext('2d');
-                        
-                        const gridSize = 20;
-                        const cols = canvas.width / gridSize;
-                        const rows = canvas.height / gridSize;
-                        
-                        const startX = 0;
-                        const startY = 0;
-                        const goalX = cols - 2;
-                        const goalY = rows - 2;
-                        
-                        let maze = Array.from({ length: rows }, () => Array(cols).fill(1));
-                        let drawing = false;
-                        let path = [];
-                        let startTime = null;
-                        let timerInterval = null;
-                        
-                        function startTimer() {
-                            startTime = Date.now();
-                            timerInterval = setInterval(() => {
-                                const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
-                                timerDisplay.innerText = `Time: ${elapsed}s`;
-                            }, 100);
+                        document.addEventListener('DOMContentLoaded', () => {
+                      const gameOverlay = document.createElement('div');
+                      const canvas = document.createElement('canvas');
+                      const timerDisplay = document.createElement('div');
+                    
+                      document.body.appendChild(gameOverlay);
+                      gameOverlay.appendChild(canvas);
+                      gameOverlay.appendChild(timerDisplay);
+                    
+                      Object.assign(gameOverlay.style, {
+                        position: 'fixed',
+                        top: '0',
+                        left: '0',
+                        width: '100vw',
+                        height: '100vh',
+                        backgroundColor: 'black',
+                        zIndex: '9999',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        flexDirection: 'column',
+                      });
+                    
+                      Object.assign(canvas.style, {
+                        backgroundColor: 'white',
+                        border: '2px solid white',
+                        cursor: 'crosshair',
+                      });
+                    
+                      Object.assign(timerDisplay.style, {
+                        color: 'white',
+                        fontSize: '20px',
+                        marginBottom: '10px',
+                        fontFamily: 'monospace',
+                      });
+                    
+                      canvas.width = 400;
+                      canvas.height = 400;
+                      const ctx = canvas.getContext('2d');
+                    
+                      const gridSize = 20;
+                      const cols = canvas.width / gridSize;
+                      const rows = canvas.height / gridSize;
+                    
+                      const startX = 0;
+                      const startY = 0;
+                      const goalX = cols - 2;
+                      const goalY = rows - 2;
+                    
+                      let maze = Array.from({ length: rows }, () => Array(cols).fill(1));
+                      let drawing = false;
+                      let path = [];
+                    
+                      let startTime = null;
+                      let timerInterval = null;
+                    
+                      function startTimer() {
+                        startTime = Date.now();
+                        timerInterval = setInterval(() => {
+                          const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
+                          timerDisplay.textContent = `Time: ${elapsed}s`;
+                        }, 100);
+                      }
+                    
+                      function stopTimer() {
+                        clearInterval(timerInterval);
+                      }
+                    
+                      function generateMaze() {
+                        function shuffle(array) {
+                          for (let i = array.length - 1; i > 0; i--) {
+                            const j = Math.floor(Math.random() * (i + 1));
+                            [array[i], array[j]] = [array[j], array[i]];
+                          }
                         }
                     
-                        function stopTimer() {
-                            clearInterval(timerInterval);
+                        function carve(x, y) {
+                          const dirs = [[0, -2], [0, 2], [-2, 0], [2, 0]];
+                          shuffle(dirs);
+                          for (const [dx, dy] of dirs) {
+                            const nx = x + dx, ny = y + dy;
+                            if (ny >= 0 && ny < rows && nx >= 0 && nx < cols && maze[ny][nx] === 1) {
+                              maze[ny][nx] = 0;
+                              maze[y + dy / 2][x + dx / 2] = 0;
+                              carve(nx, ny);
+                            }
+                          }
                         }
                     
-                        // Maze generation logic
-                        function generateMaze() {
-                            function shuffle(array) {
-                                for (let i = array.length - 1; i > 0; i--) {
-                                    const j = Math.floor(Math.random() * (i + 1));
-                                    [array[i], array[j]] = [array[j], array[i]];
-                                }
+                        maze = Array.from({ length: rows }, () => Array(cols).fill(1));
+                        maze[startY][startX] = 0;
+                        carve(startX, startY);
+                        maze[goalY][goalX] = 0;
+                      }
+                    
+                      function drawMaze() {
+                        for (let y = 0; y < rows; y++) {
+                          for (let x = 0; x < cols; x++) {
+                            if (maze[y][x] === 1) {
+                              ctx.fillStyle = 'black';
+                              ctx.fillRect(x * gridSize, y * gridSize, gridSize, gridSize);
                             }
-                        
-                            function carve(x, y) {
-                                const dirs = [
-                                    [0, -2],
-                                    [0, 2],
-                                    [-2, 0],
-                                    [2, 0]
-                                ];
-                                shuffle(dirs);
-                        
-                                for (const [dx, dy] of dirs) {
-                                    const nx = x + dx;
-                                    const ny = y + dy;
-                                    if (ny >= 0 && ny < rows && nx >= 0 && nx < cols && maze[ny][nx] === 1) {
-                                        maze[ny][nx] = 0;
-                                        maze[y + dy / 2][x + dx / 2] = 0;
-                                        carve(nx, ny);
-                                    }
-                                }
-                            }
-                        
-                            maze = Array.from({ length: rows }, () => Array(cols).fill(1));
-                            maze[startY][startX] = 0; // Mark the start position
-                            maze[goalY][goalX] = 0;   // Mark the goal position
-                            carve(startX, startY);     // Generate path from start to goal
+                          }
                         }
-                        
-                        function drawMaze() {
-                            // Draw the outer border (walls on top and left)
-                            for (let y = 0; y < rows; y++) {
-                                ctx.fillStyle = 'black';
-                                ctx.fillRect(0, y * gridSize, gridSize, gridSize);  // Left border
-                            }
-                            for (let x = 0; x < cols; x++) {
-                                ctx.fillStyle = 'black';
-                                ctx.fillRect(x * gridSize, 0, gridSize, gridSize);  // Top border
-                            }
-                            
-                            // Draw the maze itself
-                            for (let y = 0; y < rows; y++) {
-                                for (let x = 0; x < cols; x++) {
-                                    if (maze[y][x] === 1) {
-                                        ctx.fillStyle = 'black';
-                                        ctx.fillRect(x * gridSize, y * gridSize, gridSize, gridSize);
-                                    }
-                                }
-                            }
-                        
-                            // Draw start and goal positions
-                            ctx.fillStyle = 'green';
-                            ctx.fillRect(startX * gridSize, startY * gridSize, gridSize, gridSize);
-                        
-                            ctx.fillStyle = 'red';
-                            ctx.fillRect(goalX * gridSize, goalY * gridSize, gridSize, gridSize);
+                    
+                        ctx.fillStyle = 'green';
+                        ctx.fillRect(startX * gridSize, startY * gridSize, gridSize, gridSize);
+                    
+                        ctx.fillStyle = 'red';
+                        ctx.fillRect(goalX * gridSize, goalY * gridSize, gridSize, gridSize);
+                      }
+                    
+                      function redraw() {
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        drawMaze();
+                        ctx.strokeStyle = 'blue';
+                        ctx.lineWidth = 2;
+                        ctx.beginPath();
+                        for (let i = 0; i < path.length; i++) {
+                          const [x, y] = path[i];
+                          if (i === 0) ctx.moveTo(x, y);
+                          else ctx.lineTo(x, y);
                         }
-                        
-                        canvas.addEventListener('mousedown', (e) => {
-                            const { offsetX, offsetY } = e;
-                            const cellX = Math.floor(offsetX / gridSize);
-                            const cellY = Math.floor(offsetY / gridSize);
+                        ctx.stroke();
+                      }
                     
-                            if (cellX === startX && cellY === startY) {
-                                drawing = true;
-                                path = [[offsetX, offsetY]];
-                                redraw();
-                                if (!startTime) startTimer(); // Only start the timer if it's the first click
-                            } else {
-                                alert("You must start on the green square!");
-                            }
-                        });
-                        
-                        canvas.addEventListener('mousemove', (e) => {
-                            if (!drawing) return;
-                            const { offsetX, offsetY } = e;
-                            const cellX = Math.floor(offsetX / gridSize);
-                            const cellY = Math.floor(offsetY / gridSize);
+                      function handleWallHit() {
+                        alert("You hit a wall or went out of bounds!");
+                        drawing = false;
+                        document.dispatchEvent(new MouseEvent('mouseup'));
+                      }
                     
-                            // Check if we're hitting a wall
-                            if (maze[cellY]?.[cellX] === 1) {
-                                alert("Oops! You hit a wall. Try again!");
-                                path = [[offsetX, offsetY]];  // Reset path on wall hit
-                                redraw();
-                                drawing = false; // Unclick cursor on wall hit
-                                return; // Don't update the path if it's a wall
-                            }
-                    
-                            path.push([offsetX, offsetY]);
-                            redraw();
-                    
-                            if (cellX === goalX && cellY === goalY) {
-                                stopTimer();
-                                alert("🎉 You made it in " + timerDisplay.innerText.split(' ')[1] + "!");
-                                drawing = false;
-                            }
-                        });
-                        
-                        canvas.addEventListener('mouseup', () => {
-                            drawing = false;
-                        });
-                    
-                        function redraw() {
-                            ctx.clearRect(0, 0, canvas.width, canvas.height);
-                            drawMaze();
-                            ctx.strokeStyle = 'blue';
-                            ctx.lineWidth = 2;
-                            ctx.beginPath();
-                            for (let i = 0; i < path.length; i++) {
-                                const [x, y] = path[i];
-                                if (i === 0) ctx.moveTo(x, y);
-                                else ctx.lineTo(x, y);
-                            }
-                            ctx.stroke();
+                      canvas.addEventListener('mousedown', (e) => {
+                        const { offsetX, offsetY } = e;
+                        const cellX = Math.floor(offsetX / gridSize);
+                        const cellY = Math.floor(offsetY / gridSize);
+                        if (cellX === startX && cellY === startY) {
+                          drawing = true;
+                          path = [[offsetX, offsetY]];
+                          redraw();
+                          if (!startTime) startTimer();
+                        } else {
+                          alert("Start on the green square!");
                         }
-                        
+                      });
+                    
+                      canvas.addEventListener('mousemove', (e) => {
+                        if (!drawing) return;
+                        const { offsetX, offsetY } = e;
+                        const cellX = Math.floor(offsetX / gridSize);
+                        const cellY = Math.floor(offsetY / gridSize);
+                    
+                        // Out-of-bounds or outside white line
+                        const edgePadding = 2;
+                        if (
+                          offsetX < edgePadding || offsetY < edgePadding ||
+                          offsetX > canvas.width - edgePadding ||
+                          offsetY > canvas.height - edgePadding
+                        ) {
+                          handleWallHit();
+                          return;
+                        }
+                    
+                        // Wall hit
+                        if (maze[cellY]?.[cellX] === 1) {
+                          handleWallHit();
+                          return;
+                        }
+                    
+                        path.push([offsetX, offsetY]);
+                        redraw();
+                    
+                        if (cellX === goalX && cellY === goalY) {
+                          stopTimer();
+                          alert("🎉 Maze complete in " + timerDisplay.textContent.split(' ')[1] + "!");
+                          gameOverlay.remove();
+                        }
+                      });
+                    
+                      canvas.addEventListener('mouseup', () => {
+                        drawing = false;
+                      });
+                    
+                      function resetGame() {
+                        path = [];
+                        drawing = false;
                         generateMaze();
                         drawMaze();
-                    }
+                        timerDisplay.textContent = 'Time: 0.00s';
+                        clearInterval(timerInterval);
+                        startTime = null;
+                      }
+                    
+                      resetGame();
+                    });
 
                 }
                 
