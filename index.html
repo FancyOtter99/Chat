@@ -212,27 +212,56 @@
                     }
 
                     if (my_role === "admin" || my_role === "moderator") {
-                        // Create a Start Game button
+                        // === Create the Game Selection Dropdown ===
+                        const gameSelect = document.createElement('select');
+                        gameSelect.id = 'game-select';
+                        Object.assign(gameSelect.style, {
+                            position: 'absolute',
+                            top: '660px', // Above the Start Game button
+                            right: '10px',
+                            width: '250px',
+                            padding: '10px',
+                            borderRadius: '5px',
+                            fontSize: '16px'
+                        });
+                    
+                        const games = ['Maze', 'Trivia', 'Guess the Number', 'Dodgeball', 'Dance Off'];
+                        games.forEach(game => {
+                            const option = document.createElement('option');
+                            option.value = game.toLowerCase().replace(/\s/g, '_'); // e.g. "guess_the_number"
+                            option.textContent = game;
+                            gameSelect.appendChild(option);
+                        });
+                    
+                        document.body.appendChild(gameSelect);
+                    
+                        // === Create the Start Game Button ===
                         const startGameButton = document.createElement('button');
                         startGameButton.id = 'start-game-btn';
                         startGameButton.textContent = 'Start Game';
-                        startGameButton.style.position = 'absolute';
-                        startGameButton.style.top = '700px';  // Adjust based on where you want the button
-                        startGameButton.style.right = '10px'; // You can adjust this too
-                        startGameButton.style.width = '250px';
-                        startGameButton.style.padding = '10px';
-                        startGameButton.style.borderRadius = '5px';
+                        Object.assign(startGameButton.style, {
+                            position: 'absolute',
+                            top: '700px',
+                            right: '10px',
+                            width: '250px',
+                            padding: '10px',
+                            borderRadius: '5px',
+                            backgroundColor: '#28a745',
+                            color: '#fff',
+                            fontWeight: 'bold',
+                            cursor: 'pointer'
+                        });
                     
-                        // Append to the body or a specific container
                         document.body.appendChild(startGameButton);
                     
-                        // Event listener for starting the game
+                        // === Event Listener to Start the Selected Game ===
                         startGameButton.addEventListener('click', function () {
-                            alert('started game')
-                            youDoIt = prompt('do u want to play')
+                            const selectedGame = gameSelect.value;
+                            alert(`Starting game: ${selectedGame}`);
                             socket.send(JSON.stringify({
                                 type: 'start_game',
-                                sender: username
+                                sender: username,
+                                game: selectedGame
                             }));
                         });
                     }
@@ -464,7 +493,7 @@
                   }else if (data.type === "game_started") {
                     alert(data.message)
                     if (data.game === "maze") {
-                        if (my_role != "admin" && my_role != "moderator" && youDoIt != "yes" ) {
+                        if (my_role != "admin" && my_role != "moderator") {
                           const gameOverlay = document.createElement('div');
                           const canvas = document.createElement('canvas');
                           const timerDisplay = document.createElement('div');
