@@ -705,7 +705,55 @@
                     }
                     else if (data.game === "guess_the_number") {
                         if (playGame === "yes") {
+                            // Create a new div for the guess box
+                            let guessBox = document.createElement('div');
+                            guessBox.style.width = '300px';
+                            guessBox.style.margin = '20px auto';
+                            guessBox.style.padding = '20px';
+                            guessBox.style.backgroundColor = 'white';
+                            guessBox.style.borderRadius = '5px';
+                            guessBox.style.boxShadow = '0px 0px 10px rgba(0, 0, 0, 0.1)';
+                            guessBox.style.textAlign = 'center';
                             
+                            // Create the input field
+                            let inputField = document.createElement('input');
+                            inputField.type = 'text';
+                            inputField.placeholder = '4 digit guess';
+                            inputField.style.width = '100%';
+                            inputField.style.padding = '12px';
+                            inputField.style.marginTop = '10px';
+                            inputField.style.border = '1px solid #ccc';
+                            inputField.style.borderRadius = '4px';
+                            inputField.style.fontSize = '16px';
+                            
+                            // Create the button
+                            let button = document.createElement('button');
+                            button.textContent = 'Submit Guess';
+                            button.style.width = '100%';
+                            button.style.padding = '12px';
+                            button.style.marginTop = '15px';
+                            button.style.backgroundColor = '#007bff';
+                            button.style.color = 'white';
+                            button.style.border = 'none';
+                            button.style.borderRadius = '4px';
+                            button.style.cursor = 'pointer';
+                            button.style.fontSize = '16px';
+                            
+                            // Change the button color when hovered
+                            button.addEventListener('mouseover', () => {
+                                button.style.backgroundColor = '#0056b3';
+                            });
+                            button.addEventListener('mouseout', () => {
+                                button.style.backgroundColor = '#007bff';
+                            });
+                            
+                            // Append the input and button to the guess box
+                            guessBox.appendChild(inputField);
+                            guessBox.appendChild(button);
+                            
+                            // Append the guess box to the body (or any other container you prefer)
+                            document.body.appendChild(guessBox);
+
                         }
                     }
                       
