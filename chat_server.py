@@ -355,6 +355,9 @@ async def websocket_handler(request):
                     
                 elif data["type"] == "finished_game":
                     print("Someone finished the game")
+                    print("data[\"game\"] =", data["game"])
+                    print("realPin:", data.get("realPin"))
+                    print("Connected clients:", list(connected_clients.keys()))
                     if (data["game"] == "maze"):
                         await send_to_admins_and_mods({
                             "type": "game_finished",
