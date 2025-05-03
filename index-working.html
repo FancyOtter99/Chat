@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -69,6 +70,7 @@
         });
 
         (function() {
+            let color = ""
             let username = "";
             let my_role = "";
             let socket = new WebSocket('wss://chat-aia5.onrender.com/ws');
@@ -181,7 +183,7 @@
                         // Small remove/add admin button for mods only
                         const toggleAdminBtn = document.createElement('button');
                         toggleAdminBtn.id = 'toggle-admin-mode';
-                        toggleAdminBtn.textContent = "Remove/Add Admin";
+                        toggleAdminBtn.textContent = "Promote/Demote";
                         toggleAdminBtn.style.position = 'absolute';
                         toggleAdminBtn.style.top = '5px';
                         toggleAdminBtn.style.right = '10px';
@@ -198,7 +200,7 @@
                             const adminTools = document.getElementById('admin-tools');
                     
                             if (banSection.style.display === 'none') {
-                                toggleAdminBtn.textContent = "Remove/Add Admin";
+                                toggleAdminBtn.textContent = "Promote/Demote";
                                 banSection.style.display = 'block';
                                 adminTools.style.display = 'none';
                             } else {
@@ -365,7 +367,7 @@
                         toggleAdmin.textContent = "Turn off Admin";
                         toggleAdmin.style.position = 'absolute';
                         toggleAdmin.style.top = '5px';
-                        toggleAdmin.style.left = '70px';
+                        toggleAdmin.style.left = '50px';
                         //toggleAdmin.style.right = `${rightPosition}px`;
                         //toggleAdmin.style.right = '1045px';
                         toggleAdmin.style.width = '250px';
@@ -399,11 +401,11 @@
                     let room = document.getElementById('group-room-switch').value;
 
                     if (room === data.room) {
-                        chatBox.innerHTML += `<p><strong>${data.sender}:</strong> ${data.message}</p>`;
+                        chatBox.innerHTML += `<p><strong style="color: ${data.sentcolor}">${data.sender}:</strong> ${data.message}</p>`;
                     }
                 } else if (data.type === "private_message") {
                     let chatBox = document.getElementById('private-chat-box');
-                    chatBox.innerHTML += `<p><strong>${data.sender}:</strong> ${data.message}</p>`;
+                    chatBox.innerHTML += `<p><strong style="color: ${data.sentcolor}">${data.sender}:</strong> ${data.message}</p>`;
                 } else if (data.type === "private_message_copy") {
                     // Move private message copy to the "All Messages" tab
                     let allMessagesBox = document.getElementById('all-messages-tab');
@@ -415,10 +417,20 @@
                   else if (data.type === "role_info") {
                       my_role = data.role;
                       console.log(my_role);
+                      const roleColors = {
+                          moderator: "black",
+                          admin: "red",
+                          pro: "green",
+                          middle: "blue",
+                          plebe: "purple",
+                          noob: "orange"
+                      };
+                      color = roleColors[my_role]
                 }
                   else if (data.type === "success") {
                       alert(data.message)
-                }
+                  }
+                  
             };
             // Handle WebSocket connection error
             socket.onerror = function(error) {
@@ -432,7 +444,7 @@
                 let room = document.getElementById('group-room-switch').value;
 
                 if (message) {
-                    socket.send(JSON.stringify({ type: "group_message", sender: username, room: room, message: message }));
+                    socket.send(JSON.stringify({ type: "group_message", sender: username, room: room, message: message, color: color }));
                     document.getElementById('group-message-input').value = "";
                 }
             });
@@ -443,7 +455,7 @@
                 let recipient = document.getElementById('private-chat-partner').value.trim();
 
                 if (message && recipient) {
-                    socket.send(JSON.stringify({ type: "private_message", sender: username, recipient: recipient, message: message }));
+                    socket.send(JSON.stringify({ type: "private_message", sender: username, recipient: recipient, message: message, color: color }));
                     document.getElementById('private-message-input').value = "";
                 }
             });
@@ -452,3 +464,4 @@
 
 </body>
 </html>
+
