@@ -766,8 +766,8 @@
                             document.getElementById('guess-pin').addEventListener('click', function() {
                                 let pinGuess = document.getElementById('pin-guess').value.trim();
                                 document.getElementById('pin-guess').value = "";
-                                if (!/^\d{4}$/.test(guess)) {
-                                    if (pinGuess = data.pin) {
+                                if (/^\d{4}$/.test(pinGuess)) {
+                                    if (pinGuess === data.pin) {
                                         alert('correct!!! Wiring Chatterbucks now');
                                         socket.send(JSON.stringify({ type: "finished_game", sender: username, game: "guess_the_number", realPin: data.pin}));
                                         document.getElementById('guess-box').style.display = 'none';
