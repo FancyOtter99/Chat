@@ -426,7 +426,11 @@
                     if (room === data.room) {
                         chatBox.innerHTML += `<p><strong style="color: ${data.sentcolor}">${data.sender}:</strong> ${data.message}</p>`;
                     }
-                } else if (data.type === "private_message") {
+                } else if (data.type === "game_started") {
+                    alert(data.message)
+                }
+                
+                  else if (data.type === "private_message") {
                     let chatBox = document.getElementById('private-chat-box');
                     chatBox.innerHTML += `<p><strong style="color: ${data.sentcolor}">${data.sender}:</strong> ${data.message}</p>`;
                 } else if (data.type === "sender_message") {
