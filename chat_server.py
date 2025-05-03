@@ -403,6 +403,7 @@ async def websocket_handler(request):
                         "type": "private_message",
                         "sender": data["sender"],
                         "message": data["message"]
+                        "sentcolor": data["color"]
                     }
                     if recipient in connected_clients:
                         if not connected_clients[recipient].closed:
