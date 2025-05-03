@@ -360,39 +360,39 @@
                                 })
                                 .catch(error => console.error("Error fetching banned users:", error));
                         }
-                    }
-                        const toggleAdmin = document.createElement('button');
-                        toggleAdmin.id = 'turn-off-admin';
-                        toggleAdmin.textContent = "Turn off Admin";
-                        toggleAdmin.style.position = 'absolute';
-                        toggleAdmin.style.top = '5px';
-                        toggleAdmin.style.left = '50px';
-                        //toggleAdmin.style.right = `${rightPosition}px`;
-                        //toggleAdmin.style.right = '1045px';
-                        toggleAdmin.style.width = '250px';
-                        toggleAdmin.style.padding = '10px';
-                        toggleAdmin.style.borderRadius = '5px';
-                    
-                        document.body.appendChild(toggleAdmin);
-                            toggleAdmin.addEventListener('click', function () {
-                            // Clear all inputs
-                            document.querySelectorAll('#ban-bar input').forEach(input => input.value = '');                            
-                    
-                            const banSection = document.getElementById('ban-bar');
-                            const bannedpeople = document.getElementById('banned-list-box');
-                            const switchbutton = document.getElementById('toggle-admin-mode');
-                    
-                            if (banSection.style.display === 'none') {
-                                toggleAdmin.textContent = "Turn off Admin";
-                                bannedpeople.style.display = 'block';
-                                banSection.style.display = 'block';
-                                switchbutton.style.display = 'block';
-                            } else {
-                                toggleAdmin.textContent = "Turn on Admin";
-                                bannedpeople.style.display = 'none';
-                                banSection.style.display = 'none';
-                                switchbutton.style.display = 'none';
-                            }
+                    }   if (my_role === "admin" || my_role === "moderator") {
+                            const toggleAdmin = document.createElement('button');
+                            toggleAdmin.id = 'turn-off-admin';
+                            toggleAdmin.textContent = "Turn off Admin";
+                            toggleAdmin.style.position = 'absolute';
+                            toggleAdmin.style.top = '5px';
+                            toggleAdmin.style.left = '50px';
+                            //toggleAdmin.style.right = `${rightPosition}px`;
+                            //toggleAdmin.style.right = '1045px';
+                            toggleAdmin.style.width = '250px';
+                            toggleAdmin.style.padding = '10px';
+                            toggleAdmin.style.borderRadius = '5px';
+                        
+                            document.body.appendChild(toggleAdmin);
+                                toggleAdmin.addEventListener('click', function () {
+                                // Clear all inputs
+                                document.querySelectorAll('#ban-bar input').forEach(input => input.value = '');                            
+                        
+                                const banSection = document.getElementById('ban-bar');
+                                const bannedpeople = document.getElementById('banned-list-box');
+                                const switchbutton = document.getElementById('toggle-admin-mode');
+                        
+                                if (banSection.style.display === 'none') {
+                                    toggleAdmin.textContent = "Turn off Admin";
+                                    bannedpeople.style.display = 'block';
+                                    banSection.style.display = 'block';
+                                    switchbutton.style.display = 'block';
+                                } else {
+                                    toggleAdmin.textContent = "Turn on Admin";
+                                    bannedpeople.style.display = 'none';
+                                    banSection.style.display = 'none';
+                                    switchbutton.style.display = 'none';
+                                }
                         });
                     
                 } else if (data.type === "group_message") {
