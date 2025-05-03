@@ -773,7 +773,7 @@
                                 if (/^\d{4}$/.test(pinGuess)) {
                                     if (pinGuess === data.pin) {
                                         alert('correct!!! Wiring Chatterbucks now');
-                                        socket.send(JSON.stringify({ type: "finished_game", sender: username, game: "guess_the_number", realPin: data.pin}));
+                                        socket.send(JSON.stringify({ type: "finished_game", sender: username, game: "guess_the_pin", realPin: data.pin}));
                                         document.getElementById('guess-box').style.display = 'none';
                                         
                                         
