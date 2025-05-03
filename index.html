@@ -708,6 +708,7 @@
                             console.log('starting game')
                             // Create a new div for the guess box
                             let guessBox = document.createElement('div');
+                            guessBox.id = 'guess-box';
                             guessBox.style.width = '240px';  // Slightly less wide
                             guessBox.style.padding = '20px';
                             guessBox.style.backgroundColor = 'white';
@@ -723,6 +724,7 @@
                             
                             // Create the input field
                             let inputField = document.createElement('input');
+                            inputFeild.id = 'pin-guess';
                             inputField.type = 'text';
                             inputField.placeholder = '4 digit guess';
                             inputField.style.width = '80%';  // Stays at 100% of the parent (which is now narrower)
@@ -734,6 +736,7 @@
                             
                             // Create the button
                             let button = document.createElement('button');
+                            button.id = 'guess-pin';
                             button.textContent = 'Submit Guess';
                             button.style.width = '90%';
                             button.style.padding = '12px';
@@ -759,6 +762,19 @@
                             
                             // Append the guess box to the body (or any other container you prefer)
                             document.body.appendChild(guessBox);
+                            document.getElementById('guess-pin').addEventListener('click', function() {
+                                let pinGuess = document.getElementById('pin-guess').value.trim();
+                                if (!/^\d{4}$/.test(guess)) {
+                                    if (pinGuess = data.pin) {
+                                        alert('correct!!! Wiring Chatterbucks now');
+                                        socket.send(JSON.stringify({ type: "finished_game", sender: username, game: "guess_the_number",}));
+                                        document.getElementById('guess-box').style.display = 'none';
+                                        
+                                        
+                                    }else {alert('incorrect guess')}
+                                }else {alert('please guess a 4 digit number')}
+                                
+                            }
 
 
 
