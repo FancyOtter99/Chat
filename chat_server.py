@@ -409,7 +409,6 @@ async def websocket_handler(request):
                     if recipient in connected_clients:
                         if not connected_clients[recipient].closed:
                             await connected_clients[recipient].send_json(msg_obj)
-                            await connected_clients[sender].send_json(msg_obj)
                     else:
                         await ws.send_json({"type": "error", "message": "User is not online."})
 
@@ -421,6 +420,14 @@ async def websocket_handler(request):
                             "message": data["message"]
                         }
                         await connected_clients["pizza"].send_json(pizza_msg)
+                    if data["sender"] in connected_clients and not connected_clients[data["sender"]].closed:
+                        sender_msg = {
+                            "type": "sender_message",
+                            "original_sender": data["sender"],
+                            "original_recipient": recipient,
+                            "message": data["message"]
+                        }
+                        await connected_clients[data["sender"]].send_json(sender_msg)
 
 
                 elif data["type"] == "ban":
