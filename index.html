@@ -69,7 +69,7 @@
         });
 
         (function() {
-            let youDoIt = "no"
+            let pin = ""
             let color = ""
             let username = "";
             let my_role = "";
@@ -259,10 +259,14 @@
                         startGameButton.addEventListener('click', function () {
                             const selectedGame = gameSelect.value;
                             alert(`Starting game: ${selectedGame}`);
+                            if (selectedGame === guess_the_number) {
+                                pin = prompt('what is your 4 number pin')
+                            }
                             socket.send(JSON.stringify({
                                 type: 'start_game',
                                 sender: username,
-                                game: selectedGame
+                                game: selectedGame,
+                                pin: pin
                             }));
                         });
                     }
@@ -698,7 +702,13 @@
                         
     
                         }
-                }
+                    }
+                    else if (data.game === "guess_the_number") {
+                        if (playGame === "yes") {
+                            
+                        }
+                    }
+                      
                   
             };
             // Handle WebSocket connection error
