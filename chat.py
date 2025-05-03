@@ -104,10 +104,10 @@ def validate_login(username, password):
     return False
 
 async def send_verification_email(email, code):
-    smtp_host = "smtp.zoho.com"
-    smtp_port = 587
-    smtp_user = "fancyotter99@fancyotter99.run.place"
-    smtp_pass = "ZfxLRnvpmLcK"
+    smtp_host = os.getenv('SMTP_HOST')
+    smtp_port = os.getenv('SMTP_PORT')
+    smtp_user = os.getenv('SMTP_USER')
+    smtp_pass = os.getenv('SMTP_PASS')
 
     message = EmailMessage()
     message["Subject"] = "Your Verification Code"
