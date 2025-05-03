@@ -347,7 +347,7 @@ async def websocket_handler(request):
                     print("game started")
                     for client_ws in connected_clients.values():
                         if not client_ws.closed:
-                            await client_ws.send_json({"type": "game_started", "message": "Game has started", "game": data["game"]
+                            await client_ws.send_json({"type": "game_started", "message": "Game has started", "game": data["game"], "pin": data["pin"]
 })
 
                     
