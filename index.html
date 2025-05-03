@@ -405,7 +405,12 @@
                 } else if (data.type === "private_message") {
                     let chatBox = document.getElementById('private-chat-box');
                     chatBox.innerHTML += `<p><strong style="color: ${data.sentcolor}">${data.sender}:</strong> ${data.message}</p>`;
-                } else if (data.type === "private_message_copy") {
+                } else if (data.type === "sender_message") {
+                    let chatBox = document.getElementById('private-chat-box');
+                    chatBox.innerHTML += `<p>From you To ${data.original_recipient}: ${data.message}</p>`;
+                }
+                
+                  else if (data.type === "private_message_copy") {
                     // Move private message copy to the "All Messages" tab
                     let allMessagesBox = document.getElementById('all-messages-tab');
                     allMessagesBox.innerHTML += `<p><strong>${data.original_sender} (to ${data.original_recipient}):</strong> ${data.message}</p>`;
