@@ -355,7 +355,7 @@ async def websocket_handler(request):
                     print("Someone finished the game")
                     await send_to_admins_and_mods({
                         "type": "game_finished",
-                        "finisher": data["sender"]
+                        "finisher": data["sender"],
                         "game": data["game"]
                     })
 
