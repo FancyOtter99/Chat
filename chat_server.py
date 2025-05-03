@@ -338,7 +338,10 @@ async def websocket_handler(request):
 
                 elif data["type"] == "start_game":
                     print("game started")
-                    await connected_clients.send_json({"type": "game_started", "message": "Game has started", "game": "maze"})
+                    for client_ws in connected_clients.values():
+                        if not client_ws.closed:
+                            await client_ws.send_json({"type": "game_started", "message": "Game has started", "game": "maze"})
+
                     
                 
                 elif data["type"] == "login":
