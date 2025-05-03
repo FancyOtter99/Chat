@@ -399,6 +399,7 @@ async def websocket_handler(request):
                         await ws.send_json({"type": "error", "message": "You are too weak send messages."})
                         continue
                     recipient = data["recipient"]
+                    sender = data["sender"]
                     msg_obj = {
                         "type": "private_message",
                         "sender": data["sender"],
@@ -408,6 +409,7 @@ async def websocket_handler(request):
                     if recipient in connected_clients:
                         if not connected_clients[recipient].closed:
                             await connected_clients[recipient].send_json(msg_obj)
+                            await connected_clients[sender].send_json(msg_obj)
                     else:
                         await ws.send_json({"type": "error", "message": "User is not online."})
 
