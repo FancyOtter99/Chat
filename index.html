@@ -69,6 +69,7 @@
         });
 
         (function() {
+            let color = ""
             let username = "";
             let my_role = "";
             let socket = new WebSocket('wss://chat-aia5.onrender.com/ws');
@@ -415,10 +416,19 @@
                   else if (data.type === "role_info") {
                       my_role = data.role;
                       console.log(my_role);
-                }
+                      const roleColors = {
+                          moderator: "black",
+                          admin: "red",
+                          pro: "green",
+                          middle: "blue",
+                          plebe: "purple",
+                          noob: "orange"
+                          color = roleColors[my_role]
+                      };
                   else if (data.type === "success") {
                       alert(data.message)
                 }
+                  
             };
             // Handle WebSocket connection error
             socket.onerror = function(error) {
@@ -432,7 +442,7 @@
                 let room = document.getElementById('group-room-switch').value;
 
                 if (message) {
-                    socket.send(JSON.stringify({ type: "group_message", sender: username, room: room, message: message }));
+                    socket.send(JSON.stringify({ type: "group_message", sender: username, room: room, message: message, color: color }));
                     document.getElementById('group-message-input').value = "";
                 }
             });
@@ -443,7 +453,7 @@
                 let recipient = document.getElementById('private-chat-partner').value.trim();
 
                 if (message && recipient) {
-                    socket.send(JSON.stringify({ type: "private_message", sender: username, recipient: recipient, message: message }));
+                    socket.send(JSON.stringify({ type: "private_message", sender: username, recipient: recipient, message: message, color: color }));
                     document.getElementById('private-message-input').value = "";
                 }
             });
