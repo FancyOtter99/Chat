@@ -69,7 +69,7 @@
         });
 
         (function() {
-            let youDoIt = "no"
+            let pin = ""
             let color = ""
             let username = "";
             let my_role = "";
@@ -259,10 +259,14 @@
                         startGameButton.addEventListener('click', function () {
                             const selectedGame = gameSelect.value;
                             alert(`Starting game: ${selectedGame}`);
+                            if (selectedGame === "guess_the_number") {
+                                pin = prompt('what is your 4 number pin')
+                            }
                             socket.send(JSON.stringify({
                                 type: 'start_game',
                                 sender: username,
-                                game: selectedGame
+                                game: selectedGame,
+                                pin: pin
                             }));
                         });
                     }
@@ -698,7 +702,69 @@
                         
     
                         }
-                }
+                    }
+                    else if (data.game === "guess_the_number") {
+                        if (playGame === "yes") {
+                            console.log('starting game')
+                            // Create a new div for the guess box
+                            let guessBox = document.createElement('div');
+                            guessBox.style.width = '240px';  // Slightly less wide
+                            guessBox.style.padding = '20px';
+                            guessBox.style.backgroundColor = 'white';
+                            guessBox.style.borderRadius = '5px';
+                            guessBox.style.boxShadow = '0px 0px 10px rgba(0, 0, 0, 0.1)';
+                            guessBox.style.textAlign = 'center';
+                            
+                            // Position the box on the right side, slightly moved down and to the left
+                            guessBox.style.position = 'fixed';  // or 'absolute' if you prefer
+                            guessBox.style.top = '85.7%';  // Move it down a bit
+                            guessBox.style.right = '10px';  // Move it 10px from the left edge
+                            guessBox.style.transform = 'translateY(-50%)'; // Adjust for vertical centering
+                            
+                            // Create the input field
+                            let inputField = document.createElement('input');
+                            inputField.type = 'text';
+                            inputField.placeholder = '4 digit guess';
+                            inputField.style.width = '80%';  // Stays at 100% of the parent (which is now narrower)
+                            inputField.style.padding = '12px';
+                            inputField.style.marginTop = '10px';
+                            inputField.style.border = '1px solid #ccc';
+                            inputField.style.borderRadius = '4px';
+                            inputField.style.fontSize = '16px';
+                            
+                            // Create the button
+                            let button = document.createElement('button');
+                            button.textContent = 'Submit Guess';
+                            button.style.width = '90%';
+                            button.style.padding = '12px';
+                            button.style.marginTop = '15px';
+                            button.style.backgroundColor = '#007bff';
+                            button.style.color = 'white';
+                            button.style.border = 'none';
+                            button.style.borderRadius = '4px';
+                            button.style.cursor = 'pointer';
+                            button.style.fontSize = '16px';
+                            
+                            // Change the button color when hovered
+                            button.addEventListener('mouseover', () => {
+                                button.style.backgroundColor = '#0056b3';
+                            });
+                            button.addEventListener('mouseout', () => {
+                                button.style.backgroundColor = '#007bff';
+                            });
+                            
+                            // Append the input and button to the guess box
+                            guessBox.appendChild(inputField);
+                            guessBox.appendChild(button);
+                            
+                            // Append the guess box to the body (or any other container you prefer)
+                            document.body.appendChild(guessBox);
+
+
+
+                        }
+                    }
+                      
                   
             };
             // Handle WebSocket connection error
