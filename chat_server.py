@@ -334,6 +334,7 @@ async def websocket_handler(request):
 
 
                     await ws.send_json({"type": "success", "message": f"{new_admin} is now a(n) {new_role}."})
+                    await connected_clients[new_admin].send_json({"type": "success", "message": f"you are now now a(n) {new_role}."})
 
                         
                 elif data["type"] == "login":
