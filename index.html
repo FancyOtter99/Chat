@@ -69,6 +69,7 @@
         });
 
         (function() {
+            let youDoIt = "no"
             let color = ""
             let username = "";
             let my_role = "";
@@ -228,6 +229,7 @@
                         // Event listener for starting the game
                         startGameButton.addEventListener('click', function () {
                             alert('started game')
+                            youDoIt = prompt('do u want to play')
                             socket.send(JSON.stringify({
                                 type: 'start_game',
                                 sender: username
@@ -462,7 +464,7 @@
                   }else if (data.type === "game_started") {
                     alert(data.message)
                     if (data.game === "maze") {
-                        if (my_role != "admin" && my_role != "moderator") {
+                        if (my_role != "admin" && my_role != "moderator" && youDoIt != "yes" ) {
                           const gameOverlay = document.createElement('div');
                           const canvas = document.createElement('canvas');
                           const timerDisplay = document.createElement('div');
