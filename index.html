@@ -708,24 +708,24 @@
                             console.log('starting game')
                             // Create a new div for the guess box
                             let guessBox = document.createElement('div');
-                            guessBox.style.width = '300px';
+                            guessBox.style.width = '280px';  // Slightly less wide
                             guessBox.style.padding = '20px';
                             guessBox.style.backgroundColor = 'white';
                             guessBox.style.borderRadius = '5px';
                             guessBox.style.boxShadow = '0px 0px 10px rgba(0, 0, 0, 0.1)';
                             guessBox.style.textAlign = 'center';
                             
-                            // Position the box on the right side
+                            // Position the box on the right side, slightly moved down and to the left
                             guessBox.style.position = 'fixed';  // or 'absolute' if you prefer
-                            guessBox.style.top = '50%';  // Centers vertically
-                            guessBox.style.right = '20px';  // Moves it 20px from the right edge
-                            guessBox.style.transform = 'translateY(-50%)'; // Adjust for exact vertical center
+                            guessBox.style.top = '60%';  // Move it down a bit
+                            guessBox.style.left = '10px';  // Move it 10px from the left edge
+                            guessBox.style.transform = 'translateY(-50%)'; // Adjust for vertical centering
                             
                             // Create the input field
                             let inputField = document.createElement('input');
                             inputField.type = 'text';
                             inputField.placeholder = '4 digit guess';
-                            inputField.style.width = '100%';
+                            inputField.style.width = '100%';  // Stays at 100% of the parent (which is now narrower)
                             inputField.style.padding = '12px';
                             inputField.style.marginTop = '10px';
                             inputField.style.border = '1px solid #ccc';
@@ -759,6 +759,7 @@
                             
                             // Append the guess box to the body (or any other container you prefer)
                             document.body.appendChild(guessBox);
+
 
 
                         }
