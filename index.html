@@ -717,15 +717,15 @@
                             
                             // Position the box on the right side, slightly moved down and to the left
                             guessBox.style.position = 'fixed';  // or 'absolute' if you prefer
-                            guessBox.style.top = '60%';  // Move it down a bit
-                            guessBox.style.left = '10px';  // Move it 10px from the left edge
+                            guessBox.style.top = '45%';  // Move it down a bit
+                            guessBox.style.right = '10px';  // Move it 10px from the left edge
                             guessBox.style.transform = 'translateY(-50%)'; // Adjust for vertical centering
                             
                             // Create the input field
                             let inputField = document.createElement('input');
                             inputField.type = 'text';
                             inputField.placeholder = '4 digit guess';
-                            inputField.style.width = '100%';  // Stays at 100% of the parent (which is now narrower)
+                            inputField.style.width = '90%';  // Stays at 100% of the parent (which is now narrower)
                             inputField.style.padding = '12px';
                             inputField.style.marginTop = '10px';
                             inputField.style.border = '1px solid #ccc';
@@ -735,7 +735,7 @@
                             // Create the button
                             let button = document.createElement('button');
                             button.textContent = 'Submit Guess';
-                            button.style.width = '100%';
+                            button.style.width = '90%';
                             button.style.padding = '12px';
                             button.style.marginTop = '15px';
                             button.style.backgroundColor = '#007bff';
