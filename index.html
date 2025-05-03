@@ -181,7 +181,7 @@
                         // Small remove/add admin button for mods only
                         const toggleAdminBtn = document.createElement('button');
                         toggleAdminBtn.id = 'toggle-admin-mode';
-                        toggleAdminBtn.textContent = "Remove/Add Admin";
+                        toggleAdminBtn.textContent = "Promote/Demote";
                         toggleAdminBtn.style.position = 'absolute';
                         toggleAdminBtn.style.top = '5px';
                         toggleAdminBtn.style.right = '10px';
@@ -198,7 +198,7 @@
                             const adminTools = document.getElementById('admin-tools');
                     
                             if (banSection.style.display === 'none') {
-                                toggleAdminBtn.textContent = "Remove/Add Admin";
+                                toggleAdminBtn.textContent = "Promote/Demote";
                                 banSection.style.display = 'block';
                                 adminTools.style.display = 'none';
                             } else {
