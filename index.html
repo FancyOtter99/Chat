@@ -259,7 +259,7 @@
                         startGameButton.addEventListener('click', function () {
                             const selectedGame = gameSelect.value;
                             alert(`Starting game: ${selectedGame}`);
-                            if (selectedGame === guess_the_number) {
+                            if (selectedGame === "guess_the_number") {
                                 pin = prompt('what is your 4 number pin')
                             }
                             socket.send(JSON.stringify({
