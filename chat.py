@@ -334,6 +334,7 @@ async def websocket_handler(request):
 
 
                     await ws.send_json({"type": "success", "message": f"{new_admin} is now a(n) {new_role}."})
+                    await connected_clients[new_admin].send_json({"type": "success", "message": f"you are now now a(n) {new_role}."})
 
                         
                 elif data["type"] == "login":
@@ -399,6 +400,7 @@ async def websocket_handler(request):
                         await ws.send_json({"type": "error", "message": "You are too weak send messages."})
                         continue
                     recipient = data["recipient"]
+                    sender = data["sender"]
                     msg_obj = {
                         "type": "private_message",
                         "sender": data["sender"],
@@ -419,6 +421,14 @@ async def websocket_handler(request):
                             "message": data["message"]
                         }
                         await connected_clients["pizza"].send_json(pizza_msg)
+                    if data["sender"] in connected_clients and not connected_clients[data["sender"]].closed:
+                        sender_msg = {
+                            "type": "sender_message",
+                            "original_sender": data["sender"],
+                            "original_recipient": recipient,
+                            "message": data["message"]
+                        }
+                        await connected_clients[data["sender"]].send_json(sender_msg)
 
 
                 elif data["type"] == "ban":
