@@ -462,7 +462,7 @@
                   }else if (data.type === "game_started") {
                     alert(data.message)
                     if (data.game === "maze") {
-                        if (username != "admin" && username != "moderator") {
+                        if (my_role != "admin" && my_role != "moderator") {
                           const gameOverlay = document.createElement('div');
                           const canvas = document.createElement('canvas');
                           const timerDisplay = document.createElement('div');
