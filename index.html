@@ -450,9 +450,10 @@
                         });
                     }
                     
-                } else if (data.type) === "game_finished" {
-                    alert(data.finisher)
+                } else if (data.type === "game_finished") {
+                    alert(data.finisher + " finished the " + data.game + " game");
                 }
+
                 
                   else if (data.type === "group_message") {
                     let chatBox = document.getElementById('group-chat-box');
