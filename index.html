@@ -152,7 +152,10 @@
                     alert("Enter your email and the code.");
                 }
             });
-            
+            socket.addEventListener("message", (event) => {
+                console.log("[RAW SOCKET DATA]", event.data);
+            });
+
             // Listen for messages from the server
             socket.onmessage = function(event) {
                 let data = JSON.parse(event.data);
