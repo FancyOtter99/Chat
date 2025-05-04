@@ -69,6 +69,7 @@
         });
 
         (function() {
+            let reward = ""
             let daysJoined = ""
             let new_Chatterbucks = ""
             let Chatterbucks = ""
@@ -464,6 +465,12 @@
                     
                 } else if (data.type === "game_finished") {
                     alert(data.finisher + " finished the " + data.game + " game in " + data.time);
+                    reward = prompt('would you like to reward ${data.finisher} some Chatterbucks yes/no')
+                    if (reward === "yes") {
+                        new_Chatterbucks = Chatterbucks + 75;
+                        socket.send(JSON.stringify({type: "addChatterbucks", username: data.finisher, amnt: new_Chatterbucks }))
+                    }
+                    
                 } else if (data.type === "addedChatterbucks") {
                     alert(`you now have ${data.amount} Chatterbucks in your account`)
                     document.getElementById('username').textContent = `Logged in as: ${username}, Joined ${daysJoined === "∞" ? "∞ days ago" : `${daysJoined} days ago`}, Balance: ${data.balance} Chatterbucks`;
