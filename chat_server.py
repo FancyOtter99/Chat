@@ -300,7 +300,7 @@ async def websocket_handler(request):
                         await ws.send_json({"type": "role_info", "role": role})
                         print(f"Sent role '{role}' to user '{username}'")
 
-                        balance = get_user_balance("username")
+                        balance = get_user_balance(username)
                         if balance is not None:
                             print(f"User {username} has ${balance:.2f}")
                         else:
@@ -476,7 +476,7 @@ async def websocket_handler(request):
                             role = "noob"  # For the lost souls wandering role-less
 
 
-                        balance = get_user_balance("username")
+                        balance = get_user_balance(username)  #might have quotes around username here and in verify
                         if balance is not None:
                             print(f"User {username} has ${balance:.2f}")
                         else:
