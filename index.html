@@ -840,16 +840,16 @@
             });
 
 
-
+            let chatContainer = ""
+            let chatDisplay = ""
+            let isChatVisible = ""
             document.getElementById('store-btn').addEventListener('click', function() {
-                const chatContainer = document.getElementById('chat-container');
-                const chatDisplay = window.getComputedStyle(chatContainer).display;
-                const isChatVisible = chatDisplay === 'block';
+                chatContainer = document.getElementById('chat-container');
+                chatDisplay = window.getComputedStyle(chatContainer).display;
+                isChatVisible = chatDisplay === 'block';
             
                 if (isChatVisible) {
                     // Hide everything and update button
-                    document.getElementById('auth-container').style.display = 'none';
-                    document.getElementById('verify').style.display = 'none';
                     chatContainer.style.display = 'none';
                     document.getElementById('start-game-btn').style.display = 'none';
                     document.getElementById('game-select').style.display = 'none';
@@ -859,8 +859,6 @@
                     document.getElementById('store-content').style.display = 'block';
                 } else {
                     // Show chat based on role
-                    document.getElementById('auth-container').style.display = 'none';
-                    document.getElementById('verify').style.display = 'none';
                     chatContainer.style.display = 'block';
                     document.getElementById('start-game-btn').style.display = 'block';
                     document.getElementById('game-select').style.display = 'block';
@@ -872,7 +870,7 @@
                         document.getElementById('toggle-admin-mode').style.display = 'none';
                     } else if (my_role === "moderator") {
                         document.getElementById('turn-off-admin').style.display = 'block';
-                        document.getElementById('toggle-admin-mode').style.display = 'block';
+                        document.getElementById('toggle-admin-mode').style.display = 'none';
                     } else {
                         document.getElementById('turn-off-admin').style.display = 'none';
                         document.getElementById('toggle-admin-mode').style.display = 'none';
