@@ -238,12 +238,14 @@ button:hover {
     height: 40px;
     font-size:12px
 }#store-btn {
+    position: absolute; /* Ensure the button is positioned absolutely */
     top: 5px;
     right: 10px;
     width: 250px;
     padding: 10px;
     border-radius: 5px;
 }
+
 
 
 @media (max-width: 700px) {
