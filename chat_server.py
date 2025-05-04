@@ -101,6 +101,14 @@ def update_user_balance(username, new_balance):
 
     return updated
 
+def get_user_balance(username):
+    users = load_users()
+    user = users.get(username)
+    if user:
+        return user.get("balance", 0.0)
+    return None  # or maybe -1 if you want to mock them for being non-existent
+
+
 
 def save_user(username, password, email):
     encoded_pw = base64.b64encode(password.encode()).decode()
@@ -284,9 +292,16 @@ async def websocket_handler(request):
                         print(f"Sending role: '{role}' to user: '{username}'")
                         await ws.send_json({"type": "role_info", "role": role})
                         print(f"Sent role '{role}' to user '{username}'")
+
+                        balance = get_user_balance("username")
+                        if balance is not None:
+                            print(f"User 'fancyotter' has ${balance:.2f}")
+                        else:
+                            print("User not found. Probably fell off the economy.")
+
                         
                         # Send success message back to frontend
-                        await ws.send_json({"type": "login_success", "username": username, "joined": joined})
+                        await ws.send_json({"type": "login_success", "balance": balance, "username": username, "joined": joined})
 
                         
                         
