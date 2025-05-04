@@ -325,6 +325,7 @@ async def websocket_handler(request):
                     print("load users")
                     print(load_users())
                     print(username)
+                    print("test")
 
                     update_user_balance(username, amount);
                     load_users()
