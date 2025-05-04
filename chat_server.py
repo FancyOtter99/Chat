@@ -302,7 +302,7 @@ async def websocket_handler(request):
 
                         balance = get_user_balance("username")
                         if balance is not None:
-                            print(f"User 'fancyotter' has ${balance:.2f}")
+                            print(f"User {username} has ${balance:.2f}")
                         else:
                             print("User not found. Probably fell off the economy.")
 
