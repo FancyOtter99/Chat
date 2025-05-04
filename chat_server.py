@@ -332,11 +332,12 @@ async def websocket_handler(request):
                     print(f"Balance immediately after update: {get_user_balance(username)}")
                     now_new_balance = get_user_balance(username);
                     
-                    await ws.send_json({
+                    await connected_clients[username].send_json({
                         "type": "addedChatterbucks",
                         "amount": amount,
-                        "balance": now_new_balance  # no quotes!
+                        "balance": now_new_balance
                     })
+
 
 
                 elif data["type"] == "admin-remove":
