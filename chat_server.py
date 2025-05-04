@@ -445,12 +445,19 @@ async def websocket_handler(request):
                             role = "plebe"
                         else:
                             role = "noob"  # For the lost souls wandering role-less
+
+
+                        balance = get_user_balance("username")
+                        if balance is not None:
+                            print(f"User 'fancyotter' has ${balance:.2f}")
+                        else:
+                            print("User not found. Probably fell off the economy.")
                         
                         # Send role info to the user
                         print(f"Sending role: '{role}' to user: '{username}'")
                         await ws.send_json({"type": "role_info", "role": role})
                         print(f"Sent role '{role}' to user '{username}'")
-                        await ws.send_json({"type": "login_success", "username": username, "joined": joined})
+                        await ws.send_json({"type": "login_success", "username": username, "balance": balance, "joined": joined})
 
 
                         
