@@ -106,7 +106,7 @@ def get_user_balance(username):
     user = users.get(username)
     if user:
         return user.get("balance", 0.0)
-    return None  # or maybe -1 if you want to mock them for being non-existent
+    return 0.0  # or maybe -1 if you want to mock them for being non-existent
 
 
 
