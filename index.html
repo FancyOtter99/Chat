@@ -465,7 +465,7 @@
                     
                 } else if (data.type === "game_finished") {
                     alert(data.finisher + " finished the " + data.game + " game in " + data.time);
-                    reward = prompt('would you like to reward ${data.finisher} some Chatterbucks yes/no')
+                    reward = prompt(`would you like to reward ${data.finisher} some Chatterbucks yes/no`)
                     if (reward === "yes") {
                         new_Chatterbucks = data.oldChatterbucks + 35;
                         socket.send(JSON.stringify({type: "addChatterbucks", username: data.finisher, amnt: new_Chatterbucks }))
@@ -524,7 +524,7 @@
                       alert(data.message)
                   }else if (data.type === "game_started") {
                     alert(data.message)
-                    playGame = prompt(`Would you like to play the ${data.game} game for Chatterbucks? yes/no`);
+                    playGame = prompt(`Would you like to play the ${data.game} game to possibly get some Chatterbucks? yes/no`);
                     if (data.game === "maze") {
                         if (playGame === "yes") {
                           const gameOverlay = document.createElement('div');
