@@ -322,7 +322,7 @@ async def websocket_handler(request):
                     amount = float(data["amnt"])
                     username = data["username"]
                     update_user_balance(username, amount);
-                    now_new_balance = get_user_balance(data["username"]);
+                    now_new_balance = get_user_balance(username);
                     
                     await ws.send_json({
                         "type": "addedChatterbucks",
