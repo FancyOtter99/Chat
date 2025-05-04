@@ -170,7 +170,7 @@
                         daysJoined = Math.floor(diffTime / (1000 * 60 * 60 * 24)); // convert ms -> days
                     }
                     
-                    document.getElementById('username').textContent = `Logged in as: ${data.username} (Joined ${daysJoined === "∞" ? "∞ days ago" : daysJoined + " days ago"})`;
+                    document.getElementById('username').textContent = `Logged in as: ${data.username} (Joined ${daysJoined === "∞" ? "∞ days ago" : daysJoined + ` days ago. Balance of ${data.balance}`})`;
                     //document.getElementById('username-tooltip').textContent = `sup`;
 
                     username = data.username;
