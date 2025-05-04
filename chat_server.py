@@ -322,6 +322,8 @@ async def websocket_handler(request):
                     amount = float(data["amnt"])
                     username = data["username"]
                     print(f"[DEBUG] Raw username: {repr(username)}")
+                    print(load_users())
+                    print(username)
 
                     update_user_balance(username, amount);
                     now_new_balance = get_user_balance(username);
