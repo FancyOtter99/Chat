@@ -460,7 +460,11 @@
                     
                 } else if (data.type === "game_finished") {
                     alert(data.finisher + " finished the " + data.game + " game in " + data.time);
-                } else if (data.type === "pin_game_finished") {
+                } else if (data.type === "addedChatterbucks") {
+                    alert(`added ${data.amount} Chatterbucks to your account`)
+                    document.getElementById('username').textContent = `Logged in as: ${username}, Joined ${daysJoined === "∞" ? "∞ days ago" : `${daysJoined} days ago`}, Balance: ${data.balance} Chatterbucks`;
+                }
+                  else if (data.type === "pin_game_finished") {
                      alert(data.finisher + " finished the " + data.game + " game. the correct pin was " + data.correctPin);
                      document.getElementById('guess-box').style.display = 'none';
                     
