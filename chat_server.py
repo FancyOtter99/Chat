@@ -312,7 +312,8 @@ async def websocket_handler(request):
                         await ws.send_json({"type": "error", "message": "Invalid or expired verification code."})
 
                 elif data["type"] == "addChatterbucks":
-                    update_user_balance(data["username"], data["new_balance"])
+                    update_user_balance(data["username"], data["amnt"])
+                    await ws.send_json({"type"" "addedChatterbucks", "amount": data["amnt"]})
 
                 elif data["type"] == "admin-remove":
                     if data["sender"] not in moderators:
