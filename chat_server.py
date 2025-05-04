@@ -320,7 +320,8 @@ async def websocket_handler(request):
 
                 elif data["type"] == "addChatterbucks":
                     amount = float(data["amnt"])
-                    update_user_balance(data["username"], amount);
+                    username = data["username"]
+                    update_user_balance(username, amount);
                     now_new_balance = get_user_balance(data["username"]);
                     
                     await ws.send_json({
@@ -368,20 +369,6 @@ async def websocket_handler(request):
                     if data["sender"] not in moderators:
                         await ws.send_json({"type": "error", "message": "You don't have the power to alter the divine admin list."})
                         return
-
-
-                    print("Before update:")
-                    with open(USERS_FILE) as f:
-                        for line in f:
-                            print(line.strip())
-                    
-                    update_user_balance("pizza", 1000)
-                    
-                    print("\nAfter update:")
-                    with open(USERS_FILE) as f:
-                        for line in f:
-                            print(line.strip())
-
 
                     new_admin = data.get("username")
                     new_role = data.get("role", "admin")
