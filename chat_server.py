@@ -433,7 +433,8 @@ async def websocket_handler(request):
                             "type": "game_finished",
                             "finisher": data["sender"],
                             "game": data["game"],
-                            "time": data["time"]
+                            "time": data["time"],
+                            "oldChatterbucks": data["oldchatterbucks"]
                         })
                     elif data["game"] == "guess_the_pin":
                         print(" one Someone finished the game")
