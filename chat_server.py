@@ -86,11 +86,15 @@ def update_user_balance(username, new_balance):
 
     updated = False
     lines = []
+
     with open(USERS_FILE, "r") as f:
         for line in f:
             parts = line.strip().split(":")
-            if len(parts) >= 4 and parts[0] == username:
-                parts = parts[:4]  # remove existing balance if any
+            if parts[0] == username:
+                # Assuming format: username:email:password:role[:balance]
+                if len(parts) < 4:
+                    continue  # invalid line
+                parts = parts[:4]  # remove old balance or ignore extra fields
                 parts.append(str(new_balance))
                 updated = True
             lines.append(":".join(parts) + "\n")
@@ -100,6 +104,7 @@ def update_user_balance(username, new_balance):
             f.writelines(lines)
 
     return updated
+
 
 def get_user_balance(username):
     users = load_users()
