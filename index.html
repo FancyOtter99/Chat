@@ -864,6 +864,8 @@
                     chatContainer.style.display = 'block';
                     document.getElementById('start-game-btn').style.display = 'block';
                     document.getElementById('game-select').style.display = 'block';
+                    document.getElementById('store-btn').textContent = 'Store';
+                    document.getElementById('store-content').style.display = 'none';
             
                     if (my_role === "admin") {
                         document.getElementById('turn-off-admin').style.display = 'block';
@@ -875,9 +877,7 @@
                         document.getElementById('turn-off-admin').style.display = 'none';
                         document.getElementById('toggle-admin-mode').style.display = 'none';
                     }
-            
-                    document.getElementById('store-btn').textContent = 'Chat';
-                    document.getElementById('store-content').style.display = 'none';
+    
                 }
             });
 
