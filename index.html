@@ -467,7 +467,7 @@
                     alert(data.finisher + " finished the " + data.game + " game in " + data.time);
                     reward = prompt('would you like to reward ${data.finisher} some Chatterbucks yes/no')
                     if (reward === "yes") {
-                        new_Chatterbucks = Chatterbucks + 75;
+                        new_Chatterbucks = data.oldChatterbucks + 35;
                         socket.send(JSON.stringify({type: "addChatterbucks", username: data.finisher, amnt: new_Chatterbucks }))
                     }
                     
