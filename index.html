@@ -10,6 +10,13 @@
     <!-- Store Button -->
     <button id="store-btn">Store</button>
 
+    <div id = "store-content">
+        <div id = "item-one">
+            Important Alert! (3000 Chatterbucks)
+        </div>
+        <button id = "buy-item-one"> Buy Important Alert</button>
+    </div>
+
     <!-- Login / Signup Screen -->
     <div id="auth-container">
         <h2>Login</h2>
@@ -59,13 +66,6 @@
             </div>
         </div>
     </div>
-
-    <script>
-        // JavaScript for the Store button action
-        document.getElementById('store-btn').addEventListener('click', function() {
-            alert('Store button clicked!');
-        });
-    </script>
 </body>
 </html>
     <script>
@@ -96,6 +96,8 @@
             const idealRight = 1045;
             const rightPosition = Math.min(idealRight, screenWidth - buttonWidth - 30);
             document.getElementById('verify').style.display = 'none';
+            document.getElementById('store-btn').style.display = 'none';
+            document.getElementById('store-content').style.display = 'none';
             // Wait for WebSocket connection to open
             socket.onopen = function() {
                 console.log("WebSocket connection established!");
@@ -177,7 +179,7 @@
                     document.getElementById('auth-container').style.display = 'none';
                     document.getElementById('verify').style.display = 'none';
                     document.getElementById('chat-container').style.display = 'block';
-                    
+                    document.getElementById('store-btn').style.display = 'block';
                     const joinedDate = data.joined;
                     daysJoined = "∞"; // Default to infinity if unknown
                     
@@ -837,6 +839,20 @@
                 }
             });
 
+
+
+            document.getElementById('store-btn').addEventListener('click', function() {
+                document.getElementById('auth-container').style.display = 'none';
+                document.getElementById('verify').style.display = 'none';
+                document.getElementById('chat-container').style.display = 'none';
+                document.getElementById('start-game-btn').style.display = 'none';
+                document.getElementById('game-select').style.display = 'none';
+                document.getElementById('turn-off-admin').style.display = 'none';
+                document.getElementById('toggle-admin-mode').style.display = 'none';
+                document.getElementById('store-btn').textContent = 'Chat';
+                document.getElementById('store-content').style.display = 'block';
+                
+            });    
             // Send private message
             document.getElementById('send-private-message').addEventListener('click', function() {
                 let message = document.getElementById('private-message-input').value.trim();
