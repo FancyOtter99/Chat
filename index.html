@@ -844,8 +844,8 @@
             let chatDisplay = ""
             let isChatVisible = ""
             document.getElementById('store-btn').addEventListener('click', function() {
-                chatContainer = document.getElementById('store-content');
-                chatDisplay = window.getComputedStyle(store-content).display;
+                chatContainer = document.getElementById('chat-container');
+                chatDisplay = window.getComputedStyle(chat-container).display;
                 isChatVisible = chatDisplay === 'none';
             
                 if (isChatVisible) {
