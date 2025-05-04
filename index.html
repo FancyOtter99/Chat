@@ -851,7 +851,9 @@
                     document.getElementById('start-game-btn').style.display = 'none';
                     document.getElementById('game-select').style.display = 'none';
                     document.getElementById('turn-off-admin').style.display = 'none';
-                    document.getElementById('toggle-admin-mode')?.style?.display = 'none';
+                    if (my_role === "moderator") {
+                        document.getElementById('toggle-admin-mode').style.display = 'none';
+                    }
                     document.getElementById('store-btn').textContent = 'Chat';
                     document.getElementById('store-content').style.display = 'block';
                 } else {
@@ -865,10 +867,8 @@
                     // Show admin/mod controls if applicable
                     if (my_role === "admin" || my_role === "moderator") {
                         document.getElementById('turn-off-admin').style.display = 'block';
-                        document.getElementById('toggle-admin-mode')?.style?.display = 'none';
                     } else {
-                        document.getElementById('turn-off-admin').style.display = 'none';
-                        document.getElementById('toggle-admin-mode').style.display = 'none';
+                        console.log("u not admin")
                     }
                 }
             });
