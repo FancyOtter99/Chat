@@ -311,6 +311,9 @@ async def websocket_handler(request):
                         # Send error if code is invalid or expired
                         await ws.send_json({"type": "error", "message": "Invalid or expired verification code."})
 
+                elif data["type"] == "addChatterbucks":
+                    update_user_balance(data["username"], data["new_balance"])
+
                 elif data["type"] == "admin-remove":
                     if data["sender"] not in moderators:
                         await ws.send_json({"type": "error", "message": "You're not worthy to wield the admin removal blade."})
