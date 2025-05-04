@@ -69,6 +69,7 @@
         });
 
         (function() {
+            let daysJoined = ""
             let new_Chatterbucks = ""
             let Chatterbucks = ""
             let pin = ""
@@ -166,7 +167,7 @@
                     document.getElementById('chat-container').style.display = 'block';
                     
                     const joinedDate = data.joined;
-                    let daysJoined = "∞"; // Default to infinity if unknown
+                    daysJoined = "∞"; // Default to infinity if unknown
                     
                     if (joinedDate && joinedDate !== "1999-09-09") {
                         const joinDateObj = new Date(joinedDate);
