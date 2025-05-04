@@ -321,6 +321,8 @@ async def websocket_handler(request):
                 elif data["type"] == "addChatterbucks":
                     amount = float(data["amnt"])
                     username = data["username"]
+                    print(f"[DEBUG] Raw username: {repr(username)}")
+
                     update_user_balance(username, amount);
                     now_new_balance = get_user_balance(username);
                     
