@@ -69,20 +69,46 @@ def load_users():
         with open(USERS_FILE, "r") as f:
             for line in f:
                 parts = line.strip().split(":")
-                if len(parts) == 4:
-                    username, encoded_pw, email, joined_date = parts
+                if len(parts) >= 4:
+                    username, encoded_pw, email, joined_date = parts[:4]
+                    balance = float(parts[4]) if len(parts) == 5 else 0.0
                     users[username] = {
                         "password": encoded_pw,
                         "email": email,
-                        "joined": joined_date
+                        "joined": joined_date,
+                        "balance": balance
                     }
     return users
+
+def update_user_balance(username, new_balance):
+    if not os.path.exists(USERS_FILE):
+        return False
+
+    updated = False
+    lines = []
+    with open(USERS_FILE, "r") as f:
+        for line in f:
+            parts = line.strip().split(":")
+            if len(parts) >= 4 and parts[0] == username:
+                parts = parts[:4]  # remove existing balance if any
+                parts.append(str(new_balance))
+                updated = True
+            lines.append(":".join(parts) + "\n")
+
+    if updated:
+        with open(USERS_FILE, "w") as f:
+            f.writelines(lines)
+
+    return updated
+
 
 def save_user(username, password, email):
     encoded_pw = base64.b64encode(password.encode()).decode()
     joined_date = datetime.utcnow().strftime("%Y-%m-%d")
+    initial_balance = 0.0
     with open(USERS_FILE, "a") as f:
-        f.write(f"{username}:{encoded_pw}:{email}:{joined_date}\n")
+        f.write(f"{username}:{encoded_pw}:{email}:{joined_date}:{initial_balance}\n")
+
 
 def load_banned_users():
     if not os.path.exists(BANNED_USERS_FILE):
