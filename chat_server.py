@@ -322,6 +322,7 @@ async def websocket_handler(request):
                     amount = float(data["amnt"])
                     username = data["username"]
                     print(f"[DEBUG] Raw username: {repr(username)}")
+                    print("load users")
                     print(load_users())
                     print(username)
 
