@@ -81,7 +81,9 @@ def load_users():
     return users
 
 def update_user_balance(username, new_balance):
+    print(f"Updating balance for {username} to {new_balance}")  # DEBUG
     if not os.path.exists(USERS_FILE):
+        print("User file not found")
         return False
 
     updated = False
@@ -91,13 +93,17 @@ def update_user_balance(username, new_balance):
         for line in f:
             parts = line.strip().split(":")
             if parts[0] == username and len(parts) >= 5:
-                parts[4] = str(new_balance)  # directly update balance
+                print(f"Found user line: {line.strip()}")  # DEBUG
+                parts[4] = str(new_balance)
                 updated = True
             lines.append(":".join(parts) + "\n")
 
     if updated:
         with open(USERS_FILE, "w") as f:
             f.writelines(lines)
+        print("File updated.")  # DEBUG
+    else:
+        print("User not found.")  # DEBUG
 
     return updated
 
@@ -313,12 +319,13 @@ async def websocket_handler(request):
                         await ws.send_json({"type": "error", "message": "Invalid or expired verification code."})
 
                 elif data["type"] == "addChatterbucks":
-                    update_user_balance(data["username"], data["amnt"]);
-                    now_new_balance = get_user_balance(username);
+                    amount = float(data["amnt"])
+                    update_user_balance(data["username"], amount);
+                    now_new_balance = get_user_balance(data["username"]);
                     
                     await ws.send_json({
                         "type": "addedChatterbucks",
-                        "amount": data["amnt"],
+                        "amount": amount,
                         "balance": now_new_balance  # no quotes!
                     })
 
