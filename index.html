@@ -842,15 +842,47 @@
 
 
             document.getElementById('store-btn').addEventListener('click', function() {
-                document.getElementById('auth-container').style.display = 'none';
-                document.getElementById('verify').style.display = 'none';
-                document.getElementById('chat-container').style.display = 'none';
-                document.getElementById('start-game-btn').style.display = 'none';
-                document.getElementById('game-select').style.display = 'none';
-                document.getElementById('turn-off-admin').style.display = 'none';
-                document.getElementById('toggle-admin-mode').style.display = 'none';
-                document.getElementById('store-btn').textContent = 'Chat';
-                document.getElementById('store-content').style.display = 'block';
+                if (document.getElementById('chat-container').style.display = 'block') {
+                    document.getElementById('auth-container').style.display = 'none';
+                    document.getElementById('verify').style.display = 'none';
+                    document.getElementById('chat-container').style.display = 'none';
+                    document.getElementById('start-game-btn').style.display = 'none';
+                    document.getElementById('game-select').style.display = 'none';
+                    document.getElementById('turn-off-admin').style.display = 'none';
+                    document.getElementById('toggle-admin-mode').style.display = 'none';
+                    document.getElementById('store-btn').textContent = 'Chat';
+                    document.getElementById('store-content').style.display = 'block';
+                }else if (document.getElementById('chat-container').style.display === 'none' && my_role === "admin") {
+                    document.getElementById('auth-container').style.display = 'none';
+                    document.getElementById('verify').style.display = 'none';
+                    document.getElementById('chat-container').style.display = 'block';
+                    document.getElementById('start-game-btn').style.display = 'block';
+                    document.getElementById('game-select').style.display = 'block';
+                    document.getElementById('turn-off-admin').style.display = 'none';
+                    document.getElementById('toggle-admin-mode').style.display = 'block';
+                    document.getElementById('store-btn').textContent = 'Chat';
+                    document.getElementById('store-content').style.display = 'none';
+                }else if (document.getElementById('chat-container').style.display === 'none' && my_role === "moderator") {
+                    document.getElementById('auth-container').style.display = 'none';
+                    document.getElementById('verify').style.display = 'none';
+                    document.getElementById('chat-container').style.display = 'block';
+                    document.getElementById('start-game-btn').style.display = 'block';
+                    document.getElementById('game-select').style.display = 'block';
+                    document.getElementById('turn-off-admin').style.display = 'block';
+                    document.getElementById('toggle-admin-mode').style.display = 'block';
+                    document.getElementById('store-btn').textContent = 'Chat';
+                    document.getElementById('store-content').style.display = 'none';
+                }else {
+                    document.getElementById('auth-container').style.display = 'none';
+                    document.getElementById('verify').style.display = 'none';
+                    document.getElementById('chat-container').style.display = 'block';
+                    document.getElementById('start-game-btn').style.display = 'none';
+                    document.getElementById('game-select').style.display = 'none';
+                    document.getElementById('turn-off-admin').style.display = 'none';
+                    document.getElementById('toggle-admin-mode').style.display = 'none';
+                    document.getElementById('store-btn').textContent = 'Chat';
+                    document.getElementById('store-content').style.display = 'none';
+                }
                 
             });    
             // Send private message
