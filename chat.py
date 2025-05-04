@@ -348,17 +348,34 @@ async def websocket_handler(request):
                     for client_ws in connected_clients.values():
                         if not client_ws.closed:
                             await client_ws.send_json({"type": "game_started", "message": "Game has started", "game": data["game"], "pin": data["pin"]
+                            
 })
+                            print("sent game info")
 
                     
                 elif data["type"] == "finished_game":
                     print("Someone finished the game")
-                    await send_to_admins_and_mods({
-                        "type": "game_finished",
-                        "finisher": data["sender"],
-                        "game": data["game"],
-                        "time": data["time"]
-                    })
+                    print("data[\"game\"] =", data["game"])
+                    print("realPin:", data.get("realPin"))
+                    print("Connected clients:", list(connected_clients.keys()))
+                    if (data["game"] == "maze"):
+                        await send_to_admins_and_mods({
+                            "type": "game_finished",
+                            "finisher": data["sender"],
+                            "game": data["game"],
+                            "time": data["time"]
+                        })
+                    elif data["game"] == "guess_the_pin":
+                        print(" one Someone finished the game")
+                        print("data[\"game\"] =", data["game"])
+                        print("realPin:", data.get("realPin"))
+                        print("Connected clients:", list(connected_clients.keys()))
+
+                        for client_ws in connected_clients.values():
+                            if not client_ws.closed:
+                                await client_ws.send_json({"type": "pin_game_finished", "finisher": data["sender"], "game": data["game"], "correctPin": data["realPin"] })
+
+                    
 
                 
                 elif data["type"] == "login":
