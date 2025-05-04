@@ -7,6 +7,9 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body id="normal-content">
+    <!-- Store Button -->
+    <button id="store-btn" class="top-right">Store</button>
+
     <!-- Login / Signup Screen -->
     <div id="auth-container">
         <h2>Login</h2>
@@ -57,6 +60,14 @@
         </div>
     </div>
 
+    <script>
+        // JavaScript for the Store button action
+        document.getElementById('store-btn').addEventListener('click', function() {
+            alert('Store button clicked!');
+        });
+    </script>
+</body>
+</html>
     <script>
         Object.defineProperty(window, 'username', {
             get: function() {
