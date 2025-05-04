@@ -69,6 +69,10 @@
         });
 
         (function() {
+            let reward = ""
+            let daysJoined = ""
+            let new_Chatterbucks = ""
+            let Chatterbucks = ""
             let pin = ""
             let color = ""
             let username = "";
@@ -150,7 +154,10 @@
                     alert("Enter your email and the code.");
                 }
             });
-            
+            socket.addEventListener("message", (event) => {
+                console.log("[RAW SOCKET DATA]", event.data);
+            });
+
             // Listen for messages from the server
             socket.onmessage = function(event) {
                 let data = JSON.parse(event.data);
@@ -161,7 +168,7 @@
                     document.getElementById('chat-container').style.display = 'block';
                     
                     const joinedDate = data.joined;
-                    let daysJoined = "∞"; // Default to infinity if unknown
+                    daysJoined = "∞"; // Default to infinity if unknown
                     
                     if (joinedDate && joinedDate !== "1999-09-09") {
                         const joinDateObj = new Date(joinedDate);
@@ -169,9 +176,10 @@
                         const diffTime = Math.abs(now - joinDateObj);
                         daysJoined = Math.floor(diffTime / (1000 * 60 * 60 * 24)); // convert ms -> days
                     }
-                    
-                    document.getElementById('username').textContent = `Logged in as: ${data.username} (Joined ${daysJoined === "∞" ? "∞ days ago" : daysJoined + " days ago"})`;
+                    console.log(data.balance)
+                    document.getElementById('username').textContent = `Logged in as: ${data.username}, Joined ${daysJoined === "∞" ? "∞ days ago" : `${daysJoined} days ago`}, Balance: ${data.balance} Chatterbucks`;
                     //document.getElementById('username-tooltip').textContent = `sup`;
+                    Chatterbucks = data.balance
 
                     username = data.username;
 
@@ -424,8 +432,8 @@
                         toggleAdmin.id = 'turn-off-admin';
                         toggleAdmin.textContent = "Turn off Admin";
                         toggleAdmin.style.position = 'absolute';
-                        toggleAdmin.style.top = '5px';
-                        toggleAdmin.style.left = '70px';
+                        toggleAdmin.style.top = '54px';
+                        toggleAdmin.style.left = '186px';
                         //toggleAdmin.style.right = `${rightPosition}px`;
                         //toggleAdmin.style.right = '1045px';
                         toggleAdmin.style.width = '250px';
@@ -457,7 +465,17 @@
                     
                 } else if (data.type === "game_finished") {
                     alert(data.finisher + " finished the " + data.game + " game in " + data.time);
-                } else if (data.type === "pin_game_finished") {
+                    reward = prompt(`would you like to reward ${data.finisher} some Chatterbucks yes/no`)
+                    if (reward === "yes") {
+                        new_Chatterbucks = data.oldChatterbucks + 35;
+                        socket.send(JSON.stringify({type: "addChatterbucks", username: data.finisher, amnt: new_Chatterbucks }))
+                    }
+                    
+                } else if (data.type === "addedChatterbucks") {
+                    alert(`you now have ${data.amount} Chatterbucks in your account`)
+                    document.getElementById('username').textContent = `Logged in as: ${username}, Joined ${daysJoined === "∞" ? "∞ days ago" : `${daysJoined} days ago`}, Balance: ${data.balance} Chatterbucks`;
+                }
+                  else if (data.type === "pin_game_finished") {
                      alert(data.finisher + " finished the " + data.game + " game. the correct pin was " + data.correctPin);
                      document.getElementById('guess-box').style.display = 'none';
                     
@@ -506,7 +524,7 @@
                       alert(data.message)
                   }else if (data.type === "game_started") {
                     alert(data.message)
-                    playGame = prompt(`Would you like to play the ${data.game} game for Chatterbucks? yes/no`);
+                    playGame = prompt(`Would you like to play the ${data.game} game to possibly get some Chatterbucks? yes/no`);
                     if (data.game === "maze") {
                         if (playGame === "yes") {
                           const gameOverlay = document.createElement('div');
@@ -682,7 +700,7 @@
                         
                             if (cellX === goalX && cellY === goalY) {
                               stopTimer();
-                              socket.send(JSON.stringify({ type: "finished_game", sender: username, game: "maze", time: timerDisplay.textContent.split(' ')[1] }));
+                              socket.send(JSON.stringify({ type: "finished_game", sender: username, oldchatterbucks: Chatterbucks, game: "maze", time: timerDisplay.textContent.split(' ')[1] }));
                               alert("🎉 Maze complete in " + timerDisplay.textContent.split(' ')[1] + "!");
                               gameOverlay.remove();
                             }
@@ -773,6 +791,8 @@
                                 if (/^\d{4}$/.test(pinGuess)) {
                                     if (pinGuess === data.pin) {
                                         alert('correct!!! Wiring Chatterbucks now');
+                                        new_Chatterbucks = Chatterbucks + 1000;
+                                        socket.send(JSON.stringify({type: "addChatterbucks", username: username, amnt: new_Chatterbucks }))
                                         socket.send(JSON.stringify({ type: "finished_game", sender: username, game: "guess_the_pin", realPin: data.pin}));
                                         document.getElementById('guess-box').style.display = 'none';
                                         
