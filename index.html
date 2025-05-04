@@ -840,16 +840,13 @@
             });
 
 
-            let chatContainer = ""
-            let chatDisplay = ""
-            let isChatVisible = ""
-            document.getElementById('store-btn').addEventListener('click', function() {
-                chatContainer = document.getElementById('chat-container');
-                chatDisplay = window.getComputedStyle(chat-container).display;
-                isChatVisible = chatDisplay === 'none';
+            document.getElementById('store-btn').addEventListener('click', function () {
+                const chatContainer = document.getElementById('chat-container');
+                const chatDisplay = window.getComputedStyle(chatContainer).display;
+                const isChatVisible = chatDisplay === 'block';
             
                 if (isChatVisible) {
-                    // Hide everything and update button
+                    // Hide chat, show store
                     chatContainer.style.display = 'none';
                     document.getElementById('start-game-btn').style.display = 'none';
                     document.getElementById('game-select').style.display = 'none';
@@ -858,26 +855,24 @@
                     document.getElementById('store-btn').textContent = 'Chat';
                     document.getElementById('store-content').style.display = 'block';
                 } else {
-                    // Show chat based on role
+                    // Show chat, hide store
                     chatContainer.style.display = 'block';
                     document.getElementById('start-game-btn').style.display = 'block';
                     document.getElementById('game-select').style.display = 'block';
                     document.getElementById('store-btn').textContent = 'Store';
                     document.getElementById('store-content').style.display = 'none';
             
-                    if (my_role === "admin") {
-                        document.getElementById('turn-off-admin').style.display = 'block';
-                        document.getElementById('toggle-admin-mode').style.display = 'none';
-                    } else if (my_role === "moderator") {
+                    // Show admin/mod controls if applicable
+                    if (my_role === "admin" || my_role === "moderator") {
                         document.getElementById('turn-off-admin').style.display = 'block';
                         document.getElementById('toggle-admin-mode').style.display = 'none';
                     } else {
                         document.getElementById('turn-off-admin').style.display = 'none';
                         document.getElementById('toggle-admin-mode').style.display = 'none';
                     }
-    
                 }
             });
+
 
             // Send private message
             document.getElementById('send-private-message').addEventListener('click', function() {
