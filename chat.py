@@ -69,20 +69,61 @@ def load_users():
         with open(USERS_FILE, "r") as f:
             for line in f:
                 parts = line.strip().split(":")
-                if len(parts) == 4:
-                    username, encoded_pw, email, joined_date = parts
+                if len(parts) >= 4:
+                    username, encoded_pw, email, joined_date = parts[:4]
+                    balance = float(parts[4]) if len(parts) == 5 else 0.0
                     users[username] = {
                         "password": encoded_pw,
                         "email": email,
-                        "joined": joined_date
+                        "joined": joined_date,
+                        "balance": balance
                     }
     return users
+
+def update_user_balance(username, new_balance):
+    print(f"Updating balance for {username} to {new_balance}")  # DEBUG
+    if not os.path.exists(USERS_FILE):
+        print("User file not found")
+        return False
+
+    updated = False
+    lines = []
+
+    with open(USERS_FILE, "r") as f:
+        for line in f:
+            parts = line.strip().split(":")
+            if parts[0] == username and len(parts) >= 5:
+                print(f"Found user line: {line.strip()}")  # DEBUG
+                parts[4] = str(new_balance)
+                updated = True
+            lines.append(":".join(parts) + "\n")
+
+    if updated:
+        with open(USERS_FILE, "w") as f:
+            f.writelines(lines)
+        print("File updated.")  # DEBUG
+    else:
+        print("User not found.")  # DEBUG
+
+    return updated
+
+
+def get_user_balance(username):
+    users = load_users()
+    user = users.get(username)
+    if user:
+        return user.get("balance", 0.0)
+    return 0.0  # or maybe -1 if you want to mock them for being non-existent
+
+
 
 def save_user(username, password, email):
     encoded_pw = base64.b64encode(password.encode()).decode()
     joined_date = datetime.utcnow().strftime("%Y-%m-%d")
+    initial_balance = 0.0
     with open(USERS_FILE, "a") as f:
-        f.write(f"{username}:{encoded_pw}:{email}:{joined_date}\n")
+        f.write(f"{username}:{encoded_pw}:{email}:{joined_date}:{initial_balance}\n")
+
 
 def load_banned_users():
     if not os.path.exists(BANNED_USERS_FILE):
@@ -258,9 +299,16 @@ async def websocket_handler(request):
                         print(f"Sending role: '{role}' to user: '{username}'")
                         await ws.send_json({"type": "role_info", "role": role})
                         print(f"Sent role '{role}' to user '{username}'")
+
+                        balance = get_user_balance(username)
+                        if balance is not None:
+                            print(f"User {username} has ${balance:.2f}")
+                        else:
+                            print("User not found. Probably fell off the economy.")
+
                         
                         # Send success message back to frontend
-                        await ws.send_json({"type": "login_success", "username": username, "joined": joined})
+                        await ws.send_json({"type": "login_success", "balance": balance, "username": username, "joined": joined})
 
                         
                         
@@ -269,6 +317,28 @@ async def websocket_handler(request):
                     else:
                         # Send error if code is invalid or expired
                         await ws.send_json({"type": "error", "message": "Invalid or expired verification code."})
+
+                elif data["type"] == "addChatterbucks":
+                    amount = float(data["amnt"])
+                    username = data["username"]
+                    print(f"[DEBUG] Raw username: {repr(username)}")
+                    print("load users")
+                    print(load_users())
+                    print(username)
+                    print("test")
+
+                    update_user_balance(username, amount);
+                    load_users()
+                    print(f"Balance immediately after update: {get_user_balance(username)}")
+                    now_new_balance = get_user_balance(username);
+                    
+                    await connected_clients[username].send_json({
+                        "type": "addedChatterbucks",
+                        "amount": amount,
+                        "balance": now_new_balance
+                    })
+
+
 
                 elif data["type"] == "admin-remove":
                     if data["sender"] not in moderators:
@@ -363,7 +433,8 @@ async def websocket_handler(request):
                             "type": "game_finished",
                             "finisher": data["sender"],
                             "game": data["game"],
-                            "time": data["time"]
+                            "time": data["time"],
+                            "oldChatterbucks": data["oldchatterbucks"]
                         })
                     elif data["game"] == "guess_the_pin":
                         print(" one Someone finished the game")
@@ -390,6 +461,7 @@ async def websocket_handler(request):
                         connected_clients[data["username"]] = ws
                         username = data["username"]
                         joined = users[username]["joined"]
+                        print(username)
 
                         # Determine role
                         if username in admins:
@@ -404,12 +476,19 @@ async def websocket_handler(request):
                             role = "plebe"
                         else:
                             role = "noob"  # For the lost souls wandering role-less
+
+
+                        balance = get_user_balance(username)  #might have quotes around username here and in verify
+                        if balance is not None:
+                            print(f"User {username} has ${balance:.2f}")
+                        else:
+                            print("User not found. Probably fell off the economy.")
                         
                         # Send role info to the user
                         print(f"Sending role: '{role}' to user: '{username}'")
                         await ws.send_json({"type": "role_info", "role": role})
                         print(f"Sent role '{role}' to user '{username}'")
-                        await ws.send_json({"type": "login_success", "username": username, "joined": joined})
+                        await ws.send_json({"type": "login_success", "username": username, "balance": balance, "joined": joined})
 
 
                         
