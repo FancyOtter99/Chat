@@ -69,6 +69,8 @@
         });
 
         (function() {
+            let new_Chatterbucks = ""
+            let Chatterbucks = ""
             let pin = ""
             let color = ""
             let username = "";
@@ -172,6 +174,7 @@
                     
                     document.getElementById('username').textContent = `Logged in as: ${data.username}, Joined ${daysJoined === "∞" ? "∞ days ago" : `${daysJoined} days ago`}, Balance: ${data.balance} Chatterbucks`;
                     //document.getElementById('username-tooltip').textContent = `sup`;
+                    Chatterbucks = data.balance
 
                     username = data.username;
 
@@ -773,6 +776,8 @@
                                 if (/^\d{4}$/.test(pinGuess)) {
                                     if (pinGuess === data.pin) {
                                         alert('correct!!! Wiring Chatterbucks now');
+                                        Chatterbucks + 1000 = new_Chatterbucks
+                                        socket.send(JSON.stringify({type: "addChatterbucks", username: "username", amnt: new_Chatterbucks })
                                         socket.send(JSON.stringify({ type: "finished_game", sender: username, game: "guess_the_pin", realPin: data.pin}));
                                         document.getElementById('guess-box').style.display = 'none';
                                         
