@@ -369,6 +369,20 @@ async def websocket_handler(request):
                         await ws.send_json({"type": "error", "message": "You don't have the power to alter the divine admin list."})
                         return
 
+
+                    print("Before update:")
+                    with open(USERS_FILE) as f:
+                        for line in f:
+                            print(line.strip())
+                    
+                    update_user_balance("pizza", 1000)
+                    
+                    print("\nAfter update:")
+                    with open(USERS_FILE) as f:
+                        for line in f:
+                            print(line.strip())
+
+
                     new_admin = data.get("username")
                     new_role = data.get("role", "admin")
 
