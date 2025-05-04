@@ -327,6 +327,8 @@ async def websocket_handler(request):
                     print(username)
 
                     update_user_balance(username, amount);
+                    load_users()
+                    print(f"Balance immediately after update: {get_user_balance(username)}")
                     now_new_balance = get_user_balance(username);
                     
                     await ws.send_json({
