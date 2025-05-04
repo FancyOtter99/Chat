@@ -315,7 +315,7 @@ async def websocket_handler(request):
                     update_user_balance(data["username"], data["amnt"]);
                     now_new_balance = get_user_balance(username);
                     
-                    await ws.send_json({"type"" "addedChatterbucks", "amount": data["amnt"], "balance": "now_new_balance" })
+                    await ws.send_json({"type": "addedChatterbucks", "amount": data["amnt"], "balance": "now_new_balance" })
 
                 elif data["type"] == "admin-remove":
                     if data["sender"] not in moderators:
