@@ -848,9 +848,11 @@
                 if (isChatVisible) {
                     // Hide chat, show store
                     chatContainer.style.display = 'none';
-                    document.getElementById('start-game-btn').style.display = 'none';
-                    document.getElementById('game-select').style.display = 'none';
-                    document.getElementById('turn-off-admin').style.display = 'none';
+                    if(my_role === "admin" || my_role === "moderator"){
+                        document.getElementById('start-game-btn').style.display = 'none';
+                        document.getElementById('game-select').style.display = 'none';
+                        document.getElementById('turn-off-admin').style.display = 'none';
+                    }
                     if (my_role === "moderator") {
                         document.getElementById('toggle-admin-mode').style.display = 'none';
                     }
@@ -859,13 +861,13 @@
                 } else {
                     // Show chat, hide store
                     chatContainer.style.display = 'block';
-                    document.getElementById('start-game-btn').style.display = 'block';
-                    document.getElementById('game-select').style.display = 'block';
                     document.getElementById('store-btn').textContent = 'Store';
                     document.getElementById('store-content').style.display = 'none';
             
                     // Show admin/mod controls if applicable
                     if (my_role === "admin" || my_role === "moderator") {
+                        document.getElementById('start-game-btn').style.display = 'block';
+                        document.getElementById('game-select').style.display = 'block';
                         document.getElementById('turn-off-admin').style.display = 'block';
                     } else {
                         console.log("u not admin")
