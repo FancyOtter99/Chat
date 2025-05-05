@@ -190,6 +190,25 @@
                         daysJoined = Math.floor(diffTime / (1000 * 60 * 60 * 24)); // convert ms -> days
                     }
                     console.log(data.balance)
+                    console.log(data.items)
+                    if (data.items.includes("one")) {
+                        const urgentalert = document.createElement('div');
+                        urgentalert.id = 'urgent';
+                        urgentalert.style.position = 'absolute';
+                        urgentalert.style.top = '65px';
+                        urgentalert.style.right = '10px';
+                        urgentalert.style.padding = '10px';
+                        urgentalert.style.backgroundColor = 'blue';
+                        urgentalert.style.color = '#fff';
+                        urgentalert.style.borderRadius = '5px';
+                        urgentalert.style.width = '250px';
+                        urgentalert.innerHTML = `<input id = 'alertusername' style = "width: 200px; fontSize: 16px; padding: 10px; borderRadius: 5px;" placeholder = 'who do you want to alert'>
+                        </input> <button id = "startalert">Alert person</button>`
+
+
+                        document.body.appendChild(urgentalert);
+                        console.log("Blablabla granted. The 'one' is strong with this one.");
+                    }
                     document.getElementById('username').textContent = `Logged in as: ${data.username}, Joined ${daysJoined === "∞" ? "∞ days ago" : `${daysJoined} days ago`}, Balance: ${data.balance} Chatterbucks`;
                     //document.getElementById('username-tooltip').textContent = `sup`;
                     Chatterbucks = data.balance
