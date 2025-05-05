@@ -455,7 +455,7 @@ async def websocket_handler(request):
                         print(f"{data['username']} has now sent {user_alert_counts[data['username']]} alerts.")
                 
                         # Check if they're over the limit
-                        if user_alert_counts[data["username"]] > 2:
+                        if user_alert_counts[data["username"]] > 4:
                             await ws.send_json({
                                 "type": "error",
                                 "message": "That's more than two. No more alerts for you."
