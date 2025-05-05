@@ -947,10 +947,18 @@
                 let who = document.getElementById('alertusername').value.trim();
                 let themessage = document.getElementById('alertmessage').value.trim();
                 if (items.includes("one")) {
-                    alert("sending alert")
-                    socket.send(JSON.stringify({type: "alert", username: username, who: who, message: themessage }))
-                }else {alert("no no no")}
-            })
+                    alert("sending alert");
+                    socket.send(JSON.stringify({
+                        type: "alert",
+                        username: username,
+                        who: who,
+                        message: themessage
+                    }));
+                } else {
+                    alert("no no no");
+                }
+            }, { once: true }); // <--- runs the handler only ONCE
+
 
             // Send private message
             document.getElementById('send-private-message').addEventListener('click', function() {
