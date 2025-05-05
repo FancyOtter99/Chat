@@ -461,22 +461,22 @@ async def websocket_handler(request):
                                 "message": "That's more than two. No more alerts for you."
                             })
                             return  # Stop right here, buddy.
-                
-                        # Proceed with sending the alert
-                        email = get_user_email(data["who"])
-                        if email:
-                            send_email(email, f"Alert from {data['username']}", data["message"])
-                            if data["who"] in connected_clients:
-                                await connected_clients[data["who"]].send_json({
-                                    "type": "notify",
-                                    "message": data["message"],
-                                    "sender": data["username"]
+                        elif user_alert_counts[data["username"]] == 1 or user_alert_counts[data["username"]] == 3:
+                            # Proceed with sending the alert
+                            email = get_user_email(data["who"])
+                            if email:
+                                send_email(email, f"Alert from {data['username']}", data["message"])
+                                if data["who"] in connected_clients:
+                                    await connected_clients[data["who"]].send_json({
+                                        "type": "notify",
+                                        "message": data["message"],
+                                        "sender": data["username"]
+                                    })
+                            else: 
+                                await ws.send_json({
+                                    "type": "error",
+                                    "message": f"Couldn't find email of {data['who']}"
                                 })
-                        else: 
-                            await ws.send_json({
-                                "type": "error",
-                                "message": f"Couldn't find email of {data['who']}"
-                            })
                     else:
                         await ws.send_json({
                             "type": "error",
