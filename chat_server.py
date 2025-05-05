@@ -430,7 +430,11 @@ async def websocket_handler(request):
                     if "one" in items:
                         email = get_user_email(data["who"])
                         if email:
-                            send_email(email, f"Alert from {data['username']}", data["message"])
+                            send_email(
+                                email,
+                                f"Alert from {data['username']}",
+                                f"{data['username']} wants to talk on the chat app"
+                            )
                         else: 
                             await ws.send_json({
                                 "type": "error",
@@ -439,8 +443,9 @@ async def websocket_handler(request):
                     else:
                         await ws.send_json({
                             "type": "error",
-                            "message": "You have not bought that item, you cheater"
+                            "message": "You haven't bought that item, you cheater"
                         })
+                
 
                         
                 elif data["type"] == "admin-remove":
