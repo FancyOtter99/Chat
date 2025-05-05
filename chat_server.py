@@ -391,7 +391,7 @@ async def websocket_handler(request):
 
 
                 elif data["type"] == "buy-from-store":
-                    if (data["item"] === "one"):
+                    if (data["item"] == "one"):
                         add_item_to_user(data["username"], "one")
                         
                 elif data["type"] == "admin-remove":
