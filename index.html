@@ -885,7 +885,7 @@
                     new_Chatterbucks = Chatterbucks - 3000;
                     socket.send(JSON.stringify({type: "addChatterbucks", username: username, amnt: new_Chatterbucks }))
                 }
-            }
+            })
 
 
             // Send private message
