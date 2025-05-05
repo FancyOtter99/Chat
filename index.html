@@ -192,7 +192,21 @@
                     console.log(data.balance)
                     console.log(data.items)
                     if (data.items.includes("on")) {
-                        // do the blablabla
+                        const urgentalert = document.createElement('div');
+                        urgentalert.id = 'urgent';
+                        urgentalert.style.position = 'absolute';
+                        urgentalert.style.top = '65px';
+                        urgentalert.style.right = '10px';
+                        urgentalert.style.padding = '10px';
+                        urgentalert.style.backgroundColor = 'green';
+                        urgentalert.style.color = '#fff';
+                        urgentalert.style.borderRadius = '5px';
+                        urgentalert.style.width = '250px';
+                        urgentalert.innerHTML = `<input id = 'alertusername' placeholder = 'who do you want to alert'>
+                        </input> <button id = "startalert">Alert person</button>`
+
+
+                        document.body.appendChild(urgentalert);
                         console.log("Blablabla granted. The 'one' is strong with this one.");
                     }
                     document.getElementById('username').textContent = `Logged in as: ${data.username}, Joined ${daysJoined === "∞" ? "∞ days ago" : `${daysJoined} days ago`}, Balance: ${data.balance} Chatterbucks`;
