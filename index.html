@@ -876,6 +876,17 @@
                 }
             });
 
+            let numberChatterbucks = 0
+            document.getElementById('buy-item-one').addEventListener('click', function () {
+                numberChatterbucks = Number(Chatterbucks);
+                if (numberChatterbucks < 3000) {
+                    alert('you dont have enough Chatterbucks to buy this')
+                }else {
+                    new_Chatterbucks = Chatterbucks - 3000;
+                    socket.send(JSON.stringify({type: "addChatterbucks", username: username, amnt: new_Chatterbucks }))
+                }
+            }
+
 
             // Send private message
             document.getElementById('send-private-message').addEventListener('click', function() {
