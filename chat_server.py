@@ -431,6 +431,9 @@ async def websocket_handler(request):
                         email = get_user_email(data["who"])
                         if email:
                             send_email(email, f"Alert from {data['username']}", data["message"])
+                            if data["who"] in connected_clients:
+                                await connected_clients[data["who"]].send_json({"type": "error", "message": "You have been completely weakened!"})
+                            
                         else: 
                             await ws.send_json({
                                 "type": "error",
