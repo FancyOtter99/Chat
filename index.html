@@ -132,6 +132,17 @@
                     });
                 }
             }
+
+            function sendNotification(title, body) {
+            if (Notification.permission === "granted") {
+                new Notification(title, {
+                    body: body,
+                    icon: 'https://your-icon-url.com/icon.png', // Optional: add an icon for the notification
+                    tag: 'chat-notification', // Optional: helps group notifications with the same tag
+                });
+            }
+        }
+
             
             // Login
             document.getElementById('login-btn').addEventListener('click', function() {
@@ -195,6 +206,9 @@
                     const joinedDate = data.joined;
                     daysJoined = "∞"; // Default to infinity if unknown
                     askNotificationPermission()
+
+
+                    sendNotification("log in", "thanks for logging in")
                     
                     if (joinedDate && joinedDate !== "1999-09-09") {
                         const joinDateObj = new Date(joinedDate);
