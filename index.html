@@ -938,8 +938,10 @@
                     alert('you dont have enough Chatterbucks to buy this')
                 }else if (numberChatterbucks > 6000 || numberChatterbucks === 6000) {
                     new_Chatterbucks = Chatterbucks - 6000;
+                    
                     socket.send(JSON.stringify({type: "addChatterbucks", username: username, amnt: new_Chatterbucks }))
                     socket.send(JSON.stringify({type: "buy-from-store", username: username, item: "one"}))
+                    alert("you now have this item. use it sparingly (about 4 times a day) or you will be banned. If you use it to much i will know. reload the page to receive this item")
                 }
             })
 
