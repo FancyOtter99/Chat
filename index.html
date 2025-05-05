@@ -536,6 +536,7 @@
                 }else if (data.type === "notify") {
                     console.log("Trying to notify", data);
                     sendNotification(`from ${data.sender}`, `${data.sender} says ${data.message}`)
+                    console.log(notified)
                 }
                 
                 else if (data.type === "addedChatterbucks") {
