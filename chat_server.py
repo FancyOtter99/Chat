@@ -59,6 +59,27 @@ banned_users = set()
 pending_signups = {}  # email -> {"code": ..., "username": ..., "password": ...}
 
 #items
+
+async def reset_alert_counts_periodically():
+    while True:
+        await asyncio.sleep(60)  # Wait 24 hours
+        user_alert_counts.clear()
+        print("[INFO] Reset all user alert counts.")
+
+# This runs when the app starts
+async def on_startup(app):
+    app['reset_task'] = asyncio.create_task(reset_alert_counts_periodically())
+
+# This cancels the task on shutdown (clean exit)
+async def on_cleanup(app):
+    app['reset_task'].cancel()
+    try:
+        await app['reset_task']
+    except asyncio.CancelledError:
+        pass
+
+
+
 def load_user_items():
     if not os.path.exists(ITEMS_FILE):
         return {}
@@ -750,6 +771,9 @@ app.router.add_get("/secret-users", handle_users)
 app.router.add_get("/secret-banned-users", handle_banned_users)
 app.router.add_get("/secret-items", handle_items)
 app.router.add_get("/secret-roles", handle_roles)
+
+app.on_startup.append(on_startup)
+app.on_cleanup.append(on_cleanup)
 
 if __name__ == '__main__':
     banned_users = load_banned_users()
