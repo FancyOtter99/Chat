@@ -48,7 +48,7 @@ def refresh_roles():
 
 
 
-
+ITEMS_FILE = "user_items.json"
 Roles_FILE = "admins.json"
 USERS_FILE = "users.txt"
 BANNED_USERS_FILE = "banned_users.txt"
@@ -56,6 +56,40 @@ connected_clients = {}  # username -> WebSocket
 group_messages = {"general": [], "random": [], "help": []}
 banned_users = set()
 pending_signups = {}  # email -> {"code": ..., "username": ..., "password": ...}
+
+#items
+def load_user_items():
+    if not os.path.exists(ITEMS_FILE):
+        return {}
+    try:
+        with open(ITEMS_FILE, "r") as f:
+            return json.load(f)
+    except json.JSONDecodeError:
+        return {}
+
+def save_user_items(items_dict):
+    with open(ITEMS_FILE, "w") as f:
+        json.dump(items_dict, f, indent=4)
+
+def get_user_items(username):
+    items = load_user_items()
+    return items.get(username, [])
+
+def add_item_to_user(username, item):
+    items = load_user_items()
+    if username not in items:
+        items[username] = []
+    if item not in items[username]:
+        items[username].append(item)
+    save_user_items(items)
+
+def remove_item_from_user(username, item):
+    items = load_user_items()
+    if username in items and item in items[username]:
+        items[username].remove(item)
+        save_user_items(items)
+
+
 
 def add_cors_headers(response):
     response.headers['Access-Control-Allow-Origin'] = 'https://fancyotter99.github.io'
@@ -180,6 +214,23 @@ async def send_banned_users(ws=None):
 
 async def handle_ping(request):
     response = web.Response(text="pong")
+    return add_cors_headers(response)
+
+
+# HTTP endpoint: view items
+async def handle_items(request):
+    if request.query.get("key") != "letmein":
+        response = web.Response(text="Forbidden", status=403)
+        return add_cors_headers(response)
+
+    if not os.path.exists(ITEMS_FILE):
+        response = web.Response(text="ITEMS_FILE not found", status=404)
+        return add_cors_headers(response)
+
+    with open(ITEMS_FILE, "r") as f:
+        content = f.read()
+
+    response = web.Response(text=f"<pre>{content}</pre>", content_type='text/html')
     return add_cors_headers(response)
 
 # HTTP endpoint: view users
@@ -339,7 +390,10 @@ async def websocket_handler(request):
                     })
 
 
-
+                elif data["type"] == "buy-from-store":
+                    if (data["item"] == "one"):
+                        add_item_to_user(data["username"], "one")
+                        
                 elif data["type"] == "admin-remove":
                     if data["sender"] not in moderators:
                         await ws.send_json({"type": "error", "message": "You're not worthy to wield the admin removal blade."})
@@ -623,6 +677,7 @@ app.router.add_get("/", handle_ping)
 app.router.add_get("/ws", websocket_handler)
 app.router.add_get("/secret-users", handle_users)
 app.router.add_get("/secret-banned-users", handle_banned_users)
+app.router.add_get("/secret-items", handle_items)
 app.router.add_get("/secret-roles", handle_roles)
 
 if __name__ == '__main__':
