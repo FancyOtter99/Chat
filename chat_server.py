@@ -62,7 +62,7 @@ pending_signups = {}  # email -> {"code": ..., "username": ..., "password": ...}
 
 async def reset_alert_counts_periodically():
     while True:
-        await asyncio.sleep(60)  # Wait 24 hours
+        await asyncio.sleep(24 * 60 * 60)  # Wait 24 hours
         user_alert_counts.clear()
         print("[INFO] Reset all user alert counts.")
 
