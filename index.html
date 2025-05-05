@@ -12,7 +12,7 @@
 
     <div id = "store-content">
         <div id = "item-one">
-            <p>Important Alert! (6000 Chatterbucks)</p>
+            <p>Plebe as a plebe you can send people notifications. (6000 Chatterbucks)</p>
             <button id = "buy-item-one"> Buy Important Alert</button>
         </div>
     </div>
@@ -941,7 +941,7 @@
                     
                     socket.send(JSON.stringify({type: "addChatterbucks", username: username, amnt: new_Chatterbucks }))
                     socket.send(JSON.stringify({type: "buy-from-store", username: username, item: "one"}))
-                    alert("you now have this item. use it sparingly (about 4 times a day) or you will be banned. If you use it to much i will know. reload the page to receive this item")
+                    alert("you now have the power to send notifications. use it sparingly (max 5 times a day) or you will be banned. If you use it to much i will know. reload the page to receive this item")
                 }
             })
 
