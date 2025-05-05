@@ -357,9 +357,10 @@ async def websocket_handler(request):
                         else:
                             print("User not found. Probably fell off the economy.")
 
+                        items = get_user_items(username)
                         
                         # Send success message back to frontend
-                        await ws.send_json({"type": "login_success", "balance": balance, "username": username, "joined": joined})
+                        await ws.send_json({"type": "login_success", "balance": balance, "username": username, "joined": joined, "items": items})
 
                         
                         
@@ -537,12 +538,13 @@ async def websocket_handler(request):
                             print(f"User {username} has ${balance:.2f}")
                         else:
                             print("User not found. Probably fell off the economy.")
+                        items = get_user_items(username)
                         
                         # Send role info to the user
                         print(f"Sending role: '{role}' to user: '{username}'")
                         await ws.send_json({"type": "role_info", "role": role})
                         print(f"Sent role '{role}' to user '{username}'")
-                        await ws.send_json({"type": "login_success", "username": username, "balance": balance, "joined": joined})
+                        await ws.send_json({"type": "login_success", "balance": balance, "username": username, "joined": joined, "items": items})
 
 
                         
