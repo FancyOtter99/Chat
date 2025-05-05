@@ -12,7 +12,7 @@
 
     <div id = "store-content">
         <div id = "item-one">
-            <p>Plebe as a plebe you can send people notifications. (6000 Chatterbucks)</p>
+            <p>Pro as a pro you can send people notifications. (30000 Chatterbucks)</p>
             <button id = "buy-item-one"> Buy Important Alert</button>
         </div>
     </div>
@@ -934,14 +934,14 @@
             let numberChatterbucks = 0
             document.getElementById('buy-item-one').addEventListener('click', function () {
                 numberChatterbucks = Number(Chatterbucks);
-                if (numberChatterbucks < 6000) {
+                if (numberChatterbucks < 30000) {
                     alert('you dont have enough Chatterbucks to buy this')
-                }else if (numberChatterbucks > 6000 || numberChatterbucks === 6000) {
-                    new_Chatterbucks = Chatterbucks - 6000;
+                }else if (numberChatterbucks > 30000 || numberChatterbucks === 30000) {
+                    new_Chatterbucks = Chatterbucks - 30000;
                     
                     socket.send(JSON.stringify({type: "addChatterbucks", username: username, amnt: new_Chatterbucks }))
                     socket.send(JSON.stringify({type: "buy-from-store", username: username, item: "one"}))
-                    alert("you now have the power to send notifications. use it sparingly (max 5 times a day) or you will be banned. If you use it to much i will know. reload the page to receive this item")
+                    alert("you now have the power to send notifications. use it sparingly (max 2 times a day) or you will be banned. If you use it to much i will know. reload the page to receive this item")
                 }
             })
 
