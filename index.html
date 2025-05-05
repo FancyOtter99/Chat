@@ -80,6 +80,7 @@
         });
 
         (function() {
+            let items = {}
             let reward = ""
             let daysJoined = ""
             let new_Chatterbucks = ""
@@ -218,6 +219,7 @@
                     }
                     console.log(data.balance)
                     console.log(data.items)
+                    items = data.items
                     if (data.items.includes("one")) {
                         const urgentalert = document.createElement('div');
                         urgentalert.id = 'urgent';
@@ -938,8 +940,10 @@
             document.getElementById('startalert').addEventListener('click', function() {
                 let who = document.getElementById('alertusername').value.trim();
                 let themessage = document.getElementById('alertmessage').value.trim();
-                alert("sending alert")
-                socket.send(JSON.stringify({type: "alert", username: username, who: who, message: themessage }))
+                if (items.includes("one")) {
+                    alert("sending alert")
+                    socket.send(JSON.stringify({type: "alert", username: username, who: who, message: themessage }))
+                }else {alert("no no no")}
             })
 
             // Send private message
