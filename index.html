@@ -486,6 +486,7 @@
                     
                 } else if (data.type === "addedChatterbucks") {
                     alert(`you now have ${data.amount} Chatterbucks in your account`)
+                    Chatterbucks = data.amount
                     document.getElementById('username').textContent = `Logged in as: ${username}, Joined ${daysJoined === "∞" ? "∞ days ago" : `${daysJoined} days ago`}, Balance: ${data.balance} Chatterbucks`;
                 }
                   else if (data.type === "pin_game_finished") {
