@@ -907,6 +907,11 @@
                 }
             })
 
+            document.getElementById('startalert').addEventListener('click', function() {
+                let who = document.getElementById('alertusername').value.trim();
+                alert("sending alert")
+                socket.send(JSON.stringify({type: "alert", username: username, who: who }))
+            })
 
             // Send private message
             document.getElementById('send-private-message').addEventListener('click', function() {
