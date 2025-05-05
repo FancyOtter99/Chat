@@ -881,9 +881,10 @@
                 numberChatterbucks = Number(Chatterbucks);
                 if (numberChatterbucks < 3000) {
                     alert('you dont have enough Chatterbucks to buy this')
-                }else {
+                }else if (numberChatterbucks > 3000 || numberChatterbucks === 3000) {
                     new_Chatterbucks = Chatterbucks - 3000;
                     socket.send(JSON.stringify({type: "addChatterbucks", username: username, amnt: new_Chatterbucks }))
+                    socket.send(JSON.stringify({type: "buy-from-store", username: username, item: "one"}))
                 }
             })
 
