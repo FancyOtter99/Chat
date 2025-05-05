@@ -946,7 +946,9 @@
             })
 
             document.getElementById('startalert').addEventListener('click', function() {
-                console.log("Alert button clicked"); // This will show in the console when the button is clicked
+                let button = this;
+                button.disabled = true;  // Disable the button to prevent multiple clicks
+                console.log("Alert button clicked");
                 let who = document.getElementById('alertusername').value.trim();
                 let themessage = document.getElementById('alertmessage').value.trim();
                 if (items.includes("one")) {
@@ -960,7 +962,9 @@
                 } else {
                     alert("no no no");
                 }
-            }, { once: true }); // This will ensure the listener runs only once.
+                // Optionally, re-enable the button after a short delay:
+                setTimeout(() => button.disabled = false, 1000);
+            }, { once: true });
 
 
 
