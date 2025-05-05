@@ -90,6 +90,28 @@ def remove_item_from_user(username, item):
         save_user_items(items)
 
 
+def send_email(to_email, subject, body):
+    smtp_host = os.getenv('SMTP_HOST')
+    smtp_port = int(os.getenv('SMTP_PORT'))
+    smtp_user = os.getenv('SMTP_USER')
+    smtp_pass = os.getenv('SMTP_PASS')
+
+    message = EmailMessage()
+    message["Subject"] = subject
+    message["From"] = smtp_user
+    message["To"] = to_email
+    message.set_content(body)
+
+    try:
+        with smtplib.SMTP(smtp_host, smtp_port) as server:
+            server.starttls()
+            server.login(smtp_user, smtp_pass)
+            server.send_message(message)
+            print(f"Email sent to {to_email}")
+    except Exception as e:
+        print(f"Failed to send email: {e}")
+        traceback.print_exc()
+
 
 def add_cors_headers(response):
     response.headers['Access-Control-Allow-Origin'] = 'https://fancyotter99.github.io'
@@ -177,6 +199,13 @@ def validate_login(username, password):
     if user_data:
         return user_data["password"] == encoded_pw
     return False
+
+def get_user_email(username):
+    users = load_users()
+    user = users.get(username)
+    if user:
+        return user.get("email")
+    return None
 
 async def send_verification_email(email, code):
     smtp_host = os.getenv('SMTP_HOST')
@@ -394,6 +423,25 @@ async def websocket_handler(request):
                 elif data["type"] == "buy-from-store":
                     if (data["item"] == "one"):
                         add_item_to_user(data["username"], "one")
+
+
+                elif data["type"] == "alert":
+                    items = get_user_items(data["username"])
+                    if "one" in items:
+                        email = get_user_email(data["who"])
+                        if email:
+                            send_email(email, f"Alert from {data['username']}", data["message"])
+                        else: 
+                            await ws.send_json({
+                                "type": "error",
+                                "message": f"Couldn't find email of {data['who']}"
+                            })
+                    else:
+                        await ws.send_json({
+                            "type": "error",
+                            "message": "You have not bought that item, you cheater"
+                        })
+
                         
                 elif data["type"] == "admin-remove":
                     if data["sender"] not in moderators:
