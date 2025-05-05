@@ -28,6 +28,7 @@ moderators = get_role_set("moderator")
 pros = get_role_set("pro")
 middles = get_role_set("middle")
 plebes = get_role_set("plebe")
+user_alert_counts = {}  # Example: {"bob": 3, "susan": 12}
 
 def refresh_roles():
     admins.clear()
@@ -428,12 +429,28 @@ async def websocket_handler(request):
                 elif data["type"] == "alert":
                     items = get_user_items(data["username"])
                     if "one" in items:
+                        # Count the alerts
+                        user_alert_counts[data["username"]] = user_alert_counts.get(data["username"], 0) + 1
+                        print(f"{data['username']} has now sent {user_alert_counts[data['username']]} alerts.")
+                
+                        # Check if they're over the limit
+                        if user_alert_counts[data["username"]] > 2:
+                            await ws.send_json({
+                                "type": "error",
+                                "message": "That's more than two. No more alerts for you."
+                            })
+                            return  # Stop right here, buddy.
+                
+                        # Proceed with sending the alert
                         email = get_user_email(data["who"])
                         if email:
                             send_email(email, f"Alert from {data['username']}", data["message"])
                             if data["who"] in connected_clients:
-                                await connected_clients[data["who"]].send_json({"type": "notify", "message": data["message"], "sender": data["username"]})
-                            
+                                await connected_clients[data["who"]].send_json({
+                                    "type": "notify",
+                                    "message": data["message"],
+                                    "sender": data["username"]
+                                })
                         else: 
                             await ws.send_json({
                                 "type": "error",
