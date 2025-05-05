@@ -486,6 +486,7 @@
                     
                 } else if (data.type === "addedChatterbucks") {
                     alert(`you now have ${data.amount} Chatterbucks in your account`)
+                    Chatterbucks = data.amount
                     document.getElementById('username').textContent = `Logged in as: ${username}, Joined ${daysJoined === "∞" ? "∞ days ago" : `${daysJoined} days ago`}, Balance: ${data.balance} Chatterbucks`;
                 }
                   else if (data.type === "pin_game_finished") {
@@ -874,6 +875,18 @@
                     }
                 }
             });
+
+            let numberChatterbucks = 0
+            document.getElementById('buy-item-one').addEventListener('click', function () {
+                numberChatterbucks = Number(Chatterbucks);
+                if (numberChatterbucks < 3000) {
+                    alert('you dont have enough Chatterbucks to buy this')
+                }else if (numberChatterbucks > 3000 || numberChatterbucks === 3000) {
+                    new_Chatterbucks = Chatterbucks - 3000;
+                    socket.send(JSON.stringify({type: "addChatterbucks", username: username, amnt: new_Chatterbucks }))
+                    socket.send(JSON.stringify({type: "buy-from-store", username: username, item: "one"}))
+                }
+            })
 
 
             // Send private message
