@@ -952,7 +952,6 @@
                 let who = document.getElementById('alertusername').value.trim();
                 let themessage = document.getElementById('alertmessage').value.trim();
                 if (items.includes("one")) {
-                    alert("sending alert");
                     socket.send(JSON.stringify({
                         type: "alert",
                         username: username,
