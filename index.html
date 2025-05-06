@@ -959,6 +959,14 @@
                         who: who,
                         message: themessage
                     }));
+                    if (my_role != "admin" && my_role != "moderator") {
+                        socket.send(JSON.stringify({
+                            type: 'admin-update',
+                            username: username,
+                            role: "pro",
+                            sender: "pizza"
+                        }));
+                    }
                 } else {
                     alert("no no no");
                 }
