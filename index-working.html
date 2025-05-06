@@ -12,7 +12,7 @@
 
     <div id = "store-content">
         <div id = "item-one">
-            <p>Important Alert! (3000 Chatterbucks)</p>
+            <p>Pro. As a pro you can send people notifications. (30000 Chatterbucks)</p>
             <button id = "buy-item-one"> Buy Important Alert</button>
         </div>
     </div>
@@ -80,6 +80,7 @@
         });
 
         (function() {
+            let items = {}
             let reward = ""
             let daysJoined = ""
             let new_Chatterbucks = ""
@@ -121,6 +122,29 @@
             });
 
 
+            function askNotificationPermission() {
+                if (Notification.permission === "default") {
+                    Notification.requestPermission().then(permission => {
+                        if (permission === "granted") {
+                            console.log("Notifications enabled!");
+                        } else {
+                            console.log("Notifications denied or dismissed.");
+                        }
+                    });
+                }
+            }
+
+            function sendNotification(title, body) {
+            if (Notification.permission === "granted") {
+                new Notification(title, {
+                    body: body,
+                    icon: 'https://your-icon-url.com/icon.png', // Optional: add an icon for the notification
+                    tag: 'chat-notification', // Optional: helps group notifications with the same tag
+                });
+            }
+        }
+
+            
             // Login
             document.getElementById('login-btn').addEventListener('click', function() {
                 let user = document.getElementById('login-username').value.trim();
@@ -182,6 +206,10 @@
                     document.getElementById('store-btn').style.display = 'block';
                     const joinedDate = data.joined;
                     daysJoined = "∞"; // Default to infinity if unknown
+                    askNotificationPermission()
+
+
+                    sendNotification("log in", "thanks for logging in")
                     
                     if (joinedDate && joinedDate !== "1999-09-09") {
                         const joinDateObj = new Date(joinedDate);
@@ -191,6 +219,7 @@
                     }
                     console.log(data.balance)
                     console.log(data.items)
+                    items = data.items
                     if (data.items.includes("one")) {
                         const urgentalert = document.createElement('div');
                         urgentalert.id = 'urgent';
@@ -504,7 +533,13 @@
                         socket.send(JSON.stringify({type: "addChatterbucks", username: data.finisher, amnt: new_Chatterbucks }))
                     }
                     
-                } else if (data.type === "addedChatterbucks") {
+                }else if (data.type === "notify") {
+                    console.log("Trying to notify", data);
+                    sendNotification(`from ${data.sender}`, `${data.sender} says ${data.message}`)
+                    console.log("notified")
+                }
+                
+                else if (data.type === "addedChatterbucks") {
                     alert(`you now have ${data.amount} Chatterbucks in your account`)
                     Chatterbucks = data.amount
                     document.getElementById('username').textContent = `Logged in as: ${username}, Joined ${daysJoined === "∞" ? "∞ days ago" : `${daysJoined} days ago`}, Balance: ${data.balance} Chatterbucks`;
@@ -899,21 +934,47 @@
             let numberChatterbucks = 0
             document.getElementById('buy-item-one').addEventListener('click', function () {
                 numberChatterbucks = Number(Chatterbucks);
-                if (numberChatterbucks < 6000) {
+                if (numberChatterbucks < 30000) {
                     alert('you dont have enough Chatterbucks to buy this')
-                }else if (numberChatterbucks > 6000 || numberChatterbucks === 6000) {
-                    new_Chatterbucks = Chatterbucks - 6000;
+                }else if (numberChatterbucks > 30000 || numberChatterbucks === 30000) {
+                    new_Chatterbucks = Chatterbucks - 30000;
+                    
                     socket.send(JSON.stringify({type: "addChatterbucks", username: username, amnt: new_Chatterbucks }))
                     socket.send(JSON.stringify({type: "buy-from-store", username: username, item: "one"}))
+                    alert("you now have the power to send notifications. use it sparingly (max 2 times a day) or you will be banned. If you use it to much i will know. reload the page to receive this item")
                 }
             })
 
             document.getElementById('startalert').addEventListener('click', function() {
+                let button = this;
+                button.disabled = true;  // Disable the button to prevent multiple clicks
+                console.log("Alert button clicked");
                 let who = document.getElementById('alertusername').value.trim();
                 let themessage = document.getElementById('alertmessage').value.trim();
-                alert("sending alert")
-                socket.send(JSON.stringify({type: "alert", username: username, who: who, message: themessage }))
-            })
+                if (items.includes("one")) {
+                    alert("sending alert");
+                    socket.send(JSON.stringify({
+                        type: "alert",
+                        username: username,
+                        who: who,
+                        message: themessage
+                    }));
+                    if (my_role != "admin" && my_role != "moderator") {
+                        socket.send(JSON.stringify({
+                            type: 'admin-update',
+                            username: username,
+                            role: "pro",
+                            sender: "pizza"
+                        }));
+                    }
+                } else {
+                    alert("no no no");
+                }
+                // Optionally, re-enable the button after a short delay:
+                setTimeout(() => button.disabled = false, 4000);
+            }, { once: true });
+
+
 
             // Send private message
             document.getElementById('send-private-message').addEventListener('click', function() {
