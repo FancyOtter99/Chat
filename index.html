@@ -964,34 +964,35 @@
                 }
             })
                 
-
-            document.getElementById('startalert').addEventListener('click', function() {
-                let button = this;
-                button.disabled = true;  // Disable the button to prevent multiple clicks
-                console.log("Alert button clicked");
-                let who = document.getElementById('alertusername').value.trim();
-                let themessage = document.getElementById('alertmessage').value.trim();
-                if (items.includes("one")) {
-                    socket.send(JSON.stringify({
-                        type: "alert",
-                        username: username,
-                        who: who,
-                        message: themessage
-                    }));
-                    if (my_role != "admin" && my_role != "moderator") {
+            if (items.includes("one")) {
+                document.getElementById('startalert').addEventListener('click', function() {
+                    let button = this;
+                    button.disabled = true;  // Disable the button to prevent multiple clicks
+                    console.log("Alert button clicked");
+                    let who = document.getElementById('alertusername').value.trim();
+                    let themessage = document.getElementById('alertmessage').value.trim();
+                    if (items.includes("one")) {
                         socket.send(JSON.stringify({
-                            type: 'admin-update',
+                            type: "alert",
                             username: username,
-                            role: "pro",
-                            sender: "pizza"
+                            who: who,
+                            message: themessage
                         }));
+                        if (my_role != "admin" && my_role != "moderator") {
+                            socket.send(JSON.stringify({
+                                type: 'admin-update',
+                                username: username,
+                                role: "pro",
+                                sender: "pizza"
+                            }));
+                        }
+                    } else {
+                        alert("no no no");
                     }
-                } else {
-                    alert("no no no");
-                }
-                // Optionally, re-enable the button after a short delay:
-                setTimeout(() => button.disabled = false, 4000);
-            }, { once: true });
+                    // Optionally, re-enable the button after a short delay:
+                    setTimeout(() => button.disabled = false, 4000);
+                }, { once: true });
+            }
 
 
 
