@@ -785,7 +785,7 @@ app.router.add_get("/", handle_ping)
 app.router.add_get("/ws", websocket_handler)
 app.router.add_get("/secret-users", handle_users)
 app.router.add_get("/secret-banned-users", handle_banned_users)
-app.router.add_get("/secret-connected-clients", handle_connected_clients
+app.router.add_get("/secret-connected-clients", handle_connected_clients)
 app.router.add_get("/secret-items", handle_items)
 app.router.add_get("/secret-roles", handle_roles)
 
