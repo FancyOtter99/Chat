@@ -51,7 +51,7 @@
 </head>
 <body>
 
-<div class="hover-container">
+<div class="hover-container" id = "hover-on-me">
 <div class="hover-target">
     Connected Clients!
 </div>
@@ -156,6 +156,7 @@
             document.getElementById('verify').style.display = 'none';
             document.getElementById('store-btn').style.display = 'none';
             document.getElementById('store-content').style.display = 'none';
+            document.getElementById('hover-on-me').style.display = 'none';
             // Wait for WebSocket connection to open
             socket.onopen = function() {
                 console.log("WebSocket connection established!");
@@ -261,6 +262,7 @@
                     document.getElementById('verify').style.display = 'none';
                     document.getElementById('chat-container').style.display = 'block';
                     document.getElementById('store-btn').style.display = 'block';
+                    document.getElementById('hover-on-me').style.display = 'block';
                     const joinedDate = data.joined;
                     daysJoined = "∞"; // Default to infinity if unknown
                     askNotificationPermission()
