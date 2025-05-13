@@ -347,6 +347,14 @@ async def handle_banned_users(request):
     response = web.Response(text=f"<pre>{content}</pre>", content_type='text/html')
     return add_cors_headers(response)
 
+async def handle_connected_clients(request):
+    if request.query.get("key") != "letmein":
+        response = web.Response(text="Forbidden", status=403)
+        return add_cors_headers(response)
+
+    response = web.Response(text=f"<pre>{list(connected_clients.keys())}</pre>", content_type='text/html')
+    return add_cors_headers(response)
+
 async def websocket_handler(request):
     ws = web.WebSocketResponse()
     await ws.prepare(request)
@@ -777,6 +785,7 @@ app.router.add_get("/", handle_ping)
 app.router.add_get("/ws", websocket_handler)
 app.router.add_get("/secret-users", handle_users)
 app.router.add_get("/secret-banned-users", handle_banned_users)
+app.router.add_get("/secret-connected-clients", handle_connected_clients
 app.router.add_get("/secret-items", handle_items)
 app.router.add_get("/secret-roles", handle_roles)
 
