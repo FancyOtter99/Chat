@@ -136,8 +136,15 @@ def send_email(to_email, subject, body):
 
 
 def add_cors_headers(response):
-    allowed_origins = ['https://fancyotter99.github.io', 'https://6w5f23va.live.codepad.app']
-    response.headers['Access-Control-Allow-Origin'] = allowed_origins
+#    allowed_origins = [
+ #       'https://fancyotter99.github.io',
+  #      'https://6w5f23va.live.codepad.app'
+   # ]
+    
+    origin = request.headers.get('Origin')
+    
+    #if origin in allowed_origins:
+    response.headers['Access-Control-Allow-Origin'] = origin
     response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
     return response
