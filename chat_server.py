@@ -352,7 +352,8 @@ async def handle_connected_clients(request):
         response = web.Response(text="Forbidden", status=403)
         return add_cors_headers(response)
 
-    response = web.Response(text=f"<pre>{list(connected_clients.keys())}</pre>", content_type='text/html')
+    #response = web.Response(text=f"<pre>{list(connected_clients.keys())}</pre>", content_type='text/html')
+    response = web.Response(text=f"<pre>{connected_clients}</pre>", content_type='text/html')
     return add_cors_headers(response)
 
 async def websocket_handler(request):
