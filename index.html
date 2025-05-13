@@ -10,88 +10,103 @@
     <!-- Store Button -->
 
 <!-- testing some stuff -->
-    <style>
-        .hover-container {
-            position: absolute;
-            top: 25px;
-            left: 85px;
-            width: 180px;
-        }
-
-        .hover-target {
-            padding: 5px;
-            background-color: #1a05ff;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 18px;
-        }
-
-        .hover-box {
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #2ecc71;
-            color: white;
-            padding: 4px;
-            border-radius: 5px;
-            display: none;
-            font-size: 16px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            width: 150px;
-            z-index: 9999;
-            max-height: 100px;
-        }
-
-        .hover-container:hover .hover-box {
-            display: block;
-        }
-    </style>
-</head>
-    <div class="hover-container" id="hover-on-me">
-        <div class="hover-target">Connected Clients!</div>
-        <div class="hover-box" id="hover-box">No clients connected.</div>
-    </div>
-
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    function fetchConnected() {
-      fetch("https://chat-aia5.onrender.com/secret-connected-clients?key=letmein")
-        .then(response => {
-          if (!response.ok) {
-            return response.text().then(text => {
-              throw new Error(`Request failed with status: ${response.status} - ${text}`);
-            });
-          }
-          return response.text();
-        })
-        .then(data => {
-          let cleaned = data
-            .replace(/[{}']/g, '')
-            .split(',')
-            .map(entry => entry.split(':')[0].trim())
-            .filter(name => name);
-
-          const clientList = document.getElementById("hover-box");
-          if (clientList) {
-            clientList.innerHTML = cleaned.length ? cleaned.join("<br>") : "No clients connected.";
-          } else {
-            console.warn("Element with ID 'client-list' not found.");
-          }
-        })
-        .catch(error => {
-          console.error("Error fetching connected users:", error);
-          const clientList = document.getElementById("client-list");
-          if (clientList) {
-            clientList.innerHTML = "Fetch error";
-          }
-        });
+<style>
+    .hover-container {
+        position: absolute;
+        top: 25px;
+        left: 85px;
+        width: 180px;
     }
 
-    setInterval(fetchConnected, 6000);
-    fetchConnected();
-  });
+    .hover-target {
+        padding: 5px;
+        background-color: #1a05ff;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 18px;
+    }
+
+    .hover-box {
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #2ecc71;
+        color: white;
+        padding: 4px;
+        border-radius: 5px;
+        display: none;
+        font-size: 16px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        width: 170px;
+        z-index: 9999;
+        max-height: 150px; /* Max height set for scrolling */
+        overflow-y: auto;  /* Enable vertical scrolling */
+    }
+
+    .hover-container:hover .hover-box {
+        display: block;
+    }
+</style>
+</head>
+<div class="hover-container" id="hover-on-me">
+    <div class="hover-target">Connected Clients!</div>
+    <div class="hover-box" id="hover-box">No clients connected.</div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+function fetchConnected() {
+  fetch("https://chat-aia5.onrender.com/secret-connected-clients?key=letmein")
+    .then(response => {
+      return response.text(); // Always return as text
+    })
+    .then(data => {
+
+      // Strip out <pre> tags and braces
+      let cleanedData = data.replace(/<pre>|<\/pre>|[{}']/g, '').trim();
+
+
+      // Check if cleaned data is empty
+      if (cleanedData === "") {
+        console.log('Detected no clients connected or empty response');
+        document.getElementById("hover-box").innerHTML = "No clients connected.";
+        return; // Exit early if empty
+      }
+
+      // Clean the data and split by commas
+      let cleaned = cleanedData
+        .split(',')                        // Split by commas
+        .map(entry => entry.split(':')[0].trim())  // Extract the names (before the first colon) and trim extra spaces
+        .filter(name => name.length > 0);  // Remove any empty names
+
+
+      const clientList = document.getElementById("hover-box");
+
+      if (clientList) {
+        if (cleaned.length > 0) {
+          clientList.innerHTML = cleaned.join("<br>");  // Show the cleaned names
+        } else {
+          console.log('No clients found, showing default message');  // Debugging: Log when no clients are found
+          clientList.innerHTML = "No clients connected."; // Show fallback message if no clients
+        }
+      } else {
+        console.warn("Element with ID 'hover-box' not found.");
+      }
+    })
+    .catch(error => {
+      console.error("Error fetching connected users:", error);
+      const clientList = document.getElementById("hover-box");
+      if (clientList) {
+        clientList.innerHTML = "Fetch error"; // Handle fetch errors
+      }
+    });
+}
+
+setInterval(fetchConnected, 6000);  // Fetch every 6 seconds
+fetchConnected();                    // Initial fetch
+});
 </script>
 </div>
 <!-- done testing -->
