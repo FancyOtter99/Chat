@@ -9,53 +9,56 @@
 <body id="normal-content">
     <!-- Store Button -->
 
-// testing some stuff
-        <style>
-        .hover-container {
-            position: relative;
-            top: 50px;
-            left: 200px;
-        }
+<!-- testing some stuff -->
+<style>
+    .hover-container {
+        position: relative;
+        top: 50px;
+        left: 150px;
+        width: 150px;
+        
+    }
 
-        .hover-target {
-            padding: 20px;
-            background-color: #3498db;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 18px;
-        }
+    .hover-target {
+        padding-left: 5px;
+        background-color: #1a05ff;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 18px;
+    }
 
-        .hover-box {
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #2ecc71;
-            color: white;
-            padding: 10px;
-            border-radius: 5px;
-            display: none;
-            font-size: 16px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
+    .hover-box {
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #2ecc71;
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+        display: none;
+        font-size: 16px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        width: 150px;
+    }
 
-        .hover-container:hover .hover-box {
-            display: block;
-        }
-    </style>
+    .hover-container:hover .hover-box {
+        display: block;
+    }
+</style>
 </head>
 <body>
 
 <div class="hover-container">
-    <div class="hover-target">
-        Hover over me!
-    </div>
-    <div class="hover-box">
-        This is the box with some text that appears on hover.
-    </div>
+<div class="hover-target">
+    Connected Clients!
 </div>
-//done testing
+<div class="hover-box">
+    This is the box with some text that appears on hover.
+</div>
+</div>
+<!-- done testing -->
     
     <button id="store-btn">Store</button>
 
