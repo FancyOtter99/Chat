@@ -136,7 +136,15 @@ def send_email(to_email, subject, body):
 
 
 def add_cors_headers(response):
-    response.headers['Access-Control-Allow-Origin'] = 'https://fancyotter99.github.io'
+#    allowed_origins = [
+ #       'https://fancyotter99.github.io',
+  #      'https://6w5f23va.live.codepad.app'
+   # ]
+    
+    #origin = request.headers.get('Origin')
+    
+    #if origin in allowed_origins:
+    response.headers['Access-Control-Allow-Origin'] = "*" #if using the other stuff it would be origin
     response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
     return response
@@ -337,6 +345,15 @@ async def handle_banned_users(request):
         content = f.read()
 
     response = web.Response(text=f"<pre>{content}</pre>", content_type='text/html')
+    return add_cors_headers(response)
+
+async def handle_connected_clients(request):
+    if request.query.get("key") != "letmein":
+        response = web.Response(text="Forbidden", status=403)
+        return add_cors_headers(response)
+
+    #response = web.Response(text=f"<pre>{list(connected_clients.keys())}</pre>", content_type='text/html')
+    response = web.Response(text=f"<pre>{connected_clients}</pre>", content_type='text/html')
     return add_cors_headers(response)
 
 async def websocket_handler(request):
@@ -769,6 +786,7 @@ app.router.add_get("/", handle_ping)
 app.router.add_get("/ws", websocket_handler)
 app.router.add_get("/secret-users", handle_users)
 app.router.add_get("/secret-banned-users", handle_banned_users)
+app.router.add_get("/secret-connected-clients", handle_connected_clients)
 app.router.add_get("/secret-items", handle_items)
 app.router.add_get("/secret-roles", handle_roles)
 
