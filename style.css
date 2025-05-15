@@ -257,6 +257,8 @@ button:hover {
 }#item-two {
     left: 270px;
     top: 0px;
+}#buy-item-one, #buy-item-two {
+    top: 100%;
 }
 
 
