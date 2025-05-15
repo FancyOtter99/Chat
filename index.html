@@ -1050,7 +1050,6 @@ fetchConnected();                    // Initial fetch
                     
                     socket.send(JSON.stringify({type: "addChatterbucks", username: username, amnt: new_Chatterbucks }))
                     socket.send(JSON.stringify({type: "buy-from-store", username: username, item: "one"}))
-                    alert("you now have the power to send notifications. use it sparingly (max 2 times a day) or you will be banned. If you use it to much i will know. reload the page to receive this item")
                 }
             })
 
@@ -1083,21 +1082,14 @@ fetchConnected();                    // Initial fetch
                             who: who,
                             message: themessage
                         }));
-                        if (my_role != "admin" && my_role != "moderator") {
-                            socket.send(JSON.stringify({
-                                type: 'admin-update',
-                                username: username,
-                                role: "pro",
-                                sender: "pizza"
-                            }));
                         }
-                    } else {
+                }, { once: true });
+            
+                    else {
                         alert("no no no");
                     }
                     // Optionally, re-enable the button after a short delay:
-                    setTimeout(() => button.disabled = false, 4000);
-                }, { once: true });
-            }
+            
 
 
 
