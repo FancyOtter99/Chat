@@ -251,13 +251,14 @@ button:hover {
     background-color: white;
     border: 3px solid black;
     text-size: 22px;
-}#item-one, {
+}#item-one {
     left: 10px;
     top: 5px;
 }#item-two {
     left: 270px;
     top: 0px;
 }#buy-item-one, #buy-item-two {
+    position: absolute;
     top: 100%;
 }
 
