@@ -258,7 +258,7 @@ button:hover {
     top: 5px;
 }#buy-item-one, #buy-item-two {
     position: relative;
-    bottom: 5px;
+    bottom: 0px;
 }
 
 
