@@ -644,7 +644,6 @@ fetchConnected();                    // Initial fetch
                     
                 }else if (data.type === "notify") {
                     console.log("Trying to notify", data);
-                    askNotificationPermission()
                     sendNotification(`from ${data.sender}`, `${data.sender} says ${data.message}`)
                     console.log("notified")
                 }
