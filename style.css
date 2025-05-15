@@ -244,7 +244,7 @@ button:hover {
     width: 250px;
     padding: 10px;
     border-radius: 5px;
-}#item-one, item-two {
+}#item-one, #item-two {
     width: 250px;
     position: absolute;
     background-color: white;
