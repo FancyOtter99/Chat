@@ -244,14 +244,18 @@ button:hover {
     width: 250px;
     padding: 10px;
     border-radius: 5px;
-}#item-one {
+}#item-one, item-two {
     width: 250px;
     position: absolute;
-    left: 10px;
-    top: 5px;
     background-color: white;
     border: 3px solid black;
     text-size: 22px;
+}#item-one, {
+    left: 10px;
+    top: 5px;
+}#item-two {
+    left: 270px;
+    top: 5px;
 }
 
 
