@@ -260,6 +260,10 @@ button:hover {
     position: absolute;
     bottom: 0%;
     left: 0%;
+}#cursorselect {
+    position: absolute;
+    right: 10px;
+    top: px;
 }
 
 
