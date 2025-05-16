@@ -427,8 +427,9 @@ fetchConnected();                    // Initial fetch
                     console.log(data.balance)
                     console.log(data.items)
                     items = data.items
-                    if (data.items.includes("one")) {
-                        
+                    if (data.items.includes("two")) {
+                        document.getElementById('cursorselect').style.display = 'block';
+                        hasTwo = true
                     }
                     if (data.items.includes("one")) {
                         const urgentalert = document.createElement('div');
