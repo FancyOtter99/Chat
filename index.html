@@ -354,6 +354,7 @@ fetchConnected();                    // Initial fetch
                     if (data.items.includes("two")) {
                         document.getElementById('cursorselect').style.display = 'block';
                         hasTwo = true
+                        console.log("showed cursor select")
                     }
                     if (data.items.includes("one")) {
                         const urgentalert = document.createElement('div');
@@ -1133,6 +1134,7 @@ fetchConnected();                    // Initial fetch
                 }
             
                 if (hasTwo) {
+                    console.log("select is working")
                     switch (value) {
                         case "":
                             console.log("You picked: None. Boring. Safe. Probably uses Internet Explorer.");
