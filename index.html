@@ -1300,7 +1300,8 @@ fetchConnected();                    // Initial fetch
             
               pmBtn.addEventListener('click', function () {
                 if (!canSendPM) {
-                  console.log("Slow your whispering. Cooldown in effect.");
+                  document.getElementById('private-message-input').value = "";
+                  alert("Chill. Cooldown Bro.");
                   return;
                 }
             
@@ -1338,7 +1339,8 @@ fetchConnected();                    // Initial fetch
             
               groupSendBtn.addEventListener('click', function () {
                 if (!canSend) {
-                  console.log("Chill. Cooldown Bro");
+                  document.getElementById('group-message-input').value = "";
+                  alert("Chill. Cooldown Bro.");
                   return;
                 }
             
