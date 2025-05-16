@@ -1230,57 +1230,44 @@ fetchConnected();                    // Initial fetch
 
 
             document.addEventListener("keydown", function(event) {
-                if (event.ctrlKey && event.key.toLowerCase() === 'l') {
-                    event.preventDefault(); // prevent browser default (like focusing address bar)
-                    console.log("A wild Ctrl+L appeared!");
-                    // Add your custom logic here
-                    (function () {
-                      function invert () {
-                      // the css we are going to inject
-                      var css =
-                          "html {" +
-                          "    -webkit-filter: invert(100%);" +
-                          "    -moz-filter:    invert(100%);" +
-                          "    -o-filter:      invert(100%);" +
-                          "    -ms-filter:     invert(100%);" +
-                          "}",
-                        head = document.getElementsByTagName("head")[0],
-                        style = document.createElement("style");
-                    
-                      // a hack, so you can "invert back" clicking the bookmarklet again
-                      if (!window.counter) {
-                        window.counter = 1;
-                      } else {
-                        window.counter++;
-                        if (window.counter % 2 == 0) {
-                          // showing another way instead of multiple strings with + you can use \
-                          var css =
-                            "html { \
-                                -webkit-filter: invert(0%); \
-                                -moz-filter:    invert(0%); \
-                                -o-filter:      invert(0%); \
-                                -ms-filter:     invert(0%); \
-                            }";
-                        }
-                      }
-                    
-                      style.type = "text/css";
-                      if (style.styleSheet) {
-                        style.styleSheet.cssText = css;
-                      } else {
-                        style.appendChild(document.createTextNode(css));
-                      }
-                    
-                      //injecting the css to the head
-                      head.appendChild(style);
-                      k ++
-                      } if (k % 2 !== 0) {
-                          invert()
-                          console.log("inverted")
-                        }
-                    })();
-                  }
+              if (event.ctrlKey && event.key.toLowerCase() === 'l') {
+                event.preventDefault();
+                console.log("A wild Ctrl+L appeared!");
+            
+                // Keep track of toggle state
+                if (typeof window.invertToggle === 'undefined') {
+                  window.invertToggle = false;
+                }
+            
+                // If style tag exists, remove it
+                let existingStyle = document.getElementById('invert-style');
+            
+                if (window.invertToggle) {
+                  // Remove inversion
+                  if (existingStyle) existingStyle.remove();
+                  console.log("Inversion removed");
+                } else {
+                  // Add inversion CSS
+                  let style = document.createElement('style');
+                  style.id = 'invert-style';
+                  style.textContent = `
+                    html {
+                      -webkit-filter: invert(100%);
+                      -moz-filter: invert(100%);
+                      -o-filter: invert(100%);
+                      -ms-filter: invert(100%);
+                      filter: invert(100%);
+                    }
+                  `;
+                  document.head.appendChild(style);
+                  console.log("Inverted colors activated");
+                }
+            
+                // Toggle state
+                window.invertToggle = !window.invertToggle;
+              }
             });
+
             
                 
             // Send private message
