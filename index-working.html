@@ -201,6 +201,7 @@ fetchConnected();                    // Initial fetch
 
         (function() {
             let k = 0
+            const theeffects = [];
             let items = {}
             let speed = ""
             let whatText = ""
@@ -1022,72 +1023,63 @@ fetchConnected();                    // Initial fetch
                 console.error("WebSocket Error: ", error);
                 alert("WebSocket connection error. Please reload page until it works.");
             };
-
-            // Send group message
-            document.getElementById('send-group-message').addEventListener('click', function() {
-                let message = document.getElementById('group-message-input').value.trim();
-                let room = document.getElementById('group-room-switch').value;
-
-                if (message) {
-                    socket.send(JSON.stringify({ type: "group_message", sender: username, room: room, message: message, color: color }));
-                    document.getElementById('group-message-input').value = "";
-                }
-            });
-
-
-            document.getElementById('store-btn').addEventListener('click', function () {
+            // === STORE BUTTON TOGGLE ===
+            const storeBtn = document.getElementById('store-btn');
+            if (!storeBtn.dataset.listenerAdded) {
+              storeBtn.addEventListener('click', function () {
                 const chatContainer = document.getElementById('chat-container');
                 const chatDisplay = window.getComputedStyle(chatContainer).display;
                 const isChatVisible = chatDisplay === 'block';
             
                 if (isChatVisible) {
-                    // Hide chat, show store
-                    chatContainer.style.display = 'none';
-                    if(my_role === "admin" || my_role === "moderator"){
-                        document.getElementById('start-game-btn').style.display = 'none';
-                        document.getElementById('game-select').style.display = 'none';
-                        document.getElementById('turn-off-admin').style.display = 'none';
-                    }
-                    if (my_role === "moderator") {
-                        document.getElementById('toggle-admin-mode').style.display = 'none';
-                    }
-                    document.getElementById('store-btn').textContent = 'Chat';
-                    document.getElementById('store-content').style.display = 'block';
+                  chatContainer.style.display = 'none';
+                  if (my_role === "admin" || my_role === "moderator") {
+                    document.getElementById('start-game-btn').style.display = 'none';
+                    document.getElementById('game-select').style.display = 'none';
+                    document.getElementById('turn-off-admin').style.display = 'none';
+                  }
+                  if (my_role === "moderator") {
+                    document.getElementById('toggle-admin-mode').style.display = 'none';
+                  }
+                  storeBtn.textContent = 'Chat';
+                  document.getElementById('store-content').style.display = 'block';
                 } else {
-                    // Show chat, hide store
-                    chatContainer.style.display = 'block';
-                    document.getElementById('store-btn').textContent = 'Store';
-                    document.getElementById('store-content').style.display = 'none';
+                  chatContainer.style.display = 'block';
+                  storeBtn.textContent = 'Store';
+                  document.getElementById('store-content').style.display = 'none';
             
-                    // Show admin/mod controls if applicable
-                    if (my_role === "admin" || my_role === "moderator") {
-                        document.getElementById('start-game-btn').style.display = 'block';
-                        document.getElementById('game-select').style.display = 'block';
-                        document.getElementById('turn-off-admin').style.display = 'block';
-                    } else {
-                        console.log("u not admin")
-                    }
+                  if (my_role === "admin" || my_role === "moderator") {
+                    document.getElementById('start-game-btn').style.display = 'block';
+                    document.getElementById('game-select').style.display = 'block';
+                    document.getElementById('turn-off-admin').style.display = 'block';
+                  } else {
+                    console.log("u not admin");
+                  }
                 }
-            });
-
-            let numberChatterbucks = 0
-            document.getElementById('buy-item-one').addEventListener('click', function () {
-                numberChatterbucks = Number(Chatterbucks);
+              });
+              storeBtn.dataset.listenerAdded = 'true';
+            }
+            
+            // === BUY ITEM ONE ===
+            const btnOne = document.getElementById('buy-item-one');
+            if (!btnOne.dataset.listenerAdded) {
+              btnOne.addEventListener('click', function () {
+                let numberChatterbucks = Number(Chatterbucks);
                 if (numberChatterbucks < 30000) {
-                    alert('you dont have enough Chatterbucks to buy this')
-                }else if (numberChatterbucks > 30000 || numberChatterbucks === 30000) {
-                    new_Chatterbucks = Chatterbucks - 30000;
-                    
-                    socket.send(JSON.stringify({type: "addChatterbucks", username: username, amnt: new_Chatterbucks }))
-                    socket.send(JSON.stringify({type: "buy-from-store", username: username, item: "one"}))
+                  alert('you dont have enough Chatterbucks to buy this');
+                } else {
+                  let new_Chatterbucks = Chatterbucks - 30000;
+                  socket.send(JSON.stringify({ type: "addChatterbucks", username: username, amnt: new_Chatterbucks }));
+                  socket.send(JSON.stringify({ type: "buy-from-store", username: username, item: "one" }));
                 }
-            })
-
-
-
-            const btn = document.getElementById('buy-item-two');
-            if (!btn.dataset.listenerAdded) {
-              btn.addEventListener('click', function () {
+              });
+              btnOne.dataset.listenerAdded = 'true';
+            }
+            
+            // === BUY ITEM TWO ===
+            const btnTwo = document.getElementById('buy-item-two');
+            if (!btnTwo.dataset.listenerAdded) {
+              btnTwo.addEventListener('click', function () {
                 let numberChatterbucks = Number(Chatterbucks);
                 if (numberChatterbucks < 1000) {
                   alert('you dont have enough Chatterbucks to buy this');
@@ -1098,112 +1090,143 @@ fetchConnected();                    // Initial fetch
                   alert("you can now edit your cursor");
                 }
               });
-              btn.dataset.listenerAdded = 'true';
-            }
-
-                
-            if (items.includes("one")) {
-                document.getElementById('startalert').addEventListener('click', function() {
-                    let button = this;
-                    button.disabled = true;  // Disable the button to prevent multiple clicks
-                    console.log("Alert button clicked");
-                    let who = document.getElementById('alertusername').value.trim();
-                    let themessage = document.getElementById('alertmessage').value.trim();
-                    if (items.includes("one")) {
-                        socket.send(JSON.stringify({
-                            type: "alert",
-                            username: username,
-                            who: who,
-                            message: themessage
-                        }));
-                        }
-                })
-            }else {
-                alert("no no no")
+              btnTwo.dataset.listenerAdded = 'true';
             }
             
-
-
+            // === ALERT BUTTON ===
+            const alertBtn = document.getElementById('startalert');
+            if (items.includes("one") && alertBtn && !alertBtn.dataset.listenerAdded) {
+              alertBtn.addEventListener('click', function () {
+                this.disabled = true;
+                console.log("Alert button clicked");
+                let who = document.getElementById('alertusername').value.trim();
+                let themessage = document.getElementById('alertmessage').value.trim();
             
+                if (items.includes("one")) {
+                  socket.send(JSON.stringify({
+                    type: "alert",
+                    username: username,
+                    who: who,
+                    message: themessage
+                  }));
+                }
+              });
+              alertBtn.dataset.listenerAdded = 'true';
+            } else if (!items.includes("one")) {
+              alert("no no no");
+            }
+            
+            // === CURSOR SELECTION ===
             const select = document.getElementById('cursorselect');
             let cursorEffect = null;
             
             function isUserInputNumber(input) {
-                return !isNaN(input) && input.trim() !== "";
+              return !isNaN(input) && input.trim !== "";
             }
             
-            select.addEventListener('change', (e) => {
+            if (select && !select.dataset.listenerAdded) {
+              select.addEventListener('change', (e) => {
                 const value = e.target.value;
             
                 if (cursorEffect) {
+                  try {
                     cursorEffect.destroy?.();
-                    cursorEffect = null;
+                    theeffects.forEach(e => e.destroy?.());
+                    theeffects.length = 0;
+
+                  } catch (e) {
+                    console.warn("Destroy threw error:", e);
+                  }
+                  cursorEffect = null;
                 }
             
                 if (hasTwo) {
-                    console.log("select is working")
-                    switch (value) {
-                        case "":
-                            console.log("You picked: None. Boring. Safe. Probably uses Internet Explorer.");
-                            alert("Wow you are so boring :|");
-                            break;
-                        case "charachter": // chaos reigns
-                            cursorEffect = Effects.characterCursor();
-                            break;
-                        case "bubble":
-                            cursorEffect = Effects.bubbleCursor();
-                            break;
-                        case "clock":
-                            cursorEffect = Effects.clockCursor();
-                            break;
-                        case "emoji":
-                            cursorEffect = Effects.emojiCursor();
-                            break;
-                        case "fairy":
-                            cursorEffect = Effects.fairyDustCursor();
-                            break;
-                        case "dot":
-                            cursorEffect = Effects.followingDotCursor();
-                            break;
-                        case "ghost":
-                            cursorEffect = Effects.ghostCursor();
-                            break;
-                        case "rainbow":
-                            cursorEffect = Effects.rainbowCursor();
-                            break;
-                        case "snowflake":
-                            cursorEffect = Effects.snowflakeCursor();
-                            break;
-                        case "flag":
-                          if (!speed && !whatText) {
-                            whatText = prompt("what text?");
-                            speed = prompt("what speed? 0-9 (0 = normal)");
-                          }
-                            if (isUserInputNumber(speed)) {
-                                speed = Number(speed);
-                                if (speed > 9 || speed < 0) {
-                                    alert("I SAID 0-9!!!");
-                                } else {
-                                    cursorEffect = Effects.textFlag(` ${whatText}`, speed);
-                                }
-                            } else {
-                                alert("IT MUST BE A NUMBER!!!");
-                            }
-                            break;
-                    case "circle":
-                        if (!speed && !whatText) {
-                            whatText = prompt("what text?");
-                            speed = prompt("what speed? 0-9 (0 = normal)");
+                  console.log("select is working");
+                  switch (value) {
+                    case "":
+                      console.log("You picked: None. Boring. Safe. Probably uses Internet Explorer.");
+                      alert("Wow you are so boring :|");
+                      break;
+                    case "charachter":
+                      theeffects.forEach(e => e.destroy?.());
+                      theeffects.length = 0;
+                      cursorEffect = Effects.characterCursor();
+                      break;
+                    case "bubble":
+                      theeffects.forEach(e => e.destroy?.());
+                      theeffects.length = 0;
+                      cursorEffect = Effects.bubbleCursor();
+                      break;
+                    case "clock":
+                      theeffects.forEach(e => e.destroy?.());
+                      theeffects.length = 0;
+                      cursorEffect = Effects.clockCursor();
+                      break;
+                    case "emoji":
+                      theeffects.forEach(e => e.destroy?.());
+                      theeffects.length = 0;
+                      cursorEffect = Effects.emojiCursor();
+                      break;
+                    case "fairy":
+                      theeffects.forEach(e => e.destroy?.());
+                      theeffects.length = 0;
+                      cursorEffect = Effects.fairyDustCursor();
+                      break;
+                    case "dot":
+                      theeffects.forEach(e => e.destroy?.());
+                      theeffects.length = 0;
+                      cursorEffect = Effects.followingDotCursor();
+                      break;
+                    case "ghost":
+                      theeffects.forEach(e => e.destroy?.());
+                      theeffects.length = 0;
+                      cursorEffect = Effects.ghostCursor();
+                      break;
+                    case "rainbow":
+                      theeffects.forEach(e => e.destroy?.());
+                      theeffects.length = 0;
+                      cursorEffect = Effects.rainbowCursor();
+                      break;
+                    case "snowflake":
+                      theeffects.forEach(e => e.destroy?.());
+                      theeffects.length = 0;
+                      cursorEffect = Effects.snowflakeCursor();
+                      break;
+                    case "flag":
+                        whatText = prompt("what text?");
+                        speed = prompt("what speed? 0-9 (0 = normal)");
+                      
+                      if (isUserInputNumber(speed)) {
+                        speed = Number(speed);
+                        if (speed > 9 || speed < 0) {
+                          alert("I SAID 0-9!!!");
+                        } else {
+                          theeffects.forEach(e => e.destroy?.());
+                          theeffects.length = 0;
+                          cursorEffect = Effects.textFlag(` ${whatText}`, speed);
                         }
+                      } else {
+                        alert("IT MUST BE A NUMBER!!!");
+                      }
+                      break;
+                    case "circle":
+                            whatText = prompt("what text?");
+                            speed = prompt("what speed? 0-9 (0 = normal)");
+                        
                     
                         if (isUserInputNumber(speed)) {
                             speed = Number(speed);
                             if (speed >= 0 && speed <= 9) {
                                 let i = 0;
-                                const max = 5;
+                                const max = 12;
+                    
+                                // Clean up old effects first
+                                theeffects.forEach(e => e.destroy?.());
+                                theeffects.length = 0;
                     
                                 const interval = setInterval(() => {
-                                    cursorEffect = Effects.textFlag(` ${whatText}`, speed);
+                                    const aeffect = Effects.textFlag(` ${whatText}`, speed);
+                                    theeffects.push(aeffect);
                                     i++;
                     
                                     if (i >= max) {
@@ -1211,40 +1234,35 @@ fetchConnected();                    // Initial fetch
                                     }
                                 }, 1000);
                             }
-                            // skip alert if out of range
                         }
-                        // skip alert if not a number
                         break;
 
-                        case "spring":
-                            cursorEffect = Effects.springyEmojiCursor();
-                            break;
-                        case "trail":
-                            cursorEffect = Effects.trailingCursor();
-                            break;
-                        default:
-                            console.log(`Unknown option: ${value}`);
-                            alert("Option still in development");
-                    }
+                    case "spring":
+                      theeffects.forEach(e => e.destroy?.());
+                      theeffects.length = 0;
+                      cursorEffect = Effects.springyEmojiCursor();
+                      break;
+                    case "trail":
+                      theeffects.forEach(e => e.destroy?.());
+                      theeffects.length = 0;
+                      cursorEffect = Effects.trailingCursor();
+                      break;
+                    default:
+                      console.log(`Unknown option: ${value}`);
+                      alert("Option still in development");
+                  }
                 }
-            });
-
-
-
-            document.addEventListener("keydown", function(event) {
-              if (event.ctrlKey && event.key.toLowerCase() === 'l') {
-                event.preventDefault();
-                console.log("Ctrl+L pressed!");
+              });
+              select.dataset.listenerAdded = 'true';
+            }
             
-                if (typeof window.ctrlLPressCount === 'undefined') {
-                  window.ctrlLPressCount = 0;
-                }
+            // === CTRL + L INVERT TOGGLE (EVERY TIME, NO SKIPPING) ===
+            if (!window.ctrlListenerAdded) {
+              document.addEventListener("keydown", function(event) {
+                if (event.ctrlKey && event.key.toLowerCase() === 'l') {
+                  event.preventDefault();
+                  console.log("Ctrl+L pressed!");
             
-                window.ctrlLPressCount++;
-            
-                // Only do the invert toggle on every *even* press (2nd, 4th, 6th...)
-                if (window.ctrlLPressCount % 2 === 0) {
-                  // Your existing toggle logic here
                   if (typeof window.invertToggle === 'undefined') {
                     window.invertToggle = false;
                   }
@@ -1271,25 +1289,50 @@ fetchConnected();                    // Initial fetch
                   }
             
                   window.invertToggle = !window.invertToggle;
-                } else {
-                  console.log("Skipped this Ctrl+L press. Try again!");
                 }
-              }
-            });
-
-
+              });
+              window.ctrlListenerAdded = true;
+            }
             
-                
-            // Send private message
-            document.getElementById('send-private-message').addEventListener('click', function() {
+            // === PRIVATE MESSAGE SENDER ===
+            const pmBtn = document.getElementById('send-private-message');
+            if (pmBtn && !pmBtn.dataset.listenerAdded) {
+              pmBtn.addEventListener('click', function() {
                 let message = document.getElementById('private-message-input').value.trim();
                 let recipient = document.getElementById('private-chat-partner').value.trim();
-
+            
                 if (message && recipient) {
-                    socket.send(JSON.stringify({ type: "private_message", sender: username, recipient: recipient, message: message, color: color }));
-                    document.getElementById('private-message-input').value = "";
+                  socket.send(JSON.stringify({
+                    type: "private_message",
+                    sender: username,
+                    recipient: recipient,
+                    message: message,
+                    color: color
+                  }));
+                  document.getElementById('private-message-input').value = "";
                 }
-            });
+              });
+              pmBtn.dataset.listenerAdded = 'true';
+            }
+            
+            // === GROUP CHAT MESSAGE SENDER ===
+            const groupSendBtn = document.getElementById('send-group-message');
+            if (groupSendBtn && !groupSendBtn.dataset.listenerAdded) {
+              groupSendBtn.addEventListener('click', function() {
+                let message = document.getElementById('group-message-input').value.trim();
+                if (message) {
+                  socket.send(JSON.stringify({
+                    type: "group_message",
+                    sender: username,
+                    message: message,
+                    color: color
+                  }));
+                  document.getElementById('group-message-input').value = "";
+                }
+              });
+              groupSendBtn.dataset.listenerAdded = 'true';
+            }
+
         }})();
     </script>
 
