@@ -202,6 +202,7 @@ fetchConnected();                    // Initial fetch
         import * as Effects from './cursorEffects.js';
 
         (function() {
+            let k = 0
             let items = {}
             let speed = ""
             let whatText = ""
@@ -1234,6 +1235,7 @@ fetchConnected();                    // Initial fetch
                     console.log("A wild Ctrl+L appeared!");
                     // Add your custom logic here
                     (function () {
+                      function invert () {
                       // the css we are going to inject
                       var css =
                           "html {" +
@@ -1271,6 +1273,10 @@ fetchConnected();                    // Initial fetch
                     
                       //injecting the css to the head
                       head.appendChild(style);
+                      k ++
+                      } if (k % 2 !== 0) {
+                          invert()
+                        }
                     })();
                   }
             });
