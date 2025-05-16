@@ -7,9 +7,24 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body id="normal-content">
-    <!-- Store Button -->
-
 <!-- testing some stuff -->
+  <select id="cursorselect">
+    <option value="">-- None --</option>
+    <option value="bubble">Bubble</option>
+    <option value="charachter">Charachter</option>
+    <option value="clock">Clock</option>
+    <option value="emoji">Emoji</option>
+    <option value="spring">Emoji 2</option>
+    <option value="fairy">Stars</option>
+    <option value="dot">Dot</option>
+    <option value="ghost">Sticky</option>
+    <option value="rainbow">Rainbow</option>
+    <option value="snowflake">Snowflake</option>
+    <option value="flag">Flag</option>
+    <option value="circle">Flag Circle</option>
+    <option value="trail">Trail</option>
+  </select>
+<!-- done testing -->
 <style>
     .hover-container {
         position: absolute;
@@ -109,8 +124,7 @@ fetchConnected();                    // Initial fetch
 });
 </script>
 </div>
-<!-- done testing -->
-    
+<!-- Store Button -->
     <button id="store-btn">Store</button>
 
     <div id = "store-content">
@@ -173,9 +187,7 @@ fetchConnected();                    // Initial fetch
             </div>
         </div>
     </div>
-</body>
-</html>
-    <script>
+    <script type="module">
         Object.defineProperty(window, 'username', {
             get: function() {
                 console.warn("Do not modify the username variable!");
@@ -185,9 +197,13 @@ fetchConnected();                    // Initial fetch
                 console.warn("You can't change the username like that!");
             }
         });
+        import * as Effects from './cursorEffects.js';
 
         (function() {
+            let k = 0
             let items = {}
+            let speed = ""
+            let whatText = ""
             let reward = ""
             let daysJoined = ""
             let new_Chatterbucks = ""
@@ -197,6 +213,7 @@ fetchConnected();                    // Initial fetch
             let username = "";
             let my_role = "";
             let playGame = ""
+            let hasTwo = false
             let socket = new WebSocket('wss://chat-aia5.onrender.com/ws');
             let bannedUsers = [];  // Array to store banned users
             const screenWidth = window.innerWidth;
@@ -207,6 +224,13 @@ fetchConnected();                    // Initial fetch
             document.getElementById('store-btn').style.display = 'none';
             document.getElementById('store-content').style.display = 'none';
             document.getElementById('hover-on-me').style.display = 'none';
+            document.getElementById('cursorselect').style.display = 'none';
+
+             //testing
+
+            //done testing
+
+            
             // Wait for WebSocket connection to open
             socket.onopen = function() {
                 console.log("WebSocket connection established!");
@@ -316,6 +340,7 @@ fetchConnected();                    // Initial fetch
                     const joinedDate = data.joined;
                     daysJoined = "∞"; // Default to infinity if unknown
                     askNotificationPermission()
+                    alert("press ctrl L to invert colors")
 
 
                     sendNotification("log in", "thanks for logging in")
@@ -329,6 +354,11 @@ fetchConnected();                    // Initial fetch
                     console.log(data.balance)
                     console.log(data.items)
                     items = data.items
+                    if (data.items.includes("two")) {
+                        document.getElementById('cursorselect').style.display = 'block';
+                        hasTwo = true
+                        console.log("showed cursor select")
+                    }
                     if (data.items.includes("one")) {
                         const urgentalert = document.createElement('div');
                         urgentalert.id = 'urgent';
@@ -339,7 +369,7 @@ fetchConnected();                    // Initial fetch
                         urgentalert.style.backgroundColor = 'blue';
                         urgentalert.style.color = '#fff';
                         urgentalert.style.borderRadius = '5px';
-                        urgentalert.style.width = '250px';
+                        urgentalert.style.width = '230px';
                         urgentalert.innerHTML = `<input id = 'alertmessage' style = "width: 200px; fontSize: 16px; padding: 10px; borderRadius: 5px;" placeholder = 'message'>
                         </input> <input id = 'alertusername' style = "width: 200px; fontSize: 16px; padding: 10px; borderRadius: 5px;" placeholder = 'who do you want to alert'>
                         </input> <button id = "startalert">Alert person</button>`
@@ -1055,18 +1085,22 @@ fetchConnected();                    // Initial fetch
 
 
 
-            document.getElementById('buy-item-two').addEventListener('click', function () {
-                numberChatterbucks = Number(Chatterbucks);
+            const btn = document.getElementById('buy-item-two');
+            if (!btn.dataset.listenerAdded) {
+              btn.addEventListener('click', function () {
+                let numberChatterbucks = Number(Chatterbucks);
                 if (numberChatterbucks < 1000) {
-                    alert('you dont have enough Chatterbucks to buy this')
-                }else if (numberChatterbucks > 1000 || numberChatterbucks === 1000) {
-                    new_Chatterbucks = Chatterbucks - 1000;
-                    
-                    socket.send(JSON.stringify({type: "addChatterbucks", username: username, amnt: new_Chatterbucks }))
-                    socket.send(JSON.stringify({type: "buy-from-store", username: username, item: "two"}))
-                    alert("you can now edit your cursor")
+                  alert('you dont have enough Chatterbucks to buy this');
+                } else {
+                  let new_Chatterbucks = Chatterbucks - 1000;
+                  socket.send(JSON.stringify({ type: "addChatterbucks", username: username, amnt: new_Chatterbucks }));
+                  socket.send(JSON.stringify({ type: "buy-from-store", username: username, item: "two" }));
+                  alert("you can now edit your cursor");
                 }
-            })
+              });
+              btn.dataset.listenerAdded = 'true';
+            }
+
                 
             if (items.includes("one")) {
                 document.getElementById('startalert').addEventListener('click', function() {
@@ -1090,7 +1124,162 @@ fetchConnected();                    // Initial fetch
             
 
 
+            
+            const select = document.getElementById('cursorselect');
+            let cursorEffect = null;
+            
+            function isUserInputNumber(input) {
+                return !isNaN(input) && input.trim() !== "";
+            }
+            
+            select.addEventListener('change', (e) => {
+                const value = e.target.value;
+            
+                if (cursorEffect) {
+                    cursorEffect.destroy?.();
+                    cursorEffect = null;
+                }
+            
+                if (hasTwo) {
+                    console.log("select is working")
+                    switch (value) {
+                        case "":
+                            console.log("You picked: None. Boring. Safe. Probably uses Internet Explorer.");
+                            alert("Wow you are so boring :|");
+                            break;
+                        case "charachter": // chaos reigns
+                            cursorEffect = Effects.characterCursor();
+                            break;
+                        case "bubble":
+                            cursorEffect = Effects.bubbleCursor();
+                            break;
+                        case "clock":
+                            cursorEffect = Effects.clockCursor();
+                            break;
+                        case "emoji":
+                            cursorEffect = Effects.emojiCursor();
+                            break;
+                        case "fairy":
+                            cursorEffect = Effects.fairyDustCursor();
+                            break;
+                        case "dot":
+                            cursorEffect = Effects.followingDotCursor();
+                            break;
+                        case "ghost":
+                            cursorEffect = Effects.ghostCursor();
+                            break;
+                        case "rainbow":
+                            cursorEffect = Effects.rainbowCursor();
+                            break;
+                        case "snowflake":
+                            cursorEffect = Effects.snowflakeCursor();
+                            break;
+                        case "flag":
+                          if (!speed && !whatText) {
+                            whatText = prompt("what text?");
+                            speed = prompt("what speed? 0-9 (0 = normal)");
+                          }
+                            if (isUserInputNumber(speed)) {
+                                speed = Number(speed);
+                                if (speed > 9 || speed < 0) {
+                                    alert("I SAID 0-9!!!");
+                                } else {
+                                    cursorEffect = Effects.textFlag(` ${whatText}`, speed);
+                                }
+                            } else {
+                                alert("IT MUST BE A NUMBER!!!");
+                            }
+                            break;
+                    case "circle":
+                        if (!speed && !whatText) {
+                            whatText = prompt("what text?");
+                            speed = prompt("what speed? 0-9 (0 = normal)");
+                        }
+                    
+                        if (isUserInputNumber(speed)) {
+                            speed = Number(speed);
+                            if (speed >= 0 && speed <= 9) {
+                                let i = 0;
+                                const max = 5;
+                    
+                                const interval = setInterval(() => {
+                                    cursorEffect = Effects.textFlag(` ${whatText}`, speed);
+                                    i++;
+                    
+                                    if (i >= max) {
+                                        clearInterval(interval);
+                                    }
+                                }, 1000);
+                            }
+                            // skip alert if out of range
+                        }
+                        // skip alert if not a number
+                        break;
 
+                        case "spring":
+                            cursorEffect = Effects.springyEmojiCursor();
+                            break;
+                        case "trail":
+                            cursorEffect = Effects.trailingCursor();
+                            break;
+                        default:
+                            console.log(`Unknown option: ${value}`);
+                            alert("Option still in development");
+                    }
+                }
+            });
+
+
+
+            document.addEventListener("keydown", function(event) {
+              if (event.ctrlKey && event.key.toLowerCase() === 'l') {
+                event.preventDefault();
+                console.log("Ctrl+L pressed!");
+            
+                if (typeof window.ctrlLPressCount === 'undefined') {
+                  window.ctrlLPressCount = 0;
+                }
+            
+                window.ctrlLPressCount++;
+            
+                // Only do the invert toggle on every *even* press (2nd, 4th, 6th...)
+                if (window.ctrlLPressCount % 2 === 0) {
+                  // Your existing toggle logic here
+                  if (typeof window.invertToggle === 'undefined') {
+                    window.invertToggle = false;
+                  }
+            
+                  let existingStyle = document.getElementById('invert-style');
+            
+                  if (window.invertToggle) {
+                    if (existingStyle) existingStyle.remove();
+                    console.log("Inversion removed");
+                  } else {
+                    let style = document.createElement('style');
+                    style.id = 'invert-style';
+                    style.textContent = `
+                      html {
+                        -webkit-filter: invert(100%);
+                        -moz-filter: invert(100%);
+                        -o-filter: invert(100%);
+                        -ms-filter: invert(100%);
+                        filter: invert(100%);
+                      }
+                    `;
+                    document.head.appendChild(style);
+                    console.log("Inverted colors activated");
+                  }
+            
+                  window.invertToggle = !window.invertToggle;
+                } else {
+                  console.log("Skipped this Ctrl+L press. Try again!");
+                }
+              }
+            });
+
+
+            
+                
             // Send private message
             document.getElementById('send-private-message').addEventListener('click', function() {
                 let message = document.getElementById('private-message-input').value.trim();
@@ -1106,4 +1295,5 @@ fetchConnected();                    // Initial fetch
 
 </body>
 </html>
+
 
