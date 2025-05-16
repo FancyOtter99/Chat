@@ -1129,6 +1129,18 @@ fetchConnected();                    // Initial fetch
             
                 if (cursorEffect) {
                   cursorEffect.destroy?.();
+                  cursorEffect.destroy?.();
+                  cursorEffect.destroy?.();
+                  cursorEffect.destroy?.();
+                  cursorEffect.destroy?.();
+                  cursorEffect.destroy?.();
+                  cursorEffect.destroy?.();
+                  cursorEffect.destroy?.();
+                  cursorEffect.destroy?.();
+                  cursorEffect.destroy?.();
+                  cursorEffect.destroy?.();
+                  cursorEffect.destroy?.();
+                  cursorEffect.destroy?.();
                   cursorEffect = null;
                 }
             
@@ -1167,10 +1179,9 @@ fetchConnected();                    // Initial fetch
                       cursorEffect = Effects.snowflakeCursor();
                       break;
                     case "flag":
-                      if (!speed && !whatText) {
                         whatText = prompt("what text?");
                         speed = prompt("what speed? 0-9 (0 = normal)");
-                      }
+                      
                       if (isUserInputNumber(speed)) {
                         speed = Number(speed);
                         if (speed > 9 || speed < 0) {
@@ -1183,15 +1194,14 @@ fetchConnected();                    // Initial fetch
                       }
                       break;
                     case "circle":
-                      if (!speed && !whatText) {
                         whatText = prompt("what text?");
                         speed = prompt("what speed? 0-9 (0 = normal)");
-                      }
+                      
                       if (isUserInputNumber(speed)) {
                         speed = Number(speed);
                         if (speed >= 0 && speed <= 9) {
                           let i = 0;
-                          const max = 5;
+                          const max = 9;
                           const interval = setInterval(() => {
                             cursorEffect = Effects.textFlag(` ${whatText}`, speed);
                             i++;
