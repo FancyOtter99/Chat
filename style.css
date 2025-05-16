@@ -267,6 +267,7 @@ button:hover {
     width: 250px;
     padding: 10px;
     borderRadius: 5px;
+    background-color: #a005fa;
     fontSize: 16px;
 }
 
