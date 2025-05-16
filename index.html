@@ -14,13 +14,14 @@
     <option value="charachter">Charachter</option>
     <option value="clock">Clock</option>
     <option value="emoji">Emoji</option>
+    <option value="spring">Emoji 2</option>
     <option value="fairy">Stars</option>
     <option value="dot">Dot</option>
     <option value="ghost">Sticky</option>
     <option value="rainbow">Rainbow</option>
     <option value="snowflake">Snowflake</option>
     <option value="flag">Flag</option>
-    <option value="spring">Emoji 2</option>
+    <option value="circle">Flag Circle</option>
     <option value="trail">Trail</option>
   </select>
 <!-- done testing -->
@@ -1185,6 +1186,32 @@ fetchConnected();                    // Initial fetch
                                 alert("IT MUST BE A NUMBER!!!");
                             }
                             break;
+                    case "circle":
+                        if (!speed && !whatText) {
+                            whatText = prompt("what text?");
+                            speed = prompt("what speed? 0-9 (0 = normal)");
+                        }
+                    
+                        if (isUserInputNumber(speed)) {
+                            speed = Number(speed);
+                            if (speed >= 0 && speed <= 9) {
+                                let i = 0;
+                                const max = 5;
+                    
+                                const interval = setInterval(() => {
+                                    cursorEffect = Effects.textFlag(` ${whatText}`, speed);
+                                    i++;
+                    
+                                    if (i >= max) {
+                                        clearInterval(interval);
+                                    }
+                                }, 1000);
+                            }
+                            // skip alert if out of range
+                        }
+                        // skip alert if not a number
+                        break;
+
                         case "spring":
                             cursorEffect = Effects.springyEmojiCursor();
                             break;
