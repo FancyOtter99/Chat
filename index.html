@@ -201,6 +201,7 @@ fetchConnected();                    // Initial fetch
 
         (function() {
             let k = 0
+            const theeffects = [];
             let items = {}
             let speed = ""
             let whatText = ""
@@ -1130,6 +1131,9 @@ fetchConnected();                    // Initial fetch
                 if (cursorEffect) {
                   try {
                     cursorEffect.destroy?.();
+                    theeffects.forEach(e => e.destroy?.());
+                    theeffects.length = 0;
+
                   } catch (e) {
                     console.warn("Destroy threw error:", e);
                   }
@@ -1186,22 +1190,34 @@ fetchConnected();                    // Initial fetch
                       }
                       break;
                     case "circle":
-                        whatText = prompt("what text?");
-                        speed = prompt("what speed? 0-9 (0 = normal)");
-                      
-                      if (isUserInputNumber(speed)) {
-                        speed = Number(speed);
-                        if (speed >= 0 && speed <= 9) {
-                          let i = 0;
-                          const max = 11;
-                          const interval = setInterval(() => {
-                            cursorEffect = Effects.textFlag(` ${whatText}`, speed);
-                            i++;
-                            if (i >= max) clearInterval(interval);
-                          }, 1000);
+                        if (!speed && !whatText) {
+                            whatText = prompt("what text?");
+                            speed = prompt("what speed? 0-9 (0 = normal)");
                         }
-                      }
-                      break;
+                    
+                        if (isUserInputNumber(speed)) {
+                            speed = Number(speed);
+                            if (speed >= 0 && speed <= 9) {
+                                let i = 0;
+                                const max = 5;
+                    
+                                // Clean up old effects first
+                                theeffects.forEach(e => e.destroy?.());
+                                theeffects.length = 0;
+                    
+                                const interval = setInterval(() => {
+                                    const aeffect = Effects.textFlag(` ${whatText}`, speed);
+                                    theeffects.push(aeffect);
+                                    i++;
+                    
+                                    if (i >= max) {
+                                        clearInterval(interval);
+                                    }
+                                }, 1000);
+                            }
+                        }
+                        break;
+
                     case "spring":
                       cursorEffect = Effects.springyEmojiCursor();
                       break;
