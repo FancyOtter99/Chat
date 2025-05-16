@@ -1022,7 +1022,7 @@ fetchConnected();                    // Initial fetch
                 console.error("WebSocket Error: ", error);
                 alert("WebSocket connection error. Please reload page until it works.");
             };
-            // === Store Button Toggle ===
+            // === STORE BUTTON TOGGLE ===
             const storeBtn = document.getElementById('store-btn');
             if (!storeBtn.dataset.listenerAdded) {
               storeBtn.addEventListener('click', function () {
@@ -1059,7 +1059,7 @@ fetchConnected();                    // Initial fetch
               storeBtn.dataset.listenerAdded = 'true';
             }
             
-            // === Buy Item One ===
+            // === BUY ITEM ONE ===
             const btnOne = document.getElementById('buy-item-one');
             if (!btnOne.dataset.listenerAdded) {
               btnOne.addEventListener('click', function () {
@@ -1075,7 +1075,7 @@ fetchConnected();                    // Initial fetch
               btnOne.dataset.listenerAdded = 'true';
             }
             
-            // === Buy Item Two ===
+            // === BUY ITEM TWO ===
             const btnTwo = document.getElementById('buy-item-two');
             if (!btnTwo.dataset.listenerAdded) {
               btnTwo.addEventListener('click', function () {
@@ -1092,7 +1092,7 @@ fetchConnected();                    // Initial fetch
               btnTwo.dataset.listenerAdded = 'true';
             }
             
-            // === Alert Button ===
+            // === ALERT BUTTON ===
             const alertBtn = document.getElementById('startalert');
             if (items.includes("one") && alertBtn && !alertBtn.dataset.listenerAdded) {
               alertBtn.addEventListener('click', function () {
@@ -1111,9 +1111,11 @@ fetchConnected();                    // Initial fetch
                 }
               });
               alertBtn.dataset.listenerAdded = 'true';
+            } else if (!items.includes("one")) {
+              alert("no no no");
             }
             
-            // === Cursor Selection ===
+            // === CURSOR SELECTION ===
             const select = document.getElementById('cursorselect');
             let cursorEffect = null;
             
@@ -1213,52 +1215,45 @@ fetchConnected();                    // Initial fetch
               select.dataset.listenerAdded = 'true';
             }
             
-            // === Ctrl + L to toggle inversion ===
+            // === CTRL + L INVERT TOGGLE (EVERY TIME, NO SKIPPING) ===
             if (!window.ctrlListenerAdded) {
               document.addEventListener("keydown", function(event) {
                 if (event.ctrlKey && event.key.toLowerCase() === 'l') {
                   event.preventDefault();
                   console.log("Ctrl+L pressed!");
             
-                  if (typeof window.ctrlLPressCount === 'undefined') {
-                    window.ctrlLPressCount = 0;
+                  if (typeof window.invertToggle === 'undefined') {
+                    window.invertToggle = false;
                   }
             
-                  window.ctrlLPressCount++;
+                  let existingStyle = document.getElementById('invert-style');
             
-                  if (window.ctrlLPressCount % 2 === 0) {
-                    if (typeof window.invertToggle === 'undefined') {
-                      window.invertToggle = false;
-                    }
-            
-                    let existingStyle = document.getElementById('invert-style');
-            
-                    if (window.invertToggle) {
-                      if (existingStyle) existingStyle.remove();
-                      console.log("Inversion removed");
-                    } else {
-                      let style = document.createElement('style');
-                      style.id = 'invert-style';
-                      style.textContent = `
-                        html {
-                          -webkit-filter: invert(100%);
-                          filter: invert(100%);
-                        }
-                      `;
-                      document.head.appendChild(style);
-                      console.log("Inverted colors activated");
-                    }
-            
-                    window.invertToggle = !window.invertToggle;
+                  if (window.invertToggle) {
+                    if (existingStyle) existingStyle.remove();
+                    console.log("Inversion removed");
                   } else {
-                    console.log("Skipped this Ctrl+L press. Try again!");
+                    let style = document.createElement('style');
+                    style.id = 'invert-style';
+                    style.textContent = `
+                      html {
+                        -webkit-filter: invert(100%);
+                        -moz-filter: invert(100%);
+                        -o-filter: invert(100%);
+                        -ms-filter: invert(100%);
+                        filter: invert(100%);
+                      }
+                    `;
+                    document.head.appendChild(style);
+                    console.log("Inverted colors activated");
                   }
+            
+                  window.invertToggle = !window.invertToggle;
                 }
               });
               window.ctrlListenerAdded = true;
             }
             
-            // === Private Message Sender ===
+            // === PRIVATE MESSAGE SENDER ===
             const pmBtn = document.getElementById('send-private-message');
             if (pmBtn && !pmBtn.dataset.listenerAdded) {
               pmBtn.addEventListener('click', function() {
@@ -1278,7 +1273,24 @@ fetchConnected();                    // Initial fetch
               });
               pmBtn.dataset.listenerAdded = 'true';
             }
-
+            
+            // === GROUP CHAT MESSAGE SENDER ===
+            const groupSendBtn = document.getElementById('send-group-message');
+            if (groupSendBtn && !groupSendBtn.dataset.listenerAdded) {
+              groupSendBtn.addEventListener('click', function() {
+                let message = document.getElementById('group-message-input').value.trim();
+                if (message) {
+                  socket.send(JSON.stringify({
+                    type: "group_message",
+                    sender: username,
+                    message: message,
+                    color: color
+                  }));
+                  document.getElementById('group-message-input').value = "";
+                }
+              });
+              groupSendBtn.dataset.listenerAdded = 'true';
+            }
 
         }})();
     </script>
