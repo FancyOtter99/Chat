@@ -463,6 +463,9 @@ async def websocket_handler(request):
                     if (data["item"] == "one"):
                         add_item_to_user(data["username"], "one")
 
+                    if (data["item"] == "two"):
+                        add_item_to_user(data["username"], "two")
+
 
                 elif data["type"] == "alert":
                     items = get_user_items(data["username"])
