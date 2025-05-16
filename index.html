@@ -1232,41 +1232,49 @@ fetchConnected();                    // Initial fetch
             document.addEventListener("keydown", function(event) {
               if (event.ctrlKey && event.key.toLowerCase() === 'l') {
                 event.preventDefault();
-                console.log("A wild Ctrl+L appeared!");
+                console.log("Ctrl+L pressed!");
             
-                // Keep track of toggle state
-                if (typeof window.invertToggle === 'undefined') {
-                  window.invertToggle = false;
+                if (typeof window.ctrlLPressCount === 'undefined') {
+                  window.ctrlLPressCount = 0;
                 }
             
-                // If style tag exists, remove it
-                let existingStyle = document.getElementById('invert-style');
+                window.ctrlLPressCount++;
             
-                if (window.invertToggle) {
-                  // Remove inversion
-                  if (existingStyle) existingStyle.remove();
-                  console.log("Inversion removed");
+                // Only do the invert toggle on every *even* press (2nd, 4th, 6th...)
+                if (window.ctrlLPressCount % 2 === 0) {
+                  // Your existing toggle logic here
+                  if (typeof window.invertToggle === 'undefined') {
+                    window.invertToggle = false;
+                  }
+            
+                  let existingStyle = document.getElementById('invert-style');
+            
+                  if (window.invertToggle) {
+                    if (existingStyle) existingStyle.remove();
+                    console.log("Inversion removed");
+                  } else {
+                    let style = document.createElement('style');
+                    style.id = 'invert-style';
+                    style.textContent = `
+                      html {
+                        -webkit-filter: invert(100%);
+                        -moz-filter: invert(100%);
+                        -o-filter: invert(100%);
+                        -ms-filter: invert(100%);
+                        filter: invert(100%);
+                      }
+                    `;
+                    document.head.appendChild(style);
+                    console.log("Inverted colors activated");
+                  }
+            
+                  window.invertToggle = !window.invertToggle;
                 } else {
-                  // Add inversion CSS
-                  let style = document.createElement('style');
-                  style.id = 'invert-style';
-                  style.textContent = `
-                    html {
-                      -webkit-filter: invert(100%);
-                      -moz-filter: invert(100%);
-                      -o-filter: invert(100%);
-                      -ms-filter: invert(100%);
-                      filter: invert(100%);
-                    }
-                  `;
-                  document.head.appendChild(style);
-                  console.log("Inverted colors activated");
+                  console.log("Skipped this Ctrl+L press. Try again!");
                 }
-            
-                // Toggle state
-                window.invertToggle = !window.invertToggle;
               }
             });
+
 
             
                 
