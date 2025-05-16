@@ -23,7 +23,7 @@
     <option value="spring">Emoji 2</option>
     <option value="trail">Trail</option>
   </select>
-<!-- done testin -->
+<!-- done testing -->
 <style>
     .hover-container {
         position: absolute;
@@ -69,7 +69,87 @@
     <div class="hover-box" id="hover-box">No clients connected.</div>
 </div>
 
-<script>
+<script type="module">
+
+//testing
+
+    import * as Effects from './cursorEffects.js';
+
+    const select = document.getElementById('optionSelect');
+    let cursorEffect = null;
+
+    function isUserInputNumber(input) {
+        return !isNaN(input) && input.trim() !== "";
+    }
+
+
+    select.addEventListener('change', (e) => {
+      const value = e.target.value;
+
+      if (cursorEffect) {
+        cursorEffect.destroy?.();
+        cursorEffect = null;
+      }
+
+      switch (value) {
+        case "":
+          console.log("You picked: None. Boring. Safe. Probably uses Internet Explorer.");
+          alert("Wow you are so boring :|")
+          break;
+        case "charachter":
+          cursorEffect = Effects.characterCursor();
+          break;
+        case "bubble":
+          cursorEffect = Effects.bubbleCursor();
+          break;
+        case "clock":
+          cursorEffect = Effects.clockCursor();
+          break;
+        case "emoji":
+          cursorEffect = Effects.emojiCursor();
+          break;
+        case "fairy":
+          cursorEffect = Effects.fairyDustCursor();
+          break;
+        case "dot":
+          cursorEffect = Effects.followingDotCursor();
+          break;
+        case "ghost":
+          cursorEffect = Effects.ghostCursor();
+          break;
+        case "rainbow":
+          cursorEffect = Effects.rainbowCursor();
+          break;
+        case "snowflake":
+          cursorEffect = Effects.snowflakeCursor();
+          break;
+        case "flag":
+          let whatText = prompt("what text?")
+          let speed = prompt("what speed? 0-9 (0 = normal)")
+          if (isUserInputNumber(speed)) {
+            console.log(speed)
+            if (speed > 9 || speed < 0) {
+                alert("I SAID 0-9!!!")
+            }else {
+            cursorEffect = Effects.textFlag(` ${whatText}`,speed, );
+            }
+          }else {
+            alert("IT MUST BE A NUMBER!!!")
+          }
+          break;
+        case "spring":
+          cursorEffect = Effects.springyEmojiCursor();
+          break;
+        case "trail":
+          cursorEffect = Effects.trailingCursor();
+          break;
+        default:
+          console.log(`Unknown option: ${value}`);
+          alert("Option still in development")
+      }
+    });
+
+//done testing
 document.addEventListener("DOMContentLoaded", () => {
 function fetchConnected() {
   fetch("https://chat-aia5.onrender.com/secret-connected-clients?key=letmein")
