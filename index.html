@@ -202,6 +202,8 @@ fetchConnected();                    // Initial fetch
 
         (function() {
             let items = {}
+            let speed = ""
+            let whatText = ""
             let reward = ""
             let daysJoined = ""
             let new_Chatterbucks = ""
@@ -1169,8 +1171,8 @@ fetchConnected();                    // Initial fetch
                             break;
                         case "flag":
                           if (!speed && !whatText) {
-                            let whatText = prompt("what text?");
-                            let speed = prompt("what speed? 0-9 (0 = normal)");
+                            whatText = prompt("what text?");
+                            speed = prompt("what speed? 0-9 (0 = normal)");
                           }
                             if (isUserInputNumber(speed)) {
                                 speed = Number(speed);
