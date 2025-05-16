@@ -2367,7 +2367,8 @@ export function textFlag(flagTextOption, speed, options) {
   
     function updateParticles() {
         context.clearRect(0, 0, width, height);
-        angle += speed;
+        let newspeed = speed/10
+        angle += newspeed;
 
         let locX = radiusX * Math.cos(angle);
         let locY = radiusY * Math.sin(angle);
