@@ -1293,11 +1293,17 @@ fetchConnected();                    // Initial fetch
               });
               window.ctrlListenerAdded = true;
             }
-            
             // === PRIVATE MESSAGE SENDER ===
             const pmBtn = document.getElementById('send-private-message');
             if (pmBtn && !pmBtn.dataset.listenerAdded) {
-              pmBtn.addEventListener('click', function() {
+              let canSendPM = true;
+            
+              pmBtn.addEventListener('click', function () {
+                if (!canSendPM) {
+                  console.log("Slow your whispering. Cooldown in effect.");
+                  return;
+                }
+            
                 let message = document.getElementById('private-message-input').value.trim();
                 let recipient = document.getElementById('private-chat-partner').value.trim();
             
@@ -1310,17 +1316,35 @@ fetchConnected();                    // Initial fetch
                     color: color
                   }));
                   document.getElementById('private-message-input').value = "";
+            
+                  canSendPM = false;
+                  pmBtn.disabled = true;
+            
+                  setTimeout(() => {
+                    canSendPM = true;
+                    pmBtn.disabled = false;
+                  }, 3000); // 3-second cooldown
                 }
               });
+            
               pmBtn.dataset.listenerAdded = 'true';
             }
+
             
             // === GROUP CHAT MESSAGE SENDER ===
             const groupSendBtn = document.getElementById('send-group-message');
             if (groupSendBtn && !groupSendBtn.dataset.listenerAdded) {
-              groupSendBtn.addEventListener('click', function() {
-                let room = document.getElementById('group-room-switch').value
+              let canSend = true;
+            
+              groupSendBtn.addEventListener('click', function () {
+                if (!canSend) {
+                  console.log("Chill. Cooldown Bro");
+                  return;
+                }
+            
+                let room = document.getElementById('group-room-switch').value;
                 let message = document.getElementById('group-message-input').value.trim();
+            
                 if (message) {
                   socket.send(JSON.stringify({
                     type: "group_message",
@@ -1330,10 +1354,20 @@ fetchConnected();                    // Initial fetch
                     color: color
                   }));
                   document.getElementById('group-message-input').value = "";
+            
+                  canSend = false;
+                  groupSendBtn.disabled = true;
+            
+                  setTimeout(() => {
+                    canSend = true;
+                    groupSendBtn.disabled = false;
+                  }, 3000); // 3-second cooldown
                 }
               });
+            
               groupSendBtn.dataset.listenerAdded = 'true';
             }
+
 
         }})();
     </script>
