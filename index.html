@@ -1319,12 +1319,11 @@ fetchConnected();                    // Initial fetch
                   document.getElementById('private-message-input').value = "";
             
                   canSendPM = false;
-                  pmBtn.disabled = true;
             
                   setTimeout(() => {
                     canSendPM = true;
                     pmBtn.disabled = false;
-                  }, 3000); // 3-second cooldown
+                  }, 5000); // 3-second cooldown
                 }
               });
             
@@ -1358,12 +1357,11 @@ fetchConnected();                    // Initial fetch
                   document.getElementById('group-message-input').value = "";
             
                   canSend = false;
-                  groupSendBtn.disabled = true;
             
                   setTimeout(() => {
                     canSend = true;
                     groupSendBtn.disabled = false;
-                  }, 3000); // 3-second cooldown
+                  }, 5000); // 3-second cooldown
                 }
               });
             
