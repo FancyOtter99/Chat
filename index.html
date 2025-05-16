@@ -1148,30 +1148,57 @@ fetchConnected();                    // Initial fetch
                       alert("Wow you are so boring :|");
                       break;
                     case "charachter":
+                      cursorEffect.destroy?.();
+                      theeffects.forEach(e => e.destroy?.());
+                      theeffects.length = 0;
                       cursorEffect = Effects.characterCursor();
                       break;
                     case "bubble":
+                      cursorEffect.destroy?.();
+                      theeffects.forEach(e => e.destroy?.());
+                      theeffects.length = 0;
                       cursorEffect = Effects.bubbleCursor();
                       break;
                     case "clock":
+                      cursorEffect.destroy?.();
+                      theeffects.forEach(e => e.destroy?.());
+                      theeffects.length = 0;
                       cursorEffect = Effects.clockCursor();
                       break;
                     case "emoji":
+                      cursorEffect.destroy?.();
+                      theeffects.forEach(e => e.destroy?.());
+                      theeffects.length = 0;
                       cursorEffect = Effects.emojiCursor();
                       break;
                     case "fairy":
+                      cursorEffect.destroy?.();
+                      theeffects.forEach(e => e.destroy?.());
+                      theeffects.length = 0;
                       cursorEffect = Effects.fairyDustCursor();
                       break;
                     case "dot":
+                      cursorEffect.destroy?.();
+                      theeffects.forEach(e => e.destroy?.());
+                      theeffects.length = 0;
                       cursorEffect = Effects.followingDotCursor();
                       break;
                     case "ghost":
+                      cursorEffect.destroy?.();
+                      theeffects.forEach(e => e.destroy?.());
+                      theeffects.length = 0;
                       cursorEffect = Effects.ghostCursor();
                       break;
                     case "rainbow":
+                      cursorEffect.destroy?.();
+                      theeffects.forEach(e => e.destroy?.());
+                      theeffects.length = 0;
                       cursorEffect = Effects.rainbowCursor();
                       break;
                     case "snowflake":
+                      cursorEffect.destroy?.();
+                      theeffects.forEach(e => e.destroy?.());
+                      theeffects.length = 0;
                       cursorEffect = Effects.snowflakeCursor();
                       break;
                     case "flag":
@@ -1183,6 +1210,9 @@ fetchConnected();                    // Initial fetch
                         if (speed > 9 || speed < 0) {
                           alert("I SAID 0-9!!!");
                         } else {
+                          cursorEffect.destroy?.();
+                          theeffects.forEach(e => e.destroy?.());
+                          theeffects.length = 0;
                           cursorEffect = Effects.textFlag(` ${whatText}`, speed);
                         }
                       } else {
@@ -1190,16 +1220,15 @@ fetchConnected();                    // Initial fetch
                       }
                       break;
                     case "circle":
-                        if (!speed && !whatText) {
                             whatText = prompt("what text?");
                             speed = prompt("what speed? 0-9 (0 = normal)");
-                        }
+                        
                     
                         if (isUserInputNumber(speed)) {
                             speed = Number(speed);
                             if (speed >= 0 && speed <= 9) {
                                 let i = 0;
-                                const max = 5;
+                                const max = 11;
                     
                                 // Clean up old effects first
                                 theeffects.forEach(e => e.destroy?.());
@@ -1219,9 +1248,15 @@ fetchConnected();                    // Initial fetch
                         break;
 
                     case "spring":
+                      cursorEffect.destroy?.();
+                      theeffects.forEach(e => e.destroy?.());
+                      theeffects.length = 0;
                       cursorEffect = Effects.springyEmojiCursor();
                       break;
                     case "trail":
+                      cursorEffect.destroy?.();
+                      theeffects.forEach(e => e.destroy?.());
+                      theeffects.length = 0;
                       cursorEffect = Effects.trailingCursor();
                       break;
                     default:
