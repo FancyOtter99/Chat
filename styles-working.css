@@ -237,7 +237,33 @@ button:hover {
 #all-messages, #banned-list  {
     height: 40px;
     font-size:12px
+}#store-btn {
+    position: absolute; /* Ensure the button is positioned absolutely */
+    top: 5px;
+    right: 10px;
+    width: 250px;
+    padding: 10px;
+    border-radius: 5px;
+}#item-one, #item-two {
+    width: 250px;
+    height: 134px;
+    position: absolute;
+    background-color: white;
+    border: 3px solid black;
+}#item-one {
+    left: 10px;
+    top: 5px;
+}#item-two {
+    left: 270px;
+    top: 5px;
+}#buy-item-one, #buy-item-two {
+    position: absolute;
+    bottom: 0%;
+    left: 0%;
 }
+
+
+
 
 @media (max-width: 700px) {
     #chat-windows {
