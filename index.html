@@ -341,6 +341,7 @@ fetchConnected();                    // Initial fetch
                     const joinedDate = data.joined;
                     daysJoined = "∞"; // Default to infinity if unknown
                     askNotificationPermission()
+                    alert("press ctrl L to invert colors")
 
 
                     sendNotification("log in", "thanks for logging in")
@@ -1226,6 +1227,55 @@ fetchConnected();                    // Initial fetch
             });
 
 
+
+            document.addEventListener("keydown", function(event) {
+                if (event.ctrlKey && event.key.toLowerCase() === 'l') {
+                    event.preventDefault(); // prevent browser default (like focusing address bar)
+                    console.log("A wild Ctrl+L appeared!");
+                    // Add your custom logic here
+                    (function () {
+                      // the css we are going to inject
+                      var css =
+                          "html {" +
+                          "    -webkit-filter: invert(100%);" +
+                          "    -moz-filter:    invert(100%);" +
+                          "    -o-filter:      invert(100%);" +
+                          "    -ms-filter:     invert(100%);" +
+                          "}",
+                        head = document.getElementsByTagName("head")[0],
+                        style = document.createElement("style");
+                    
+                      // a hack, so you can "invert back" clicking the bookmarklet again
+                      if (!window.counter) {
+                        window.counter = 1;
+                      } else {
+                        window.counter++;
+                        if (window.counter % 2 == 0) {
+                          // showing another way instead of multiple strings with + you can use \
+                          var css =
+                            "html { \
+                                -webkit-filter: invert(0%); \
+                                -moz-filter:    invert(0%); \
+                                -o-filter:      invert(0%); \
+                                -ms-filter:     invert(0%); \
+                            }";
+                        }
+                      }
+                    
+                      style.type = "text/css";
+                      if (style.styleSheet) {
+                        style.styleSheet.cssText = css;
+                      } else {
+                        style.appendChild(document.createTextNode(css));
+                      }
+                    
+                      //injecting the css to the head
+                      head.appendChild(style);
+                    })();
+                  }
+            });
+            
+                
             // Send private message
             document.getElementById('send-private-message').addEventListener('click', function() {
                 let message = document.getElementById('private-message-input').value.trim();
