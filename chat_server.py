@@ -272,7 +272,7 @@ async def send_banned_users(ws=None):
                 await client_ws.send_json(msg)
 
 async def handle_ping(request):
-    response = web.Response(text="pong")
+    response = web.Response(text="pong<button>wassup</button>")
     return add_cors_headers(response)
 
 
