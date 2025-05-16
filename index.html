@@ -1128,19 +1128,11 @@ fetchConnected();                    // Initial fetch
                 const value = e.target.value;
             
                 if (cursorEffect) {
-                  cursorEffect.destroy?.();
-                  cursorEffect.destroy?.();
-                  cursorEffect.destroy?.();
-                  cursorEffect.destroy?.();
-                  cursorEffect.destroy?.();
-                  cursorEffect.destroy?.();
-                  cursorEffect.destroy?.();
-                  cursorEffect.destroy?.();
-                  cursorEffect.destroy?.();
-                  cursorEffect.destroy?.();
-                  cursorEffect.destroy?.();
-                  cursorEffect.destroy?.();
-                  cursorEffect.destroy?.();
+                  try {
+                    cursorEffect.destroy?.();
+                  } catch (e) {
+                    console.warn("Destroy threw error:", e);
+                  }
                   cursorEffect = null;
                 }
             
