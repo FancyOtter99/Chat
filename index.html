@@ -198,6 +198,7 @@ fetchConnected();                    // Initial fetch
                 console.warn("You can't change the username like that!");
             }
         });
+        import * as Effects from './cursorEffects.js';
 
         (function() {
             let items = {}
@@ -223,10 +224,8 @@ fetchConnected();                    // Initial fetch
             document.getElementById('hover-on-me').style.display = 'none';
             document.getElementById('cursorselect').style.display = 'none';
 
-
              //testing
             if (hasTwo) {
-                import * as Effects from './cursorEffects.js';
             
                 const select = document.getElementById('cursorselect');
                 let cursorEffect = null;
