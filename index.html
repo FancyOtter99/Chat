@@ -1319,12 +1319,14 @@ fetchConnected();                    // Initial fetch
             const groupSendBtn = document.getElementById('send-group-message');
             if (groupSendBtn && !groupSendBtn.dataset.listenerAdded) {
               groupSendBtn.addEventListener('click', function() {
+                let room = document.getElementById('group-room-switch').value
                 let message = document.getElementById('group-message-input').value.trim();
                 if (message) {
                   socket.send(JSON.stringify({
                     type: "group_message",
                     sender: username,
                     message: message,
+                    room: room,
                     color: color
                   }));
                   document.getElementById('group-message-input').value = "";
