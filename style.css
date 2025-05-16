@@ -263,7 +263,7 @@ button:hover {
 }#cursorselect {
     position: absolute;
     right: 10px;
-    top: 230px;
+    top: 220px;
     width: 250px;
     padding: 10px;
     borderRadius: 5px;
