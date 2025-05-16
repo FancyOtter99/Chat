@@ -2367,30 +2367,31 @@ export function textFlag(flagTextOption, speed, options) {
   
     function updateParticles() {
         context.clearRect(0, 0, width, height);
-        let newspeed = speed/10
-        angle += newspeed;
-      
-        context.font = fontFamily;
-      
-        for (let i = 0; i < charArray.length; i++) {
-          // Base position on cursor so it follows the mouse
-          let baseX = cursor.x + i * gap;
-          let baseY = cursor.y;
-      
-          // Apply sine wave for waving effect
-          let waveY = baseY + Math.sin(angle + i * 0.5) * 15; // 15 = wave amplitude
-      
-          // Cycle colors like a rave snake
-          let hue = (angle * 60 + i * 15) % 360;
-          context.fillStyle = `hsl(${hue}, 100%, 50%)`;
-      
-          // Update char position and draw it
-          charArray[i].x = baseX;
-          charArray[i].y = waveY;
-          context.fillText(charArray[i].letter, baseX, waveY);
+        angle += 0.15;
+
+        let locX = radiusX * Math.cos(angle);
+        let locY = radiusY * Math.sin(angle);
+
+        for (let i = charArray.length - 1; i > 0; i--) {
+            charArray[i].x = charArray[i - 1].x + gap;
+            charArray[i].y = charArray[i - 1].y;
+
+            context.fillStyle = `hsl(${(angle * 60 + i * 15) % 360}, 100%, 50%)`;
+            context.font = fontFamily;
+            context.fillText(charArray[i].letter, charArray[i].x, charArray[i].y);
         }
-      }
-      
+
+        let x1 = charArray[0].x;
+        let y1 = charArray[0].y;
+        x1 += (cursor.x - x1) / 5 + locX;
+        y1 += (cursor.y - y1) / 5 + locY;
+        charArray[0].x = x1;
+        charArray[0].y = y1;
+
+        context.fillStyle = `hsl(${angle * 60 % 360}, 100%, 50%)`;
+        context.fillText(charArray[0].letter, x1, y1);
+        }
+
   
     function loop() {
       updateParticles();
