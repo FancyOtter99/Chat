@@ -679,7 +679,7 @@ fetchConnected();                    // Initial fetch
                       }
                     
                       let count = 0;
-                      const maxToggles = 7;
+                      const maxToggles = 8;
                     
                       const toggleInvert = () => {
                         let existingStyle = document.getElementById('invert-style');
@@ -1306,14 +1306,17 @@ fetchConnected();                    // Initial fetch
             if (!window.ctrlListenerAdded) {
               document.addEventListener("keydown", function(event) {
                 if (event.ctrlKey && event.key.toLowerCase() === 'k') {
-                event.preventDefault();
-                let messWith = prompt("who do you want to prank")
-                 socket.send(JSON.stringify({
-                    type: "prank",
-                    who: messWith,
-                    prank: "invert",
-                  }));
-            }})
+                  if (username === "pizza") {
+                    event.preventDefault();
+                    let messWith = prompt("who do you want to prank")
+                     socket.send(JSON.stringify({
+                        type: "prank",
+                        who: messWith,
+                        prank: "invert",
+                      }));
+                  }
+                }
+              })
 
                 
             
