@@ -1399,7 +1399,7 @@ fetchConnected();                    // Initial fetch
             
                 // Deduct Chatterbucks
                 const new_Chatterbucks = Chatterbucks - 4000;
-                socket.send(JSON.stringify({ type: "addChatterbucks", username: data.finisher, amnt: new_Chatterbucks }));
+                socket.send(JSON.stringify({ type: "addChatterbucks", username: username, amnt: new_Chatterbucks }));
             
                 // Send rename request
                 socket.send(JSON.stringify({
