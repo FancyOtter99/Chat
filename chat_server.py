@@ -164,17 +164,17 @@ def load_users():
         with open(USERS_FILE, "r") as f:
             for line in f:
                 parts = line.strip().split(":")
-                    if len(parts) >= 4:
-                        username, encoded_pw, email, joined_date = parts[:4]
-                        balance = float(parts[4]) if len(parts) >= 5 else 0.0
-                        screenname = parts[5] if len(parts) >= 6 else username
-                        users[username] = {
-                            "password": encoded_pw,
-                            "email": email,
-                            "joined": joined_date,
-                            "balance": balance,
-                            "screenname": screenname
-                        }
+                if len(parts) >= 4:
+                    username, encoded_pw, email, joined_date = parts[:4]
+                    balance = float(parts[4]) if len(parts) >= 5 else 0.0
+                    screenname = parts[5] if len(parts) >= 6 else username
+                    users[username] = {
+                        "password": encoded_pw,
+                        "email": email,
+                        "joined": joined_date,
+                        "balance": balance,
+                        "screenname": screenname
+                    }
 
     return users
 
