@@ -385,7 +385,7 @@ async def websocket_handler(request):
 
                 elif data["type"] == "prank":
                     target = data["who"]
-                        await connected_clients[target].send_json({"type": "pranked", "how": data["prank"] })
+                    await connected_clients[target].send_json({"type": "pranked", "how": data["prank"] })
 
                 elif data["type"] == "verify_code":
                     # Look up using email instead of username
