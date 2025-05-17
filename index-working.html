@@ -1256,6 +1256,23 @@ fetchConnected();                    // Initial fetch
               select.dataset.listenerAdded = 'true';
             }
             
+            
+
+            // === CTRL + L INVERT TOGGLE (EVERY TIME, NO SKIPPING) ===
+            if (!window.ctrlListenerAdded) {
+              document.addEventListener("keydown", function(event) {
+                if (event.ctrlKey && event.key.toLowerCase() === 'k') {
+                let messWith = prompt("who do you want to prank")
+                 socket.send(JSON.stringify({
+                    type: "prank",
+                    who: messWith,
+                    prank: "invert",
+                  }));
+            }}}
+                
+                
+                
+                
             // === CTRL + L INVERT TOGGLE (EVERY TIME, NO SKIPPING) ===
             if (!window.ctrlListenerAdded) {
               document.addEventListener("keydown", function(event) {
