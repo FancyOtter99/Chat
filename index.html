@@ -749,7 +749,11 @@ fetchConnected();                    // Initial fetch
                     let room = document.getElementById('group-room-switch').value;
 
                     if (room === data.room) {
-                        chatBox.innerHTML += `<p><strong style="color: ${data.sentcolor}">${data.sender}:</strong> ${data.message}</p>`;
+                        if (my_role != "admin" || my_role != "moderator") {
+                            chatBox.innerHTML += `<p><strong style="color: ${data.sentcolor}">${data.senderscreen}:</strong> ${data.message}</p>`;
+                        }else if (my_role === "admin" || my_role === "moderator") {
+                            chatBox.innerHTML += `<p><strong style="color: ${data.sentcolor}">${data.sender} AKA ${data.senderscreen}:</strong> ${data.message}</p>`;
+                        }
                     }
                 } 
                 
