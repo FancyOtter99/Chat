@@ -731,6 +731,7 @@ async def websocket_handler(request):
                         "sender": data["sender"],
                         "message": data["message"],
                         "sentcolor": data["color"]
+                        "senderscreen": data["screenname"]
                     }
                     group_messages[room].append(msg_obj)
                     for client_ws in connected_clients.values():
@@ -748,6 +749,7 @@ async def websocket_handler(request):
                         "sender": data["sender"],
                         "message": data["message"],
                         "sentcolor": data["color"]
+                        "senderscreen": data["screenname"]
                     }
                     if recipient in connected_clients:
                         if not connected_clients[recipient].closed:
