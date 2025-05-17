@@ -111,6 +111,15 @@ def remove_item_from_user(username, item):
         items[username].remove(item)
         save_user_items(items)
 
+def get_user_screenname(username):
+    users = load_users()
+    user = users.get(username)
+    if user:
+        return user.get("screenname", username)  # fallback to username
+    return None  # or return username if you want a "default"
+
+
+
 
 def send_email(to_email, subject, body):
     smtp_host = os.getenv('SMTP_HOST')
@@ -157,17 +166,49 @@ def load_users():
                 parts = line.strip().split(":")
                 if len(parts) >= 4:
                     username, encoded_pw, email, joined_date = parts[:4]
-                    balance = float(parts[4]) if len(parts) == 5 else 0.0
+                    balance = float(parts[4]) if len(parts) >= 5 else 0.0
+                    screenname = parts[5] if len(parts) >= 6 else username
                     users[username] = {
                         "password": encoded_pw,
                         "email": email,
                         "joined": joined_date,
-                        "balance": balance
+                        "balance": balance,
+                        "screenname": screenname
                     }
+
     return users
 
+
+def update_user_screenname(username, new_screenname):
+    if not os.path.exists(USERS_FILE):
+        print("User file not found")
+        return False
+
+    updated = False
+    lines = []
+
+    with open(USERS_FILE, "r") as f:
+        for line in f:
+            parts = line.strip().split(":")
+            if parts[0] == username:
+                if len(parts) < 6:
+                    parts += [""] * (6 - len(parts))  # pad if missing
+                parts[5] = new_screenname
+                updated = True
+            lines.append(":".join(parts) + "\n")
+
+    if updated:
+        with open(USERS_FILE, "w") as f:
+            f.writelines(lines)
+        print(f"Updated screenname for {username} to {new_screenname}")
+    else:
+        print("User not found.")
+
+    return updated
+
+
+
 def update_user_balance(username, new_balance):
-    print(f"Updating balance for {username} to {new_balance}")  # DEBUG
     if not os.path.exists(USERS_FILE):
         print("User file not found")
         return False
@@ -179,7 +220,6 @@ def update_user_balance(username, new_balance):
         for line in f:
             parts = line.strip().split(":")
             if parts[0] == username and len(parts) >= 5:
-                print(f"Found user line: {line.strip()}")  # DEBUG
                 parts[4] = str(new_balance)
                 updated = True
             lines.append(":".join(parts) + "\n")
@@ -187,11 +227,9 @@ def update_user_balance(username, new_balance):
     if updated:
         with open(USERS_FILE, "w") as f:
             f.writelines(lines)
-        print("File updated.")  # DEBUG
-    else:
-        print("User not found.")  # DEBUG
 
     return updated
+
 
 
 def get_user_balance(username):
@@ -202,13 +240,17 @@ def get_user_balance(username):
     return 0.0  # or maybe -1 if you want to mock them for being non-existent
 
 
-
-def save_user(username, password, email):
+def save_user(username, password, email, screenname=None):
+    if screenname is None:
+        screenname = username
     encoded_pw = base64.b64encode(password.encode()).decode()
     joined_date = datetime.utcnow().strftime("%Y-%m-%d")
     initial_balance = 0.0
+    default_screenname = username  # start with same as username
     with open(USERS_FILE, "a") as f:
-        f.write(f"{username}:{encoded_pw}:{email}:{joined_date}:{initial_balance}\n")
+        f.write(f"{username}:{encoded_pw}:{email}:{joined_date}:{initial_balance}:{default_screenname}\n")
+
+
 
 
 def load_banned_users():
@@ -392,7 +434,7 @@ async def websocket_handler(request):
                     entry = pending_signups.get(data["email"])  # <-- Use email
                     if entry and entry["code"] == data["code"]:
                         # Save user with the provided email and details
-                        save_user(entry["username"], entry["password"], data["email"])
+                        save_user(entry["username"], entry["password"], data["email"], entry["username"])
                         
                         # Remove the entry from pending signups
                         del pending_signups[data["email"]]
@@ -430,9 +472,10 @@ async def websocket_handler(request):
                             print("User not found. Probably fell off the economy.")
 
                         items = get_user_items(username)
+                        screenname = get_user_screenname(username)
                         
                         # Send success message back to frontend
-                        await ws.send_json({"type": "login_success", "balance": balance, "username": username, "joined": joined, "items": items})
+                        await ws.send_json({"type": "login_success", "balance": balance, "username": username, "joined": joined, "screenname": screenname, "items": items})
 
                         
                         
@@ -441,6 +484,14 @@ async def websocket_handler(request):
                     else:
                         # Send error if code is invalid or expired
                         await ws.send_json({"type": "error", "message": "Invalid or expired verification code."})
+
+                elif data["type"] == "rename":
+                    update_user_screenname(data["forwho"], data["newname"])
+                    screenname = get_user_screenname(data["forwho"])
+                    await connected_clients[data["forwho"]].send_json({
+                        "type": "addedscreenname",
+                        "changedScreenname": screenname
+                    })
 
                 elif data["type"] == "addChatterbucks":
                     amount = float(data["amnt"])
@@ -653,12 +704,13 @@ async def websocket_handler(request):
                         else:
                             print("User not found. Probably fell off the economy.")
                         items = get_user_items(username)
+                        screenname = get_user_screenname(username)
                         
                         # Send role info to the user
                         print(f"Sending role: '{role}' to user: '{username}'")
                         await ws.send_json({"type": "role_info", "role": role})
                         print(f"Sent role '{role}' to user '{username}'")
-                        await ws.send_json({"type": "login_success", "balance": balance, "username": username, "joined": joined, "items": items})
+                        await ws.send_json({"type": "login_success", "balance": balance, "username": username, "joined": joined, "screenname": screenname, "items": items})
 
 
                         
