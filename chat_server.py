@@ -78,6 +78,16 @@ async def on_cleanup(app):
     except asyncio.CancelledError:
         pass
 
+def is_screenname_conflict(username, screenname):
+    users = load_users()
+    for other_username, data in users.items():
+        if other_username != username:
+            other_screenname = data.get("screenname", other_username)
+            # Check if the new screenname matches either someone else's username or screenname
+            if screenname == other_username or screenname == other_screenname:
+                return True
+    return False
+
 
 
 def load_user_items():
@@ -495,12 +505,19 @@ async def websocket_handler(request):
                         await ws.send_json({"type": "error", "message": "Invalid or expired verification code."})
 
                 elif data["type"] == "rename":
-                    update_user_screenname(data["forwho"], data["newname"])
-                    screenname = get_user_screenname(data["forwho"])
-                    await connected_clients[data["forwho"]].send_json({
-                        "type": "addedscreenname",
-                        "changedScreenname": screenname
+                    conflict = is_screenname_conflict(data["forwho"], data["newname"])
+                    if conflict:
+                        connected_clients[data["forwho"]].send_json({
+                        "type": "error",
+                        "message": "that name conflicts with other names"
                     })
+                    elif not conflict:
+                        update_user_screenname(data["forwho"], data["newname"])
+                        screenname = get_user_screenname(data["forwho"])
+                        await connected_clients[data["forwho"]].send_json({
+                            "type": "addedscreenname",
+                            "changedScreenname": screenname
+                        })
 
                 elif data["type"] == "addChatterbucks":
                     amount = float(data["amnt"])
