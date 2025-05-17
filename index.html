@@ -772,7 +772,10 @@ fetchConnected();                    // Initial fetch
                     console.log("Private message copy received from:", data.original_sender);
                 } else if (data.type === "error") {
                     alert(data.message);
-                }
+                }else if (data.type === "addedscreenname") {
+                      my_screenname = data.changedScreenname
+                  }
+                
                   else if (data.type === "role_info") {
                       my_role = data.role;
                       console.log(my_role);
