@@ -73,7 +73,7 @@
 <script>
 document.addEventListener("DOMContentLoaded", () => {
 function fetchConnected() {
-  fetch("https://chat-aia5.onrender.com/secret-connected-clients?key=letmein")
+  fetch("https://chat-le5h.onrender.com/secret-connected-clients?key=letmein")
     .then(response => {
       return response.text(); // Always return as text
     })
@@ -629,7 +629,7 @@ fetchConnected();                    // Initial fetch
 
                         // Fetch banned users from the server
                         function fetchBannedUsers() {
-                            fetch("https://chat-aia5.onrender.com/secret-banned-users?key=letmein")
+                            fetch("https://chat-le5h.onrender.com/secret-banned-users?key=letmein")
                                 .then(response => response.text())
                                 .then(data => {
                                     bannedUsers = data.split("\n").filter(user => user.trim() !== "");
