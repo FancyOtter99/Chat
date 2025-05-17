@@ -205,6 +205,7 @@ fetchConnected();                    // Initial fetch
         import * as Effects from './cursorEffects.js';
 
         (function() {
+            let my_screenname = ""
             let k = 0;
             const theeffects = [];
             let items = {};
@@ -389,6 +390,7 @@ fetchConnected();                    // Initial fetch
                     Chatterbucks = data.balance
 
                     username = data.username;
+                    my_screenname = data.screenname
 
                     // Disable input fields to prevent editing username after login
                     document.getElementById('login-username').disabled = true;
@@ -1421,6 +1423,7 @@ fetchConnected();                    // Initial fetch
                     sender: username,
                     recipient: recipient,
                     message: message,
+                    screenname: my_screenname,
                     color: color
                   }));
                   document.getElementById('private-message-input').value = "";
@@ -1457,6 +1460,7 @@ fetchConnected();                    // Initial fetch
                   socket.send(JSON.stringify({
                     type: "group_message",
                     sender: username,
+                    screenname: my_screenname,
                     message: message,
                     room: room,
                     color: color
