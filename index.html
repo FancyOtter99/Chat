@@ -232,6 +232,7 @@ fetchConnected();                    // Initial fetch
             document.getElementById('store-content').style.display = 'none';
             document.getElementById('hover-on-me').style.display = 'none';
             document.getElementById('cursorselect').style.display = 'none';
+            document.getElementById('screenName').style.display = 'none';
 
              //testing
 
@@ -344,6 +345,7 @@ fetchConnected();                    // Initial fetch
                     document.getElementById('chat-container').style.display = 'block';
                     document.getElementById('store-btn').style.display = 'block';
                     document.getElementById('hover-on-me').style.display = 'block';
+                    document.getElementById('screenName').style.display = 'block';
                     const joinedDate = data.joined;
                     daysJoined = "∞"; // Default to infinity if unknown
                     askNotificationPermission()
