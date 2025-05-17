@@ -240,8 +240,9 @@ def get_user_balance(username):
     return 0.0  # or maybe -1 if you want to mock them for being non-existent
 
 
-
-def save_user(username, password, email):
+def save_user(username, password, email, screenname=None):
+    if screenname is None:
+        screenname = username
     encoded_pw = base64.b64encode(password.encode()).decode()
     joined_date = datetime.utcnow().strftime("%Y-%m-%d")
     initial_balance = 0.0
