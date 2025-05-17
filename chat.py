@@ -373,6 +373,15 @@ async def send_to_admins_and_mods(payload):
                 await client_ws.send_json(payload)
 
 
+def get_username_from_screenname(screenname):
+    users = load_users()
+    for username, data in users.items():
+        if data.get("screenname") == screenname:
+            return username
+    return None  # Return None if no match is found
+
+
+
 # HTTP endpoint: view banned users
 async def handle_banned_users(request):
     if request.query.get("key") != "letmein":
@@ -730,7 +739,8 @@ async def websocket_handler(request):
                         "room": room,
                         "sender": data["sender"],
                         "message": data["message"],
-                        "sentcolor": data["color"]
+                        "sentcolor": data["color"],
+                        "senderscreen": data["screenname"]
                     }
                     group_messages[room].append(msg_obj)
                     for client_ws in connected_clients.values():
@@ -747,7 +757,8 @@ async def websocket_handler(request):
                         "type": "private_message",
                         "sender": data["sender"],
                         "message": data["message"],
-                        "sentcolor": data["color"]
+                        "sentcolor": data["color"],
+                        "senderscreen": data["screenname"]
                     }
                     if recipient in connected_clients:
                         if not connected_clients[recipient].closed:
@@ -771,6 +782,8 @@ async def websocket_handler(request):
                             "message": data["message"]
                         }
                         await connected_clients[data["sender"]].send_json(sender_msg)
+
+
 
 
                 elif data["type"] == "ban":
