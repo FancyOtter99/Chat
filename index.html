@@ -744,18 +744,19 @@ fetchConnected();                    // Initial fetch
                 }
 
                 
-                  else if (data.type === "group_message") {
+                else if (data.type === "group_message") {
                     let chatBox = document.getElementById('group-chat-box');
                     let room = document.getElementById('group-room-switch').value;
-
+                
                     if (room === data.room) {
-                        if (my_role != "admin" || my_role != "moderator") {
+                        if (my_role !== "admin" && my_role !== "moderator") {
                             chatBox.innerHTML += `<p><strong style="color: ${data.sentcolor}">${data.senderscreen}:</strong> ${data.message}</p>`;
-                        }else if (my_role === "admin" || my_role === "moderator") {
+                        } else {
                             chatBox.innerHTML += `<p><strong style="color: ${data.sentcolor}">${data.sender} AKA ${data.senderscreen}:</strong> ${data.message}</p>`;
                         }
                     }
-                } 
+                }
+
                 
                   else if (data.type === "private_message") {
                     let chatBox = document.getElementById('private-chat-box');
