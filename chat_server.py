@@ -507,17 +507,18 @@ async def websocket_handler(request):
                 elif data["type"] == "rename":
                     conflict = is_screenname_conflict(data["forwho"], data["newname"])
                     if conflict:
-                        connected_clients[data["forwho"]].send_json({
-                        "type": "error",
-                        "message": "that name conflicts with other names"
-                    })
-                    elif not conflict:
+                        await connected_clients[data["forwho"]].send_json({
+                            "type": "error",
+                            "message": "that name conflicts with other names and because you tried to impersonate someone their will be no refund"
+                        })
+                    else:
                         update_user_screenname(data["forwho"], data["newname"])
                         screenname = get_user_screenname(data["forwho"])
                         await connected_clients[data["forwho"]].send_json({
                             "type": "addedscreenname",
                             "changedScreenname": screenname
                         })
+
 
                 elif data["type"] == "addChatterbucks":
                     amount = float(data["amnt"])
