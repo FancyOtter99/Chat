@@ -781,7 +781,7 @@ async def websocket_handler(request):
                         sender_msg = {
                             "type": "sender_message",
                             "original_sender": data["sender"],
-                            "original_recipient": recipient,
+                            "original_recipient": recipient_username,
                             "message": data["message"]
                         }
                         await connected_clients[data["sender"]].send_json(sender_msg)
