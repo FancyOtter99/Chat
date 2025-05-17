@@ -269,6 +269,13 @@ button:hover {
     borderRadius: 5px;
     background-color: #e808fc;
     fontSize: 16px;
+}#screenName {
+    width: 240px;
+    padding: 5px;
+    backround-color: green;
+    position: absolute;
+    top: 270px;
+    right: 10px;
 }
 
 
