@@ -137,7 +137,12 @@ fetchConnected();                    // Initial fetch
             <button id = "buy-item-two"> Buy cursor styling</button>
         </div>
     </div>
-
+    <div id = "screenName">
+        <input id = "newScreenName" placeholder = "New screen name">
+        <button id = "setScreenName">
+            Set New Screen Name
+        </button>
+    </div>
     <!-- Login / Signup Screen -->
     <div id="auth-container">
         <h2>Login</h2>
@@ -1360,6 +1365,40 @@ fetchConnected();                    // Initial fetch
               });
               window.ctrlListenerAdded = true;
             }
+
+
+            // === Change Screen Name ===
+            const setScreenBTN = document.getElementById('setScreenName');
+            if (setScreenBTN && !setScreenBTN.dataset.listenerAdded) {
+              let canSend = true;
+            
+              setScreenBTN.addEventListener('click', function () {
+                if (!canSend) {
+                  document.getElementById('newScreenName').value = "";
+                  alert("Chill. Cooldown Is On Bro.");
+                  return;
+                }
+                let newScreenName = document.getElementById('newScreenName').value.trim();
+            
+                if (newScreenName) {
+                  socket.send(JSON.stringify({
+                    type: "rename",
+                    newname: newScreenName,
+                    forwho: username
+                  }));
+                  document.getElementById('newScreenName').value = "";
+            
+                  canSend = false;
+            
+                  setTimeout(() => {
+                    canSend = true;
+                  }, 30000); // 30-second cooldown
+                }else {alert("invalid screen name")}
+              });
+            
+              setScreenBTN.dataset.listenerAdded = 'true';
+            }
+            
             // === PRIVATE MESSAGE SENDER ===
             const pmBtn = document.getElementById('send-private-message');
             if (pmBtn && !pmBtn.dataset.listenerAdded) {
