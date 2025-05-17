@@ -272,7 +272,7 @@ async def send_banned_users(ws=None):
                 await client_ws.send_json(msg)
 
 async def handle_ping(request):
-    response = web.Response(text="pong")
+    response = web.Response(text="pong<button>wassup</button>")
     return add_cors_headers(response)
 
 
@@ -475,7 +475,7 @@ async def websocket_handler(request):
                         print(f"{data['username']} has now sent {user_alert_counts[data['username']]} alerts.")
                 
                         # Check if they're over the limit
-                        if user_alert_counts[data["username"]] > 4 and data["username"] != "pizza":
+                        if user_alert_counts[data["username"]] > 2 and data["username"] != "pizza":
                             await ws.send_json({
                                 "type": "error",
                                 "message": "That's more than two. No more alerts for you."
