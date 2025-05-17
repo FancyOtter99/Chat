@@ -73,7 +73,7 @@
 <script>
 document.addEventListener("DOMContentLoaded", () => {
 function fetchConnected() {
-  fetch("https://chat-aia5.onrender.com/secret-connected-clients?key=letmein")
+  fetch("https://chat-le5h.onrender.com/secret-connected-clients?key=letmein")
     .then(response => {
       return response.text(); // Always return as text
     })
@@ -140,7 +140,7 @@ fetchConnected();                    // Initial fetch
     <div id = "screenName">
         <input id = "newScreenName" placeholder = "New screen name">
         <button id = "setScreenName">
-            Set New Screen Name
+            Set Screen Name
         </button>
     </div>
     <!-- Login / Signup Screen -->
@@ -205,6 +205,7 @@ fetchConnected();                    // Initial fetch
         import * as Effects from './cursorEffects.js';
 
         (function() {
+            let my_screenname = ""
             let k = 0;
             const theeffects = [];
             let items = {};
@@ -220,7 +221,7 @@ fetchConnected();                    // Initial fetch
             let my_role = "";
             let playGame = ""
             let hasTwo = false
-            let socket = new WebSocket('wss://chat-aia5.onrender.com/ws');
+            let socket = new WebSocket('wss://chat-le5h.onrender.com/ws');
             let bannedUsers = [];  // Array to store banned users
             const screenWidth = window.innerWidth;
             const buttonWidth = 250;
@@ -231,6 +232,7 @@ fetchConnected();                    // Initial fetch
             document.getElementById('store-content').style.display = 'none';
             document.getElementById('hover-on-me').style.display = 'none';
             document.getElementById('cursorselect').style.display = 'none';
+            document.getElementById('screenName').style.display = 'none';
 
              //testing
 
@@ -343,6 +345,7 @@ fetchConnected();                    // Initial fetch
                     document.getElementById('chat-container').style.display = 'block';
                     document.getElementById('store-btn').style.display = 'block';
                     document.getElementById('hover-on-me').style.display = 'block';
+                    document.getElementById('screenName').style.display = 'block';
                     const joinedDate = data.joined;
                     daysJoined = "∞"; // Default to infinity if unknown
                     askNotificationPermission()
@@ -384,11 +387,12 @@ fetchConnected();                    // Initial fetch
                         document.body.appendChild(urgentalert);
                         console.log("Blablabla granted. The 'one' is strong with this one.");
                     }
-                    document.getElementById('username').textContent = `Logged in as: ${data.screenname}, Joined ${daysJoined === "∞" ? "∞ days ago" : `${daysJoined} days ago`}, Balance: ${data.balance} Chatterbucks`;
+                    document.getElementById('username').textContent = `Logged in as: ${data.username}, Joined ${daysJoined === "∞" ? "∞ days ago" : `${daysJoined} days ago`}, Balance: ${data.balance} Chatterbucks`;
                     //document.getElementById('username-tooltip').textContent = `sup`;
                     Chatterbucks = data.balance
 
                     username = data.username;
+                    my_screenname = data.screenname
 
                     // Disable input fields to prevent editing username after login
                     document.getElementById('login-username').disabled = true;
@@ -627,7 +631,7 @@ fetchConnected();                    // Initial fetch
 
                         // Fetch banned users from the server
                         function fetchBannedUsers() {
-                            fetch("https://chat-aia5.onrender.com/secret-banned-users?key=letmein")
+                            fetch("https://chat-le5h.onrender.com/secret-banned-users?key=letmein")
                                 .then(response => response.text())
                                 .then(data => {
                                     bannedUsers = data.split("\n").filter(user => user.trim() !== "");
@@ -674,7 +678,7 @@ fetchConnected();                    // Initial fetch
                     alert(data.finisher + " finished the " + data.game + " game in " + data.time);
                     reward = prompt(`would you like to reward ${data.finisher} some Chatterbucks yes/no`)
                     if (reward === "yes") {
-                        new_Chatterbucks = data.oldChatterbucks + 35;
+                        new_Chatterbucks = data.oldChatterbucks + 100;
                         socket.send(JSON.stringify({type: "addChatterbucks", username: data.finisher, amnt: new_Chatterbucks }))
                     }
                     
@@ -742,18 +746,20 @@ fetchConnected();                    // Initial fetch
                 }
 
                 
-                  else if (data.type === "group_message") {
+                else if (data.type === "group_message") {
                     let chatBox = document.getElementById('group-chat-box');
                     let room = document.getElementById('group-room-switch').value;
-
+                
                     if (room === data.room) {
-                        chatBox.innerHTML += `<p><strong style="color: ${data.sentcolor}">${data.sender}:</strong> ${data.message}</p>`;
+                            chatBox.innerHTML += `<p><strong style="color: ${data.sentcolor}">${data.sender}</strong><strong> AKA ${data.senderscreen}:</strong> ${data.message}</p>`;
+                        
                     }
-                } 
+                }
+
                 
                   else if (data.type === "private_message") {
                     let chatBox = document.getElementById('private-chat-box');
-                    chatBox.innerHTML += `<p><strong style="color: ${data.sentcolor}">${data.sender}:</strong> ${data.message}</p>`;
+                    chatBox.innerHTML += `<p><strong style="color: ${data.sentcolor}">${data.sender}</strong><strong> AKA ${data.senderscreen}:</strong> ${data.message}</p>`;
                 } else if (data.type === "sender_message") {
                     let chatBox = document.getElementById('private-chat-box');
                     chatBox.innerHTML += `<p><strong>From you</strong> <strong>To ${data.original_recipient}:</strong> ${data.message}</p>`;
@@ -1206,7 +1212,8 @@ fetchConnected();                    // Initial fetch
                     case "bubble":
                       theeffects.forEach(e => e.destroy?.());
                       theeffects.length = 0;
-                      cursorEffect = Effects.bubbleCursor();
+                      let bubbles = prompt("how many bubbles")
+                      cursorEffect = Effects.bubbleCursor(bubbles, );
                       break;
                     case "clock":
                       theeffects.forEach(e => e.destroy?.());
@@ -1375,30 +1382,47 @@ fetchConnected();                    // Initial fetch
               setScreenBTN.addEventListener('click', function () {
                 if (!canSend) {
                   document.getElementById('newScreenName').value = "";
-                  alert("Chill. Cooldown Is On Bro.");
+                  alert("Chill. Cooldown is on, bro.");
                   return;
                 }
+            
                 let newScreenName = document.getElementById('newScreenName').value.trim();
             
-                if (newScreenName) {
-                  socket.send(JSON.stringify({
-                    type: "rename",
-                    newname: newScreenName,
-                    forwho: username
-                  }));
+                if (!newScreenName) {
+                  alert("Invalid screen name.");
+                  return;
+                }
+            
+                if (Chatterbucks < 500) {
+                  alert("Insufficient Chatterbucks. You Need 500");
                   document.getElementById('newScreenName').value = "";
+                  return;
+                }
             
-                  canSend = false;
+                // Deduct Chatterbucks
+                const new_Chatterbucks = Chatterbucks - 500;
+                socket.send(JSON.stringify({ type: "addChatterbucks", username: username, amnt: new_Chatterbucks }));
             
-                  setTimeout(() => {
-                    canSend = true;
-                  }, 30000); // 30-second cooldown
-                }else {alert("invalid screen name")}
-                  console.log("i was clicked")
+                // Send rename request
+                socket.send(JSON.stringify({
+                  type: "rename",
+                  newname: newScreenName,
+                  forwho: username
+                }));
+            
+                document.getElementById('newScreenName').value = "";
+            
+                canSend = false;
+                setTimeout(() => {
+                  canSend = true;
+                }, 30000); // 30-second cooldown
+            
+                console.log("Screen name change requested");
               });
             
               setScreenBTN.dataset.listenerAdded = 'true';
             }
+
             
             // === PRIVATE MESSAGE SENDER ===
             const pmBtn = document.getElementById('send-private-message');
@@ -1421,6 +1445,7 @@ fetchConnected();                    // Initial fetch
                     sender: username,
                     recipient: recipient,
                     message: message,
+                    screenname: my_screenname,
                     color: color
                   }));
                   document.getElementById('private-message-input').value = "";
@@ -1457,6 +1482,7 @@ fetchConnected();                    // Initial fetch
                   socket.send(JSON.stringify({
                     type: "group_message",
                     sender: username,
+                    screenname: my_screenname,
                     message: message,
                     room: room,
                     color: color
