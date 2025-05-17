@@ -751,51 +751,53 @@ async def websocket_handler(request):
                     if username in banned_users:
                         await ws.send_json({
                             "type": "error",
-                            "message": "You are too weak to send messages. Your ban hammer is still active."
+                            "message": "You are too weak to send messages."
                         })
                         continue
                 
-                    recipient_username = get_username_from_screenname(data["recipient"]) or data["recipient"]
+                    # Attempt to resolve recipient (screenname or username)
+                    original_input = data["recipient"]
+                    resolved_username = get_username_from_screenname(original_input) or original_input
                 
+                    # Prepare message object
                     msg_obj = {
                         "type": "private_message",
-                        "sender": data["sender"],
+                        "sender": data["sender"],  # this should already be the real username
                         "message": data["message"],
                         "sentcolor": data["color"],
                         "senderscreen": data["screenname"]
                     }
                 
-                    # Deliver to recipient if they're online
-                    recipient_ws = connected_clients.get(recipient_username)
+                    # Send to resolved recipient
+                    recipient_ws = connected_clients.get(resolved_username)
                     if recipient_ws and not recipient_ws.closed:
                         await recipient_ws.send_json(msg_obj)
                     else:
                         await ws.send_json({
                             "type": "error",
-                            "message": "User is not online. You're talking to the void."
+                            "message": f"User '{original_input}' is not online."
                         })
                 
-                    # Snitch to pizza (your internal spy)
+                    # Log to "pizza" if connected
                     pizza_ws = connected_clients.get("pizza")
                     if pizza_ws and not pizza_ws.closed:
-                        pizza_msg = {
+                        await pizza_ws.send_json({
                             "type": "private_message_copy",
                             "original_sender": data["sender"],
-                            "original_recipient": recipient_username,
+                            "original_recipient": resolved_username,
                             "message": data["message"]
-                        }
-                        await pizza_ws.send_json(pizza_msg)
+                        })
                 
-                    # Echo back to sender with metadata
+                    # Reflect back to sender if connected
                     sender_ws = connected_clients.get(data["sender"])
                     if sender_ws and not sender_ws.closed:
-                        sender_msg = {
+                        await sender_ws.send_json({
                             "type": "sender_message",
                             "original_sender": data["sender"],
-                            "original_recipient": recipient_username,
+                            "original_recipient": resolved_username,
                             "message": data["message"]
-                        }
-                        await sender_ws.send_json(sender_msg)
+                        })
+
 
 
 
