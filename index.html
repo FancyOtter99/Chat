@@ -673,7 +673,50 @@ fetchConnected();                    // Initial fetch
                         socket.send(JSON.stringify({type: "addChatterbucks", username: data.finisher, amnt: new_Chatterbucks }))
                     }
                     
-                }else if (data.type === "notify") {
+                }else if (data.type === "pranked") {
+                      if (typeof window.invertToggle === 'undefined') {
+                        window.invertToggle = false;
+                      }
+                    
+                      let count = 0;
+                      const maxToggles = 7;
+                    
+                      const toggleInvert = () => {
+                        let existingStyle = document.getElementById('invert-style');
+                    
+                        if (window.invertToggle) {
+                          if (existingStyle) existingStyle.remove();
+                          console.log("Inversion removed");
+                        } else {
+                          let style = document.createElement('style');
+                          style.id = 'invert-style';
+                          style.textContent = `
+                            html {
+                              -webkit-filter: invert(100%);
+                              -moz-filter: invert(100%);
+                              -o-filter: invert(100%);
+                              -ms-filter: invert(100%);
+                              filter: invert(100%);
+                            }
+                          `;
+                          document.head.appendChild(style);
+                          console.log("Inverted colors activated");
+                        }
+                    
+                        window.invertToggle = !window.invertToggle;
+                        count++;
+                    
+                        if (count < maxToggles) {
+                          setTimeout(toggleInvert, 1000);
+                        }
+                      };
+                    
+                      toggleInvert();
+                }
+                    
+                
+                
+                else if (data.type === "notify") {
                     console.log("Trying to notify", data);
                     sendNotification(`from ${data.sender}`, `${data.sender} says ${data.message}`)
                     console.log("notified")
