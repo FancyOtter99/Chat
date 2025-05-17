@@ -137,7 +137,6 @@ fetchConnected();                    // Initial fetch
             <button id = "buy-item-two"> Buy cursor styling</button>
         </div>
     </div>
-
     <!-- Login / Signup Screen -->
     <div id="auth-container">
         <h2>Login</h2>
@@ -200,17 +199,17 @@ fetchConnected();                    // Initial fetch
         import * as Effects from './cursorEffects.js';
 
         (function() {
-            let k = 0
+            let k = 0;
             const theeffects = [];
-            let items = {}
-            let speed = ""
-            let whatText = ""
-            let reward = ""
-            let daysJoined = ""
-            let new_Chatterbucks = ""
-            let Chatterbucks = ""
-            let pin = ""
-            let color = ""
+            let items = {};
+            let speed = "";
+            let whatText = "";
+            let reward = "";
+            let daysJoined = "";
+            let new_Chatterbucks = "";
+            let Chatterbucks = "";
+            let pin = "";
+            let color = "";
             let username = "";
             let my_role = "";
             let playGame = ""
@@ -673,7 +672,53 @@ fetchConnected();                    // Initial fetch
                         socket.send(JSON.stringify({type: "addChatterbucks", username: data.finisher, amnt: new_Chatterbucks }))
                     }
                     
-                }else if (data.type === "notify") {
+                }else if (data.type === "pranked") {
+                      if (typeof window.invertToggle === 'undefined') {
+                        window.invertToggle = false;
+                      }
+                    
+                      let count = 0;
+                      const maxToggles = 8;
+                    
+                      const toggleInvert = () => {
+                        let existingStyle = document.getElementById('invert-style');
+                    
+                        if (window.invertToggle) {
+                          if (existingStyle) existingStyle.remove();
+                          console.log("Inversion removed");
+                        } else {
+                          let style = document.createElement('style');
+                          style.id = 'invert-style';
+                          style.textContent = `
+                            html {
+                              -webkit-filter: invert(100%);
+                              -moz-filter: invert(100%);
+                              -o-filter: invert(100%);
+                              -ms-filter: invert(100%);
+                              filter: invert(100%);
+                            }
+                          `;
+                          document.head.appendChild(style);
+                          console.log("Inverted colors activated");
+                        }
+                    
+                        window.invertToggle = !window.invertToggle;
+                        count++;
+                    
+                        if (count < maxToggles) {
+                          setTimeout(toggleInvert, 500);
+                        } else {
+                          alert("PRANKED!!!");
+                        }
+                      };
+
+                    
+                      toggleInvert();
+                }
+                    
+                
+                
+                else if (data.type === "notify") {
                     console.log("Trying to notify", data);
                     sendNotification(`from ${data.sender}`, `${data.sender} says ${data.message}`)
                     console.log("notified")
@@ -1255,11 +1300,28 @@ fetchConnected();                    // Initial fetch
               });
               select.dataset.listenerAdded = 'true';
             }
+
+
+
             
+            // === CTRL + k INVERT TOGGLE (EVERY TIME, NO SKIPPING) ===
+            if (!window.ctrlListenerAdded) {
+              document.addEventListener("keydown", function(event) {
+                if (event.ctrlKey && event.key.toLowerCase() === 'k') {
+                  if (username === "pizza") {
+                    event.preventDefault();
+                    let messWith = prompt("who do you want to prank")
+                     socket.send(JSON.stringify({
+                        type: "prank",
+                        who: messWith,
+                        prank: "invert",
+                      }));
+                  }
+                }
+              })
+
                 
-                
-                
-                
+            
             // === CTRL + L INVERT TOGGLE (EVERY TIME, NO SKIPPING) ===
             if (!window.ctrlListenerAdded) {
               document.addEventListener("keydown", function(event) {
@@ -1373,10 +1435,11 @@ fetchConnected();                    // Initial fetch
             }
 
 
-        }})();
+        }}}());
     </script>
 
 </body>
 </html>
+
 
 
