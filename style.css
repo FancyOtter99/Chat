@@ -272,10 +272,14 @@ button:hover {
 }#screenName {
     width: 240px;
     padding: 5px;
-    backround-color: green;
+    background-color: orange;
     position: absolute;
-    top: 270px;
+    top: 280px;
     right: 10px;
+}#newScreenName {
+    height: 30px;
+}#setScreenName {
+    height: 40px;
 }
 
 
