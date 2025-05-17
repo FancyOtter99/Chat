@@ -176,7 +176,7 @@ export function characterCursor(options) {
 
 
 
-  export function bubbleCursor(options) {
+  export function bubbleCursor(limes, options) {
     let hasWrapperEl = options && options.element;
     let element = hasWrapperEl || document.body;
   
@@ -277,7 +277,7 @@ export function characterCursor(options) {
       }
   
       addParticle(cursor.x, cursor.y);
-      for (let i = 0; i < 10; i++) {
+      for (let i = 0; i < limes; i++) {
   addParticle(
     cursor.x + (Math.random() - 0.5) * 20,
     cursor.y + (Math.random() - 0.5) * 20
