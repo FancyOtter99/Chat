@@ -385,7 +385,7 @@ fetchConnected();                    // Initial fetch
                         document.body.appendChild(urgentalert);
                         console.log("Blablabla granted. The 'one' is strong with this one.");
                     }
-                    document.getElementById('username').textContent = `Logged in as: ${data.screenname}, Joined ${daysJoined === "∞" ? "∞ days ago" : `${daysJoined} days ago`}, Balance: ${data.balance} Chatterbucks`;
+                    document.getElementById('username').textContent = `Logged in as: ${data.username}, Joined ${daysJoined === "∞" ? "∞ days ago" : `${daysJoined} days ago`}, Balance: ${data.balance} Chatterbucks`;
                     //document.getElementById('username-tooltip').textContent = `sup`;
                     Chatterbucks = data.balance
 
