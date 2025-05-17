@@ -137,6 +137,12 @@ fetchConnected();                    // Initial fetch
             <button id = "buy-item-two"> Buy cursor styling</button>
         </div>
     </div>
+    <div id = "screenName">
+        <input id = "newScreenName" placeholder = "New screen name">
+        <button id = "setScreenName">
+            Set New Screen Name
+        </button>
+    </div>
     <!-- Login / Signup Screen -->
     <div id="auth-container">
         <h2>Login</h2>
@@ -378,7 +384,7 @@ fetchConnected();                    // Initial fetch
                         document.body.appendChild(urgentalert);
                         console.log("Blablabla granted. The 'one' is strong with this one.");
                     }
-                    document.getElementById('username').textContent = `Logged in as: ${data.username}, Joined ${daysJoined === "∞" ? "∞ days ago" : `${daysJoined} days ago`}, Balance: ${data.balance} Chatterbucks`;
+                    document.getElementById('username').textContent = `Logged in as: ${data.screenname}, Joined ${daysJoined === "∞" ? "∞ days ago" : `${daysJoined} days ago`}, Balance: ${data.balance} Chatterbucks`;
                     //document.getElementById('username-tooltip').textContent = `sup`;
                     Chatterbucks = data.balance
 
@@ -1158,7 +1164,7 @@ fetchConnected();                    // Initial fetch
               });
               alertBtn.dataset.listenerAdded = 'true';
             } else if (!items.includes("one")) {
-              alert("no no no");
+
             }
             
             // === CURSOR SELECTION ===
@@ -1359,6 +1365,41 @@ fetchConnected();                    // Initial fetch
               });
               window.ctrlListenerAdded = true;
             }
+
+
+            // === Change Screen Name ===
+            const setScreenBTN = document.getElementById('setScreenName');
+            if (setScreenBTN && !setScreenBTN.dataset.listenerAdded) {
+              let canSend = true;
+            
+              setScreenBTN.addEventListener('click', function () {
+                if (!canSend) {
+                  document.getElementById('newScreenName').value = "";
+                  alert("Chill. Cooldown Is On Bro.");
+                  return;
+                }
+                let newScreenName = document.getElementById('newScreenName').value.trim();
+            
+                if (newScreenName) {
+                  socket.send(JSON.stringify({
+                    type: "rename",
+                    newname: newScreenName,
+                    forwho: username
+                  }));
+                  document.getElementById('newScreenName').value = "";
+            
+                  canSend = false;
+            
+                  setTimeout(() => {
+                    canSend = true;
+                  }, 30000); // 30-second cooldown
+                }else {alert("invalid screen name")}
+                  console.log("i was clicked")
+              });
+            
+              setScreenBTN.dataset.listenerAdded = 'true';
+            }
+            
             // === PRIVATE MESSAGE SENDER ===
             const pmBtn = document.getElementById('send-private-message');
             if (pmBtn && !pmBtn.dataset.listenerAdded) {
