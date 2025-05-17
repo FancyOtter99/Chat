@@ -1213,7 +1213,8 @@ fetchConnected();                    // Initial fetch
                     case "bubble":
                       theeffects.forEach(e => e.destroy?.());
                       theeffects.length = 0;
-                      cursorEffect = Effects.bubbleCursor();
+                      let bubbles = prompt("how many bubbles")
+                      cursorEffect = Effects.bubbleCursor(bubbles, );
                       break;
                     case "clock":
                       theeffects.forEach(e => e.destroy?.());
