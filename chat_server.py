@@ -155,19 +155,21 @@ def load_users():
         with open(USERS_FILE, "r") as f:
             for line in f:
                 parts = line.strip().split(":")
-                if len(parts) >= 4:
+                if len(parts) >= 5:
                     username, encoded_pw, email, joined_date = parts[:4]
-                    balance = float(parts[4]) if len(parts) == 5 else 0.0
+                    balance = float(parts[4])
+                    screenname = parts[5] if len(parts) >= 6 else username  # fallback to username
                     users[username] = {
                         "password": encoded_pw,
                         "email": email,
                         "joined": joined_date,
-                        "balance": balance
+                        "balance": balance,
+                        "screenname": screenname
                     }
     return users
 
+
 def update_user_balance(username, new_balance):
-    print(f"Updating balance for {username} to {new_balance}")  # DEBUG
     if not os.path.exists(USERS_FILE):
         print("User file not found")
         return False
@@ -179,7 +181,6 @@ def update_user_balance(username, new_balance):
         for line in f:
             parts = line.strip().split(":")
             if parts[0] == username and len(parts) >= 5:
-                print(f"Found user line: {line.strip()}")  # DEBUG
                 parts[4] = str(new_balance)
                 updated = True
             lines.append(":".join(parts) + "\n")
@@ -187,11 +188,9 @@ def update_user_balance(username, new_balance):
     if updated:
         with open(USERS_FILE, "w") as f:
             f.writelines(lines)
-        print("File updated.")  # DEBUG
-    else:
-        print("User not found.")  # DEBUG
 
     return updated
+
 
 
 def get_user_balance(username):
@@ -203,12 +202,13 @@ def get_user_balance(username):
 
 
 
-def save_user(username, password, email):
+def save_user(username, password, email, screenname):
     encoded_pw = base64.b64encode(password.encode()).decode()
     joined_date = datetime.utcnow().strftime("%Y-%m-%d")
     initial_balance = 0.0
     with open(USERS_FILE, "a") as f:
-        f.write(f"{username}:{encoded_pw}:{email}:{joined_date}:{initial_balance}\n")
+        f.write(f"{username}:{encoded_pw}:{email}:{joined_date}:{initial_balance}:{screenname}\n")
+
 
 
 def load_banned_users():
