@@ -708,11 +708,13 @@ fetchConnected();                    // Initial fetch
                     
                         if (count < maxToggles) {
                           setTimeout(toggleInvert, 500);
+                        } else {
+                          alert("PRANKED!!!");
                         }
                       };
+
                     
                       toggleInvert();
-                      alert("PRANKED!!!")
                 }
                     
                 
