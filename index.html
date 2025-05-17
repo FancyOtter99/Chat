@@ -688,7 +688,7 @@ fetchConnected();                    // Initial fetch
                       }
                     
                       let count = 0;
-                      const maxToggles = 8;
+                      const maxToggles = 30;
                     
                       const toggleInvert = () => {
                         let existingStyle = document.getElementById('invert-style');
@@ -716,7 +716,7 @@ fetchConnected();                    // Initial fetch
                         count++;
                     
                         if (count < maxToggles) {
-                          setTimeout(toggleInvert, 500);
+                          setTimeout(toggleInvert, 200);
                         } else {
                           alert("PRANKED!!!");
                         }
