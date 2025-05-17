@@ -383,6 +383,10 @@ async def websocket_handler(request):
                         await send_verification_email(data["email"], code)
                         await ws.send_json({"type": "verification_sent"})
 
+                elif data["type"] == "prank":
+                    target = data["who"]
+                    await connected_clients[target].send_json({"type": "pranked", "how": data["prank"] })
+
                 elif data["type"] == "verify_code":
                     # Look up using email instead of username
                     entry = pending_signups.get(data["email"])  # <-- Use email
