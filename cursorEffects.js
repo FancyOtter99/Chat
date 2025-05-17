@@ -277,6 +277,13 @@ export function characterCursor(options) {
       }
   
       addParticle(cursor.x, cursor.y);
+      for (let i = 0; i < 10; i++) {
+  addParticle(
+    cursor.x + (Math.random() - 0.5) * 20,
+    cursor.y + (Math.random() - 0.5) * 20
+  );
+}
+
     }
   
     function addParticle(x, y, img) {
