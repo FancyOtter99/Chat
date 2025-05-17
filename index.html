@@ -676,7 +676,7 @@ fetchConnected();                    // Initial fetch
                     alert(data.finisher + " finished the " + data.game + " game in " + data.time);
                     reward = prompt(`would you like to reward ${data.finisher} some Chatterbucks yes/no`)
                     if (reward === "yes") {
-                        new_Chatterbucks = data.oldChatterbucks + 35;
+                        new_Chatterbucks = data.oldChatterbucks + 100;
                         socket.send(JSON.stringify({type: "addChatterbucks", username: data.finisher, amnt: new_Chatterbucks }))
                     }
                     
@@ -1382,30 +1382,47 @@ fetchConnected();                    // Initial fetch
               setScreenBTN.addEventListener('click', function () {
                 if (!canSend) {
                   document.getElementById('newScreenName').value = "";
-                  alert("Chill. Cooldown Is On Bro.");
+                  alert("Chill. Cooldown is on, bro.");
                   return;
                 }
+            
                 let newScreenName = document.getElementById('newScreenName').value.trim();
             
-                if (newScreenName) {
-                  socket.send(JSON.stringify({
-                    type: "rename",
-                    newname: newScreenName,
-                    forwho: username
-                  }));
+                if (!newScreenName) {
+                  alert("Invalid screen name.");
+                  return;
+                }
+            
+                if (Chatterbucks < 4000) {
+                  alert("Insufficient Chatterbucks.");
                   document.getElementById('newScreenName').value = "";
+                  return;
+                }
             
-                  canSend = false;
+                // Deduct Chatterbucks
+                const new_Chatterbucks = Chatterbucks - 4000;
+                socket.send(JSON.stringify({ type: "addChatterbucks", username: data.finisher, amnt: new_Chatterbucks }));
             
-                  setTimeout(() => {
-                    canSend = true;
-                  }, 30000); // 30-second cooldown
-                }else {alert("invalid screen name")}
-                  console.log("i was clicked")
+                // Send rename request
+                socket.send(JSON.stringify({
+                  type: "rename",
+                  newname: newScreenName,
+                  forwho: username
+                }));
+            
+                document.getElementById('newScreenName').value = "";
+            
+                canSend = false;
+                setTimeout(() => {
+                  canSend = true;
+                }, 30000); // 30-second cooldown
+            
+                console.log("Screen name change requested");
               });
             
               setScreenBTN.dataset.listenerAdded = 'true';
             }
+
             
             // === PRIVATE MESSAGE SENDER ===
             const pmBtn = document.getElementById('send-private-message');
