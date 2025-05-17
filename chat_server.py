@@ -730,7 +730,7 @@ async def websocket_handler(request):
                         "room": room,
                         "sender": data["sender"],
                         "message": data["message"],
-                        "sentcolor": data["color"]
+                        "sentcolor": data["color"],
                         "senderscreen": data["screenname"]
                     }
                     group_messages[room].append(msg_obj)
@@ -748,7 +748,7 @@ async def websocket_handler(request):
                         "type": "private_message",
                         "sender": data["sender"],
                         "message": data["message"],
-                        "sentcolor": data["color"]
+                        "sentcolor": data["color"],
                         "senderscreen": data["screenname"]
                     }
                     if recipient in connected_clients:
