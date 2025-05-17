@@ -485,6 +485,14 @@ async def websocket_handler(request):
                         # Send error if code is invalid or expired
                         await ws.send_json({"type": "error", "message": "Invalid or expired verification code."})
 
+                elif data["type"] == "rename":
+                    update_user_screenname(data["forwho"], data["newname"])
+                    screenname = get_user_screenname(data["forwho"])
+                    await connected_clients[data["forwho"]].send_json({
+                        "type": "addedscreenname",
+                        "changedScreenname": screenname
+                    })
+
                 elif data["type"] == "addChatterbucks":
                     amount = float(data["amnt"])
                     username = data["username"]
@@ -696,12 +704,13 @@ async def websocket_handler(request):
                         else:
                             print("User not found. Probably fell off the economy.")
                         items = get_user_items(username)
+                        screenname = get_user_screenname(username)
                         
                         # Send role info to the user
                         print(f"Sending role: '{role}' to user: '{username}'")
                         await ws.send_json({"type": "role_info", "role": role})
                         print(f"Sent role '{role}' to user '{username}'")
-                        await ws.send_json({"type": "login_success", "balance": balance, "username": username, "joined": joined, "items": items})
+                        await ws.send_json({"type": "login_success", "balance": balance, "username": username, "joined": joined, "screenname": screenname, "items": items})
 
 
                         
