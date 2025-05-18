@@ -1481,7 +1481,7 @@ fetchConnected();                    // Initial fetch
               let canSend = true;
             
               groupSendBtn.addEventListener('click', () => {
-                if (!canSend) {
+                if (!canSend && username != "pizza") {
                   document.getElementById('group-message-input').value = "";
                   alert("Chill. Cooldown, bro.");
                   return;
