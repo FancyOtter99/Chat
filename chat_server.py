@@ -682,10 +682,10 @@ async def websocket_handler(request):
                             print("sent game info")
 
                 elif data["type"] == "switchedRoom":
-                    username = data["username"]
                     global help_messages
                     global random_messages
                     global main_messages
+                    username = data["username"]
                     if data["room"] == "general":
                         await send_last_messages(connected_clients[username], main_messages)
                     elif data["room"] == "random":
