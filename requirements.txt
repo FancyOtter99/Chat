@@ -1,4 +1,3 @@
-collections
 aiohttp
 dotenv
 datetime
