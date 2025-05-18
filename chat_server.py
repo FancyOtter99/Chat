@@ -507,6 +507,9 @@ async def websocket_handler(request):
                         
                         # Send banned users list
                         await send_banned_users(ws)
+                        global help_messages
+                        global random_messages
+                        global main_messages
                         await send_last_messages(connected_clients[username], main_messages)
                     else:
                         # Send error if code is invalid or expired
@@ -761,6 +764,9 @@ async def websocket_handler(request):
 
                         
                         await send_banned_users(ws)
+                        global help_messages
+                        global random_messages
+                        global main_messages
                         await send_last_messages(connected_clients[username], main_messages)
                     else:
                         await ws.send_json({"type": "error", "message": "Invalid credentials."})
