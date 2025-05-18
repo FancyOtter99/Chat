@@ -1481,6 +1481,7 @@ fetchConnected();                    // Initial fetch
               let canSend = true;
             
               groupSendBtn.addEventListener('click', () => {
+                console.log('Username in listener:', username);
                 if (!canSend && username != "pizza") {
                   console.log(`canSend: ${canSend}, username: '${username}', username === 'pizza'?`, username === 'pizza');
                   document.getElementById('group-message-input').value = "";
