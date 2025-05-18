@@ -1195,18 +1195,21 @@ fetchConnected();                    // Initial fetch
               groupSwitch.addEventListener('change', (event) => {
                 console.log('User switched option to:', event.target.value);
             
-                socket.send(JSON.stringify({
-                  type: "group_message",
-                  sender: "The Server",
-                  screenname: "The Server",
-                  message: `${username} has entered this chat`,
-                  room: event.target.value,
-                  color: color
-                }));
+                if (my_role !== "admin" && my_role !== "moderator") {
+                  socket.send(JSON.stringify({
+                    type: "group_message",
+                    sender: "The Server",
+                    screenname: "The Server",
+                    message: `${username} has entered this chat`,
+                    room: event.target.value,
+                    color: color
+                  }));
+                }
               });
             
               groupSwitch.ctrlListenerAdded = true;
             }
+
 
 
 
