@@ -510,9 +510,6 @@ async def websocket_handler(request):
                         
                         # Send banned users list
                         await send_banned_users(ws)
-                        global help_messages
-                        global random_messages
-                        global main_messages
                         await send_last_messages(connected_clients[username], main_messages)
                     else:
                         # Send error if code is invalid or expired
@@ -685,9 +682,6 @@ async def websocket_handler(request):
                             print("sent game info")
 
                 elif data["type"] == "switchedRoom":
-                    global help_messages
-                    global random_messages
-                    global main_messages
                     username = data["username"]
                     if data["room"] == "general":
                         await send_last_messages(connected_clients[username], main_messages)
@@ -767,9 +761,6 @@ async def websocket_handler(request):
 
                         
                         await send_banned_users(ws)
-                        global help_messages
-                        global random_messages
-                        global main_messages
                         await send_last_messages(connected_clients[username], main_messages)
                     else:
                         await ws.send_json({"type": "error", "message": "Invalid credentials."})
@@ -780,9 +771,6 @@ async def websocket_handler(request):
                         await ws.send_json({"type": "error", "message": "You are too weak send messages."})
                         continue
                     room = data["room"]
-                    global main_messages
-                    global random_messages
-                    global help_messages
                     msg_obj = {
                         "type": "group_message",
                         "room": room,
