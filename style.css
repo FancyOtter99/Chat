@@ -280,10 +280,11 @@ button:hover {
     height: 30px;
 }#setScreenName {
     height: 40px;
+}.nocopy {
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
 }
-
-
-
 
 @media (max-width: 700px) {
     #chat-windows {
