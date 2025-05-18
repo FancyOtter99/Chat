@@ -758,7 +758,7 @@ async def websocket_handler(request):
                         await ws.send_json({"type": "error", "message": "You are too weak send messages."})
                         continue
                     room = data["room"]
-                    
+                    global all_messages
                     msg_obj = {
                         "type": "group_message",
                         "room": room,
