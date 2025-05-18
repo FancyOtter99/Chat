@@ -1475,60 +1475,63 @@ fetchConnected();                    // Initial fetch
 
             
             // === GROUP CHAT MESSAGE SENDER ===
-            const groupSendBtn = document.getElementById('send-group-message');
+            let groupSendBtn = document.getElementById('send-group-message');
+            
             if (groupSendBtn && !groupSendBtn.dataset.listenerAdded) {
               let canSend = true;
             
-              groupSendBtn.addEventListener('click', function () {
+              groupSendBtn.addEventListener('click', () => {
                 if (!canSend) {
                   document.getElementById('group-message-input').value = "";
-                  alert("Chill. Cooldown Bro.");
+                  alert("Chill. Cooldown, bro.");
                   return;
                 }
             
                 let room = document.getElementById('group-room-switch').value;
                 let message = document.getElementById('group-message-input').value.trim();
-                
-                function getMaxMessageLength(days) {
-                  if (days <= 3) return 25;
-                  if (days <= 8) return 40;
-                  if (days <= 19) return 80;
-                  if (days <= 50) return 100;
-                  return Infinity; // 51+ can send anything
-                }
-                
-                if (message.length <= getMaxMessageLength(daysJoined)) {
-                  sendgroupmessage();
+                let maxLength = getMaxMessageLength(daysJoined);
+            
+                if (message.length <= maxLength) {
+                  sendGroupMessage(room, message);
                 } else {
                   alert("Message is too long for your current age. As you get older, you can send longer messages.");
                 }
-                
-                function sendgroupmessage() {
-                  if (message) {
-                    socket.send(JSON.stringify({
-                      type: "group_message",
-                      sender: username,
-                      screenname: my_screenname,
-                      message: message,
-                      room: room,
-                      color: color
-                    }));
-                  }
-                }
-
-                  document.getElementById('group-message-input').value = "";
             
-                  canSend = false;
+                // Clear input and trigger cooldown
+                document.getElementById('group-message-input').value = "";
+                canSend = false;
+                groupSendBtn.disabled = true;
             
-                  setTimeout(() => {
-                    canSend = true;
-                    groupSendBtn.disabled = false;
-                  }, 7000); // 3-second cooldown
-                }
+                setTimeout(() => {
+                  canSend = true;
+                  groupSendBtn.disabled = false;
+                }, 7000); // 7-second cooldown
               });
             
               groupSendBtn.dataset.listenerAdded = 'true';
             }
+            
+            function getMaxMessageLength(days) {
+              if (days <= 3) return 25;
+              if (days <= 8) return 40;
+              if (days <= 19) return 80;
+              if (days <= 50) return 100;
+              return Infinity;
+            }
+            
+            function sendGroupMessage(room, message) {
+              if (message) {
+                socket.send(JSON.stringify({
+                  type: "group_message",
+                  sender: username,
+                  screenname: my_screenname,
+                  message: message,
+                  room: room,
+                  color: color
+                }));
+              }
+            }
+
 
 
         }}}());
