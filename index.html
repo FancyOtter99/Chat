@@ -1194,7 +1194,7 @@ fetchConnected();                    // Initial fetch
             if (groupSwitch && !groupSwitch.ctrlListenerAdded) {
               groupSwitch.addEventListener('change', (event) => {
                 console.log('User switched option to:', event.target.value);
-                document.getElementById('group-chat-box').value = "";
+                document.getElementById('group-chat-box').innerHTML = "";
             
                 if (my_role !== "admin" && my_role !== "moderator") {
                   socket.send(JSON.stringify({
