@@ -1197,7 +1197,8 @@ fetchConnected();                    // Initial fetch
                 document.getElementById('group-chat-box').innerHTML = "";
                 socket.send(JSON.stringify({
                     type: "switchedRoom",
-                    room:  event.target.value
+                    room:  event.target.value,
+                    username: username
                   }));
             
                 if (my_role !== "admin" && my_role !== "moderator") {
