@@ -1,3 +1,4 @@
+
 import asyncio
 import json
 import base64
@@ -48,7 +49,7 @@ def refresh_roles():
 
 
 
-
+all_messages = []
 ITEMS_FILE = "user_items.json"
 Roles_FILE = "admins.json"
 USERS_FILE = "users.txt"
@@ -88,6 +89,10 @@ def is_screenname_conflict(username, screenname):
                 return True
     return False
 
+
+async def send_last_messages(ws):
+    for msg in all_messages:
+        await ws.send_json(msg)
 
 
 def load_user_items():
@@ -500,9 +505,11 @@ async def websocket_handler(request):
                         
                         # Send banned users list
                         await send_banned_users(ws)
+                        await send_last_messages(connected_clients[username])
                     else:
                         # Send error if code is invalid or expired
                         await ws.send_json({"type": "error", "message": "Invalid or expired verification code."})
+                        
 
                 elif data["type"] == "rename":
                     conflict = is_screenname_conflict(data["forwho"], data["newname"])
@@ -742,6 +749,7 @@ async def websocket_handler(request):
 
                         
                         await send_banned_users(ws)
+                        await send_last_messages(connected_clients[username])
                     else:
                         await ws.send_json({"type": "error", "message": "Invalid credentials."})
 
@@ -751,7 +759,7 @@ async def websocket_handler(request):
                         await ws.send_json({"type": "error", "message": "You are too weak send messages."})
                         continue
                     room = data["room"]
-                    
+                    global all_messages
                     msg_obj = {
                         "type": "group_message",
                         "room": room,
@@ -760,10 +768,14 @@ async def websocket_handler(request):
                         "sentcolor": data["color"],
                         "senderscreen": data["screenname"]
                     }
+                    
                     group_messages[room].append(msg_obj)
                     for client_ws in connected_clients.values():
                         if not client_ws.closed:
                             await client_ws.send_json(msg_obj)
+
+                    all_messages.append(msg_obj)
+                    all_messages = all_messages[-10:]  # Keep only last 10 messages total
 
                 elif data["type"] == "private_message":
                     if username in banned_users:
@@ -886,3 +898,4 @@ app.on_cleanup.append(on_cleanup)
 if __name__ == '__main__':
     banned_users = load_banned_users()
     web.run_app(app, port=10000)
+
