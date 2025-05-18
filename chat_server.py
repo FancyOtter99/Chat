@@ -425,6 +425,9 @@ async def handle_connected_clients(request):
     return add_cors_headers(response)
 
 async def websocket_handler(request):
+    global help_messages
+    global random_messages
+    global main_messages
     ws = web.WebSocketResponse()
     await ws.prepare(request)
 
