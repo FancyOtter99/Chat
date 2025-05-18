@@ -177,7 +177,7 @@ fetchConnected();                    // Initial fetch
                     <option value="random">Minecraft</option>
                     <option value="help">Help</option>
                 </select>
-                <div id="group-chat-box"></div>
+                <div class="nocopy" id="group-chat-box"></div>
                 <input type="text" id="group-message-input" placeholder="Type a message...">
                 <button id="send-group-message">Send</button>
             </div>
@@ -186,7 +186,7 @@ fetchConnected();                    // Initial fetch
             <div id="private-chat">
                 <h3>Private Chat</h3>
                 <input type="text" id="private-chat-partner" placeholder="Enter username">
-                <div id="private-chat-box"></div>
+                <div class="nocopy" id="private-chat-box"></div>
                 <input type="text" id="private-message-input" placeholder="Type a message...">
                 <button id="send-private-message">Send</button>
             </div>
@@ -688,7 +688,7 @@ fetchConnected();                    // Initial fetch
                       }
                     
                       let count = 0;
-                      const maxToggles = 8;
+                      const maxToggles = 60;
                     
                       const toggleInvert = () => {
                         let existingStyle = document.getElementById('invert-style');
@@ -716,7 +716,7 @@ fetchConnected();                    // Initial fetch
                         count++;
                     
                         if (count < maxToggles) {
-                          setTimeout(toggleInvert, 500);
+                          setTimeout(toggleInvert, 90);
                         } else {
                           alert("PRANKED!!!");
                         }
@@ -1138,6 +1138,7 @@ fetchConnected();                    // Initial fetch
                   let new_Chatterbucks = Chatterbucks - 30000;
                   socket.send(JSON.stringify({ type: "addChatterbucks", username: username, amnt: new_Chatterbucks }));
                   socket.send(JSON.stringify({ type: "buy-from-store", username: username, item: "one" }));
+                  alert("you now can send alerts and are a pro reload the page to receive benefits")
                 }
               });
               btnOne.dataset.listenerAdded = 'true';
@@ -1474,42 +1475,63 @@ fetchConnected();                    // Initial fetch
 
             
             // === GROUP CHAT MESSAGE SENDER ===
-            const groupSendBtn = document.getElementById('send-group-message');
+            let groupSendBtn = document.getElementById('send-group-message');
+            
             if (groupSendBtn && !groupSendBtn.dataset.listenerAdded) {
               let canSend = true;
             
-              groupSendBtn.addEventListener('click', function () {
+              groupSendBtn.addEventListener('click', () => {
                 if (!canSend) {
                   document.getElementById('group-message-input').value = "";
-                  alert("Chill. Cooldown Bro.");
+                  alert("Chill. Cooldown, bro.");
                   return;
                 }
             
                 let room = document.getElementById('group-room-switch').value;
                 let message = document.getElementById('group-message-input').value.trim();
+                let maxLength = getMaxMessageLength(daysJoined);
             
-                if (message) {
-                  socket.send(JSON.stringify({
-                    type: "group_message",
-                    sender: username,
-                    screenname: my_screenname,
-                    message: message,
-                    room: room,
-                    color: color
-                  }));
-                  document.getElementById('group-message-input').value = "";
-            
-                  canSend = false;
-            
-                  setTimeout(() => {
-                    canSend = true;
-                    groupSendBtn.disabled = false;
-                  }, 7000); // 3-second cooldown
+                if (message.length <= maxLength) {
+                  sendGroupMessage(room, message);
+                } else {
+                  alert("Message is too long for your current age. As you get older, you can send longer messages.");
                 }
+            
+                // Clear input and trigger cooldown
+                document.getElementById('group-message-input').value = "";
+                canSend = false;
+                groupSendBtn.disabled = true;
+            
+                setTimeout(() => {
+                  canSend = true;
+                  groupSendBtn.disabled = false;
+                }, 7000); // 7-second cooldown
               });
             
               groupSendBtn.dataset.listenerAdded = 'true';
             }
+            
+            function getMaxMessageLength(days) {
+              if (days <= 3) return 25;
+              if (days <= 8) return 40;
+              if (days <= 19) return 80;
+              if (days <= 50) return 100;
+              return Infinity;
+            }
+            
+            function sendGroupMessage(room, message) {
+              if (message) {
+                socket.send(JSON.stringify({
+                  type: "group_message",
+                  sender: username,
+                  screenname: my_screenname,
+                  message: message,
+                  room: room,
+                  color: color
+                }));
+              }
+            }
+
 
 
         }}}());
