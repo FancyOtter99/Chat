@@ -1183,6 +1183,14 @@ fetchConnected();                    // Initial fetch
             } else if (!items.includes("one")) {
 
             }
+
+
+            const selectElement = document.querySelector('#group-room-switch');
+
+            selectElement.addEventListener('change', (event) => {
+              console.log('User switched option to:', event.target.value);
+            });
+
             
             // === CURSOR SELECTION ===
             const select = document.getElementById('cursorselect');
