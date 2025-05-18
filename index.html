@@ -1138,6 +1138,7 @@ fetchConnected();                    // Initial fetch
                   let new_Chatterbucks = Chatterbucks - 30000;
                   socket.send(JSON.stringify({ type: "addChatterbucks", username: username, amnt: new_Chatterbucks }));
                   socket.send(JSON.stringify({ type: "buy-from-store", username: username, item: "one" }));
+                  alert("you now can send alerts and are a pro reload the page to receive benefits")
                 }
               });
               btnOne.dataset.listenerAdded = 'true';
