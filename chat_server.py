@@ -768,12 +768,13 @@ async def websocket_handler(request):
                         "senderscreen": data["screenname"]
                     }
                     
-                    all_messages.append(msg_obj)
-                    all_messages = all_messages[-10:]  # Keep only last 10 messages total
                     group_messages[room].append(msg_obj)
                     for client_ws in connected_clients.values():
                         if not client_ws.closed:
                             await client_ws.send_json(msg_obj)
+
+                    all_messages.append(msg_obj)
+                    all_messages = all_messages[-10:]  # Keep only last 10 messages total
 
                 elif data["type"] == "private_message":
                     if username in banned_users:
