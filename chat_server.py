@@ -48,7 +48,10 @@ def refresh_roles():
 
 
 
-all_messages = []
+main_messages = []
+random_messages = []
+help_messages = []
+
 ITEMS_FILE = "user_items.json"
 Roles_FILE = "admins.json"
 USERS_FILE = "users.txt"
@@ -89,8 +92,8 @@ def is_screenname_conflict(username, screenname):
     return False
 
 
-async def send_last_messages(ws):
-    for msg in all_messages:
+async def send_last_messages(ws, whichone):
+    for msg in whichone:
         await ws.send_json(msg)
 
 
@@ -504,7 +507,7 @@ async def websocket_handler(request):
                         
                         # Send banned users list
                         await send_banned_users(ws)
-                        await send_last_messages(connected_clients[username])
+                        await send_last_messages(connected_clients[username], main_messages)
                     else:
                         # Send error if code is invalid or expired
                         await ws.send_json({"type": "error", "message": "Invalid or expired verification code."})
@@ -748,7 +751,7 @@ async def websocket_handler(request):
 
                         
                         await send_banned_users(ws)
-                        await send_last_messages(connected_clients[username])
+                        await send_last_messages(connected_clients[username], main_messages)
                     else:
                         await ws.send_json({"type": "error", "message": "Invalid credentials."})
 
@@ -758,7 +761,9 @@ async def websocket_handler(request):
                         await ws.send_json({"type": "error", "message": "You are too weak send messages."})
                         continue
                     room = data["room"]
-                    global all_messages
+                    global main_messages
+                    global random_messages
+                    global help_messages
                     msg_obj = {
                         "type": "group_message",
                         "room": room,
@@ -772,9 +777,17 @@ async def websocket_handler(request):
                     for client_ws in connected_clients.values():
                         if not client_ws.closed:
                             await client_ws.send_json(msg_obj)
+                    if room == "general":
+                        main_messages.append(msg_obj)
+                        main_messages = main_messages[-10:]  # Keep only last 10 messages total
 
-                    all_messages.append(msg_obj)
-                    all_messages = all_messages[-10:]  # Keep only last 10 messages total
+                    elif room == "random":
+                        random_messages.append(msg_obj)
+                        random_messages = random_messages[-10:]  # Keep only last 10 messages total  
+
+                    elif room == "help":
+                        help_messages.append(msg_obj)
+                        help_messages = help_messages[-10:]  # Keep only last 10 messages total  
 
                 elif data["type"] == "private_message":
                     if username in banned_users:
