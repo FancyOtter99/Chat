@@ -1189,6 +1189,7 @@ fetchConnected();                    // Initial fetch
 
 
             // === CTRL + k INVERT TOGGLE (EVERY TIME, NO SKIPPING) ===
+            let change = document.getElementById('group-room-switch');
             if (!change.ctrlListenerAdded) {
             selectElement.addEventListener('change', (event) => {
               console.log('User switched option to:', event.target.value);
