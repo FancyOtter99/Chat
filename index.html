@@ -1488,16 +1488,34 @@ fetchConnected();                    // Initial fetch
             
                 let room = document.getElementById('group-room-switch').value;
                 let message = document.getElementById('group-message-input').value.trim();
-            
-                if (message) {
-                  socket.send(JSON.stringify({
-                    type: "group_message",
-                    sender: username,
-                    screenname: my_screenname,
-                    message: message,
-                    room: room,
-                    color: color
-                  }));
+                
+                function getMaxMessageLength(days) {
+                  if (days <= 3) return 25;
+                  if (days <= 8) return 40;
+                  if (days <= 19) return 80;
+                  if (days <= 50) return 100;
+                  return Infinity; // 51+ can send anything
+                }
+                
+                if (message.length <= getMaxMessageLength(daysJoined)) {
+                  sendgroupmessage();
+                } else {
+                  alert("Message is too long for your current age. As you get older, you can send longer messages.");
+                }
+                
+                function sendgroupmessage() {
+                  if (message) {
+                    socket.send(JSON.stringify({
+                      type: "group_message",
+                      sender: username,
+                      screenname: my_screenname,
+                      message: message,
+                      room: room,
+                      color: color
+                    }));
+                  }
+                }
+
                   document.getElementById('group-message-input').value = "";
             
                   canSend = false;
