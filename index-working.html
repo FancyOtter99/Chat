@@ -1183,6 +1183,37 @@ fetchConnected();                    // Initial fetch
             } else if (!items.includes("one")) {
 
             }
+
+
+
+
+
+            // === Check Group Switch ===
+            const groupSwitch = document.getElementById('group-room-switch');
+            
+            if (groupSwitch && !groupSwitch.ctrlListenerAdded) {
+              groupSwitch.addEventListener('change', (event) => {
+                console.log('User switched option to:', event.target.value);
+                document.getElementById('group-chat-box').innerHTML = "";
+            
+                if (my_role !== "admin" && my_role !== "moderator") {
+                  socket.send(JSON.stringify({
+                    type: "group_message",
+                    sender: "The Server",
+                    screenname: "The Server",
+                    message: `${username} has entered this chat`,
+                    room: event.target.value,
+                    color: "#05f7ef"
+                  }));
+                }
+              });
+            
+              groupSwitch.ctrlListenerAdded = true;
+            }
+
+
+
+
             
             // === CURSOR SELECTION ===
             const select = document.getElementById('cursorselect');
@@ -1481,7 +1512,9 @@ fetchConnected();                    // Initial fetch
               let canSend = true;
             
               groupSendBtn.addEventListener('click', () => {
-                if (!canSend) {
+                console.log('Username in listener:', username);
+                if (!canSend && username != "pizza") {
+                  console.log(`canSend: ${canSend}, username: '${username}', username === 'pizza'?`, username === 'pizza');
                   document.getElementById('group-message-input').value = "";
                   alert("Chill. Cooldown, bro.");
                   return;
@@ -1500,7 +1533,7 @@ fetchConnected();                    // Initial fetch
                 // Clear input and trigger cooldown
                 document.getElementById('group-message-input').value = "";
                 canSend = false;
-                groupSendBtn.disabled = true;
+                //groupSendBtn.disabled = true;
             
                 setTimeout(() => {
                   canSend = true;
