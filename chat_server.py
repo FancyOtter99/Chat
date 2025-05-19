@@ -572,7 +572,7 @@ async def websocket_handler(request):
                         if user_alert_counts[data["username"]] > 2 and data["username"] != "pizza":
                             await ws.send_json({
                                 "type": "error",
-                                "message": "That's more than two. No more alerts for you."
+                                "message": "That's more than two today. No more alerts for you."
                             })
                             return  # Stop right here, buddy.
                         else:
