@@ -126,11 +126,12 @@ fetchConnected();                    // Initial fetch
 <script>
     setInterval(function () {
     const start = performance.now();
-    debugger;
+    //debugger;
     const end = performance.now();
     if (end - start > 100) {
       alert('DevTools is open. You better not be up to something.');
       // optional: redirect, freeze UI, whatever
+        setInterval(alert("STOP!!!!!") ,1000)
     }
   }, 1000);
 </script>
