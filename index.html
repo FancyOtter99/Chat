@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat App</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="/manifest.json">
 </head>
 <body id="normal-content">
 <!-- testing some stuff -->
@@ -69,6 +70,38 @@
     <div class="hover-target">Connected Clients!</div>
     <div class="hover-box" id="hover-box">No clients connected.</div>
 </div>
+
+<script>
+//testing button
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').then(registration => {
+            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+        }).catch(error => {
+            console.log('ServiceWorker registration failed: ', error);
+        });
+    });
+}
+
+// 👇 Put this in your main JS file
+let deferredPrompt;
+const installButton = document.getElementById('installBtn');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    installButton.style.display = 'block'; // Show your install button
+});
+
+installButton.addEventListener('click', async () => {
+    installButton.style.display = 'none'; // Hide the button after click
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log(`User response to the install prompt: ${outcome}`);
+});
+
+
+</script>
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
