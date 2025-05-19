@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "FancyOtter Chat",
+  "version": "1.0",
+  "description": "Chat app extension by FancyOtter99",
+  "permissions": ["storage", "tabs"],
+  "action": {
+    "default_popup": "index.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  }
+}
