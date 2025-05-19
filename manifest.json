@@ -1,15 +1,27 @@
 {
-  "manifest_version": 3,
-  "name": "FancyOtter Chat",
-  "version": "1.0",
-  "description": "Chat app extension by FancyOtter99",
-  "permissions": ["storage", "tabs"],
-  "action": {
-    "default_popup": "index.html",
-    "default_icon": {
-      "16": "icon16.png",
-      "48": "icon48.png",
-      "128": "icon128.png"
-    }
+    "name": "FancyOtter99's PWA",
+    "short_name": "OtterApp",
+    "start_url": "./",
+    "scope": "/",
+    "display": "standalone",
+    "background_color": "#121212",
+    "theme_color": "#2196f3",
+    "icons": [
+      {
+        "src": "/icon192.png",
+        "type": "image/png",
+        "sizes": "192x192"
+      },
+      {
+        "src": "/icon128.png",
+        "type": "image/png",
+        "sizes": "128x128"
+      },
+      {
+        "src": "/icon16.png",
+        "type": "image/png",
+        "sizes": "16x16"
+      }
+    ]
   }
-}
+  
