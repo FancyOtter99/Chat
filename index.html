@@ -123,6 +123,17 @@ setInterval(fetchConnected, 10000);  // Fetch every 6 seconds
 fetchConnected();                    // Initial fetch
 });
 </script>
+<script>
+    setInterval(function () {
+    const start = performance.now();
+    debugger;
+    const end = performance.now();
+    if (end - start > 100) {
+      alert('DevTools is open. You better not be up to something.');
+      // optional: redirect, freeze UI, whatever
+    }
+  }, 1000);
+</script>
 </div>
 <!-- Store Button -->
     <button id="store-btn">Store</button>
