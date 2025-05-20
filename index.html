@@ -783,6 +783,11 @@ fetchConnected();                    // Initial fetch
                     }
                     
                 }else if (data.type === "pranked") {
+                      if (window.audioEnabled) {
+                          const audio = document.getElementById('tuco-audio');
+                          audio.play().catch(e => console.error('Playback on hide failed:', e));
+
+                    
                       if (typeof window.invertToggle === 'undefined') {
                         window.invertToggle = false;
                       }
