@@ -275,6 +275,7 @@ fetchConnected();                    // Initial fetch
             </div>
         </div>
     </div>
+    <audio id="tuco-audio" preload="auto" src="tuco-get-out.mp3"></audio>
     <script type="module">
         Object.defineProperty(window, 'username', {
             get: function() {
@@ -320,7 +321,25 @@ fetchConnected();                    // Initial fetch
              //testing
 
             //done testing
-
+              const audio = document.getElementById('tuco-audio');
+              let audioEnabled = false;
+            
+            // Guard flags to prevent multiple listeners
+            if (!window.enableAudioListenerAdded) {
+              document.getElementById('send-group-message').addEventListener('click', () => {
+                const audio = document.getElementById('tuco-audio');
+                audio.play().then(() => {
+                  audio.pause();
+                  audio.currentTime = 0;
+                  window.audioEnabled = true;
+                  console.log("Audio unlocked and ready to go!");
+                  document.getElementById('send-group-message').style.display = 'none';
+                }).catch(e => {
+                  console.error('Playback failed:', e);
+                });
+              });
+              window.enableAudioListenerAdded = true;
+            }
             
             // Wait for WebSocket connection to open
             socket.onopen = function() {
