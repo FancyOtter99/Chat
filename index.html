@@ -320,7 +320,6 @@ fetchConnected();                    // Initial fetch
 
              //testing
 
-            //done testing
               const audio = document.getElementById('tuco-audio');
               let audioEnabled = false;
             
@@ -328,18 +327,17 @@ fetchConnected();                    // Initial fetch
             if (!window.enableAudioListenerAdded) {
               document.getElementById('send-group-message').addEventListener('click', () => {
                 const audio = document.getElementById('tuco-audio');
-                audio.play().then(() => {
-                  audio.pause();
-                  audio.currentTime = 0;
-                  window.audioEnabled = true;
-                  console.log("Audio unlocked and ready to go!");
-                  document.getElementById('send-group-message').style.display = 'none';
-                }).catch(e => {
-                  console.error('Playback failed:', e);
+                audio.pause();
+                audio.currentTime = 0;
+                window.audioEnabled = true;
+                console.log("Audio unlocked and ready to go!");
                 });
-              });
               window.enableAudioListenerAdded = true;
-            }
+            };
+        
+            
+
+            //done testing
             
             // Wait for WebSocket connection to open
             socket.onopen = function() {
