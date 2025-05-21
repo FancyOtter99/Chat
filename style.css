@@ -291,8 +291,87 @@ button:hover {
         flex-direction: column;
         align-items: center;
     }
+
     #group-chat, #private-chat {
-        min-width: 90%; /* no more fixed 300px */
-        max-width: 90%; /* allow it to shrink nicely */
+        min-width: 100%;
+        max-width: 100%;
+    }
+
+    #ban-bar, #banned-list-box, #store-btn, #cursorselect, #screenName {
+        position: static;
+        margin: 10px auto;
+        width: 90%;
+    }
+
+    #item-one, #item-two {
+        position: static;
+        width: 90%;
+        margin: 10px auto;
+    }
+
+    #buy-item-one, #buy-item-two {
+        position: static;
+        margin-top: 10px;
+        display: block;
+        width: 100%;
+    }
+
+    #cursorselect {
+        font-size: 16px;
+    }
+
+    #screenName {
+        position: static;
+        width: 90%;
+        margin-top: 10px;
+    }
+
+    #setScreenName {
+        width: 100%;
+    }
+
+    #auth-container, #verify {
+        width: 90%;
+        margin: 20px auto;
+    }
+
+    #group-chat-box, #private-chat-box {
+        height: 400px; /* Reduce height for small screens */
+    }
+}
+
+/* Extra small devices (phones < 500px) */
+@media (max-width: 500px) {
+    #username {
+        font-size: 20px;
+    }
+
+    #auth-container h2, #group-chat h3, #private-chat h3 {
+        font-size: 18px;
+    }
+
+    #auth-container input, #verify input, #ban-bar input,
+    #group-room-switch, input[type="text"], select {
+        font-size: 14px;
+    }
+
+    #auth-container button, #verify button, #ban-bar button, button {
+        font-size: 14px;
+        padding: 10px;
+    }
+}
+
+/* Microscopic potatoes (phones < 400px) */
+@media (max-width: 400px) {
+    #group-chat-box, #private-chat-box {
+        height: 300px;
+    }
+
+    button, input, select {
+        font-size: 13px !important;
+    }
+
+    #ban-bar span {
+        font-size: 14px;
     }
 }
