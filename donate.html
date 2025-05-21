@@ -1,0 +1,56 @@
+<!-- working -->
+<div id="donate-section" style="max-width:400px; margin:40px auto; padding:20px; background:#1e1e1e; color:#f1f1f1; text-align:center; border-radius:12px; font-family:'Segoe UI', sans-serif;">
+  <h2 style="color:#f7931a;">Donate Bitcoin</h2>
+  <p>Send BTC to this address:</p>
+  <code style="background:#333; padding:10px; border-radius:6px; display:inline-block; word-break:break-all;">
+    bc1qcjjelyj7w8gfg6lmkp9x6rxzqmh2ty8hjdlwva
+  </code>
+  <div style="margin:20px 0;">
+    <img src="https://api.qrserver.com/v1/create-qr-code/?data=bitcoin:bc1qcjjelyj7w8gfg6lmkp9x6rxzqmh2ty8hjdlwva&size=200x200" alt="Bitcoin QR Code" style="border-radius:8px; border:1px solid #444;" />
+  </div>
+  <button id="openWalletBtn" style="background:#f7931a; border:none; padding:12px 20px; border-radius:8px; font-weight:bold; cursor:pointer;">
+    Open in Wallet
+  </button>
+  <p id="message" style="margin-top:15px; color:#ff6f61; font-weight:bold; display:none;"></p>
+
+  <hr style="margin:30px 0; border-color:#444;">
+
+  <h2 style="color:#00d4ff;">Or Pay with Card</h2>
+  <p>Prefer plastic over crypto? We got you.</p>
+  <a href="https://buy.stripe.com/test_6oU6oJ7SEf123kq0bQ5c400" target="_blank" rel="noopener noreferrer">
+    <button style="background-color:#6772e5; color:white; padding:12px 24px; border:none; border-radius:6px; font-size:16px; cursor:pointer;">
+    Pay with Credit/Debit Card
+    </button>
+  </a>
+</div>
+
+<script>
+  const openWalletBtn = document.getElementById('openWalletBtn');
+  const message = document.getElementById('message');
+  const btcUri = 'bitcoin:bc1qcjjelyj7w8gfg6lmkp9x6rxzqmh2ty8hjdlwva';
+
+  openWalletBtn.addEventListener('click', () => {
+    message.style.display = 'none'; // reset message
+
+    // Start time
+    const start = Date.now();
+
+    // Try to open the bitcoin URI
+    window.location = btcUri;
+
+    // After 2 seconds, if page is still here, assume no wallet app
+    setTimeout(() => {
+      if (Date.now() - start < 2100) {
+        message.textContent = 'No Bitcoin wallet detected. Please install one to proceed.';
+        message.style.display = 'block';
+      }
+    }, 2000);
+  });
+</script>
+
+<style>
+  body {
+    background-color: black;
+  }
+</style>
+<!-- done working -->
