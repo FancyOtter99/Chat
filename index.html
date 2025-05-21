@@ -196,54 +196,6 @@ fetchConnected();                    // Initial fetch
         <input type="text" id="verification-code" placeholder="Verification Code (Check Email)">
         <button id="verify-btn">Verify Email</button>
     </div>
- <!-- working --> 
-<div id="donate-section" style="max-width:400px; margin:40px auto; padding:20px; background:#1e1e1e; color:#f1f1f1; text-align:center; border-radius:12px; font-family:'Segoe UI', sans-serif;">
-    <h2 style="color:#f7931a;">Donate Bitcoin</h2>
-    <p>Send BTC to this address:</p>
-    <code style="background:#333; padding:10px; border-radius:6px; display:inline-block; word-break:break-all;">
-      bc1qcjjelyj7w8gfg6lmkp9x6rxzqmh2ty8hjdlwva
-    </code>
-    <div style="margin:20px 0;">
-      <img src="https://api.qrserver.com/v1/create-qr-code/?data=bitcoin:bc1qcjjelyj7w8gfg6lmkp9x6rxzqmh2ty8hjdlwva&size=200x200" alt="Bitcoin QR Code" style="border-radius:8px; border:1px solid #444;" />
-    </div>
-    <button id="openWalletBtn" style="background:#f7931a; border:none; padding:12px 20px; border-radius:8px; font-weight:bold; cursor:pointer;">
-      Open in Wallet
-    </button>
-    <p id="message" style="margin-top:15px; color:#ff6f61; font-weight:bold; display:none;"></p>
-  </div>
-  
-  <script>
-    const openWalletBtn = document.getElementById('openWalletBtn');
-    const message = document.getElementById('message');
-    const btcUri = 'bitcoin:bc1qcjjelyj7w8gfg6lmkp9x6rxzqmh2ty8hjdlwva';
-  
-    openWalletBtn.addEventListener('click', () => {
-      message.style.display = 'none'; // reset message
-  
-      // Start time
-      const start = Date.now();
-  
-      // Try to open the bitcoin URI
-      window.location = btcUri;
-  
-      // After 2 seconds, if page is still here, assume no wallet app
-      setTimeout(() => {
-        // If user didn’t navigate away, show message
-        if (Date.now() - start < 2100) {
-          message.textContent = 'No Bitcoin wallet detected. Please install one to proceed.';
-          message.style.display = 'block';
-        }
-      }, 2000);
-    });
-  </script>
-  
-  
-  <style>
-    body {
-        background-color: black;
-    }
-  </style>
-   <!-- done working --> 
     <!-- Chat Application -->
     <div id="chat-container" style="display: none;">
         <h2 id="username" class="username-hover">
