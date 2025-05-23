@@ -6,7 +6,7 @@ body {
     margin: 0;
     padding: 0;
 }#donateBTN {
-  background: orange !important;
+  background: #e63946 !important; /* a nice bold, urgent red */
   color: white;
   border: none;
   padding: 12px 24px;
@@ -17,8 +17,9 @@ body {
 }
 
 #donateBTN:hover {
-  background: darkorange !important;
+  background: #a62832 !important; /* darker red for hover, screams "click me" */
 }
+
 
 
 /* Authentication Container */
