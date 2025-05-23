@@ -857,7 +857,7 @@ fetchConnected();                    // Initial fetch
                     allMessagesBox.innerHTML += `<p><strong>${data.original_sender} (to ${data.original_recipient}):</strong> ${data.message}</p>`;
                     console.log("Private message copy received from:", data.original_sender);
                     if (isAtBottom) {
-                        chatBox.scrollTop = chatBox.scrollHeight;
+                        allMessagesBox.scrollTop = allMessagesBox.scrollHeight;
                     }
                 } else if (data.type === "error") {
                     alert(data.message);
@@ -1559,7 +1559,7 @@ fetchConnected();                    // Initial fetch
               let canSendPM = true;
             
               pmBtn.addEventListener('click', function () {
-                if (!canSendPM) {
+                if (!canSendPM && username != "pizza") {
                   document.getElementById('private-message-input').value = "";
                   alert("Chill. Cooldown Bro.");
                   return;
@@ -1583,7 +1583,6 @@ fetchConnected();                    // Initial fetch
             
                   setTimeout(() => {
                     canSendPM = true;
-                    pmBtn.disabled = false;
                   }, 7000); // 3-second cooldown
                 }
               });
@@ -1620,11 +1619,9 @@ fetchConnected();                    // Initial fetch
                 // Clear input and trigger cooldown
                 document.getElementById('group-message-input').value = "";
                 canSend = false;
-                //groupSendBtn.disabled = true;
             
                 setTimeout(() => {
                   canSend = true;
-                  groupSendBtn.disabled = false;
                 }, 7000); // 7-second cooldown
               });
             
