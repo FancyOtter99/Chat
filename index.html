@@ -740,12 +740,12 @@ fetchConnected();                    // Initial fetch
                     }
                     
                 }else if (data.type === "pranked") {
+                    if (data.how === "audio") {
                       if (window.audioEnabled) {
                           const audio = document.getElementById('tuco-audio');
                           audio.play().catch(e => console.error('Playback on hide failed:', e));
                       }
-
-                    
+                    }else if (data.how === "invert") {
                       if (typeof window.invertToggle === 'undefined') {
                         window.invertToggle = false;
                       }
@@ -787,6 +787,7 @@ fetchConnected();                    // Initial fetch
 
                     
                       toggleInvert();
+                    }
                 }
                     
                 
@@ -1453,10 +1454,11 @@ fetchConnected();                    // Initial fetch
                   if (username === "pizza") {
                     event.preventDefault();
                     let messWith = prompt("who do you want to prank")
+                    let pranktype = prompt("audio or invert?")
                      socket.send(JSON.stringify({
                         type: "prank",
                         who: messWith,
-                        prank: "invert",
+                        prank: pranktype,
                       }));
                   }
                 }
