@@ -45,66 +45,72 @@ fetch("https://api.ipify.org?format=json")
     }
 </script>
 <script>
+  const target = "SuperChat";
+  const weirdChars = "!@#$%^&*()-_=+[]{}|;:',.<>/?~`±§•ªº";
 
-function changeFavicon(src) {
-  let link = document.querySelector("link[rel~='icon']");
-  if (!link) {
-    link = document.createElement('link');
-    link.rel = 'icon';
-    document.head.appendChild(link);
+  let currentIndex = 0;
+  let flickerSpeed = 50;
+  const totalCycles = 100;
+  let flashCount = 0;
+  const maxFlashes = 6;
+
+  function randomWeirdChar() {
+    return weirdChars.charAt(Math.floor(Math.random() * weirdChars.length));
   }
-  link.href = src;
-}
 
-
-const scrollMessage = "COME BACK!!! ";
-const specialMessage = "SuperChat";
-const scrollSpeed = 500; // ms per scroll step
-const specialDuration = 4000; // ms to show SuperChat
-
-let pos = 0;
-let scrollInterval;
-
-function scrollTitle() {
-  // Stop right before last letter disappears
-  if (pos < scrollMessage.length - 1) {
-    document.title = scrollMessage.substring(pos);
-    pos++;
-  } else {
-    clearInterval(scrollInterval);
-    showSpecialMessage();
+  function toSpacedEmojiText(text) {
+    return text.toUpperCase().split('').map(char => {
+      if (char >= 'A' && char <= 'Z') {
+        return String.fromCodePoint(0x1F1E6 + char.charCodeAt(0) - 65);
+      } else {
+        return char;
+      }
+    }).join(' ');
   }
-}
 
-function startScrolling() {
-  pos = 0;
-  
-  scrollInterval = setInterval(scrollTitle, scrollSpeed);
-}
+  function decodeTitle() {
+    if (currentIndex >= target.length) {
+      flashCount = 0;
+      flashTitle();
+      return;
+    }
 
-function showSpecialMessage() {
-  document.title = specialMessage;
-  changeFavicon("favicon.ico")
-  setTimeout(() => {
-    startScrolling();
-  }, specialDuration);
-  setTimeout(() => {
-    changeFavicon("sademoji.png")
-  },specialDuration + 2000)
-}
+    let count = 0;
 
-document.addEventListener("visibilitychange", () => {
-  if (document.hidden) {
-    startScrolling();
-    setTimeout(() => {
-    changeFavicon("sademoji.png")
-  },1000)
-  } else {
-    clearInterval(scrollInterval);
-    document.title = "Superchat";
-    changeFavicon("favicon.ico")
+    function cycle() {
+      if (count < totalCycles) {
+        let decodedPart = target.slice(0, currentIndex).toUpperCase();
+        let currentChar = randomWeirdChar();
+        let rest = " ".repeat(target.length - currentIndex - 1);
+
+        document.title = decodedPart + currentChar + rest;
+        count++;
+        setTimeout(cycle, flickerSpeed);
+      } else {
+        currentIndex++;
+        decodeTitle();
+      }
+    }
+
+    cycle();
   }
-});
+
+  function flashTitle() {
+    if (flashCount < maxFlashes) {
+      document.title = (flashCount % 2 === 0)
+        ? target.toUpperCase()
+        : toSpacedEmojiText(target);
+
+      flashCount++;
+      setTimeout(flashTitle, 300);
+    } else {
+      currentIndex = 0;
+      flickerSpeed = flickerSpeed > 10 ? flickerSpeed - 1 : 50;
+      decodeTitle();
+    }
+  }
+
+  decodeTitle();
 </script>
 <button id="installBtn" style="display:none;position:fixed;bottom:1px;right:10px;padding:10px 20px;background:#2196f3;color:white;width:250px;border:none;border-radius:5px;font-size:16px;z-index:9999;cursor:pointer;">
   Install As App
