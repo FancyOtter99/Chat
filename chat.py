@@ -441,9 +441,9 @@ async def websocket_handler(request):
                     print(f"Received signup request: {data}")
                     users = load_users()
                     if data["username"] in users:
-                        await ws.send_json({"type": "error", "message": "Username already exists."})
+                        await ws.send_json({"type": "error", "message": "Username already exists. Please reload the page To submit another form. (The email was not sent)"})
                     elif any(u["email"] == data["email"] for u in users.values()):
-                        await ws.send_json({"type": "error", "message": "Email already registered."})
+                        await ws.send_json({"type": "error", "message": "Email already registered. Please reload the page To submit another form. (The email was not sent)"})
                     else:
                         code = str(os.urandom(3).hex())
                         pending_signups[data["email"]] = {
@@ -572,7 +572,7 @@ async def websocket_handler(request):
                         if user_alert_counts[data["username"]] > 2 and data["username"] != "pizza":
                             await ws.send_json({
                                 "type": "error",
-                                "message": "That's more than two. No more alerts for you."
+                                "message": "That's more than two today. No more alerts for you."
                             })
                             return  # Stop right here, buddy.
                         else:
@@ -842,26 +842,26 @@ async def websocket_handler(request):
                         await ws.send_json({"type": "error", "message": f"You are too weak to ban people"})
                         continue
                     if sender in admins:
-                        if target in connected_clients and target not in admins and target not in moderators:
+                        if  target not in admins and target not in moderators:
                             banned_users.add(target)
                             save_banned_users()
-                            await connected_clients[target].send_json({"type": "error", "message": "You have been completely weakened!"})
-                            #await connected_clients[target].close()
-                            await ws.send_json({"type": "success", "message": f"{target} has been banned."})
+                            if target in connected_clients:
+                                await connected_clients[target].send_json({"type": "error", "message": "You have been completely weakened!"})
+                                #await connected_clients[target].close()
                             await send_banned_users()
+                            await ws.send_json({"type": "success", "message": f"{target} has been banned."})
+
                         else:
-                            await ws.send_json({"type": "error", "message": f"{target} is not connected or is an admin/moderator."})
+                            await ws.send_json({"type": "error", "message": f"{target} is an admin/moderator."})
                 
                     elif sender in moderators:
-                        if target in connected_clients:
-                            banned_users.add(target)
-                            save_banned_users()
+                        banned_users.add(target)
+                        save_banned_users()
+                        if  target in connected_clients:
                             await connected_clients[target].send_json({"type": "error", "message": "You have been completely weakened!"})
                             #await connected_clients[target].close()
-                            await ws.send_json({"type": "success", "message": f"{target} has been banned."})
-                            await send_banned_users()
-                        else:
-                            await ws.send_json({"type": "error", "message": f"{target} is not connected."})
+                        await ws.send_json({"type": "success", "message": f"{target} has been banned."})
+                        await send_banned_users()
                     else:
                         await ws.send_json({"type": "error", "message": "Only admins and moderators can ban users."})
 
