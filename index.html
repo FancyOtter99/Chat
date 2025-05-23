@@ -9,7 +9,7 @@
 </head>
 <body id="normal-content">
 <script>
-    function changeFavicon(src) {
+function changeFavicon(src) {
   let link = document.querySelector("link[rel~='icon']");
   if (!link) {
     link = document.createElement('link');
@@ -59,7 +59,9 @@ function showSpecialMessage() {
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) {
     startScrolling();
+    setTimeout(() => {
     changeFavicon("sademoji.png")
+  },1000)
   } else {
     clearInterval(scrollInterval);
     document.title = "Superchat";
