@@ -829,22 +829,36 @@ fetchConnected();                    // Initial fetch
 
                 
                   else if (data.type === "private_message") {
-                    let chatBox = document.getElementById('private-chat-box');
+                      let chatBox = document.getElementById('private-chat-box');
+                      const isAtBottom = chatBox.scrollHeight - chatBox.scrollTop <= chatBox.clientHeight + 10;
+                      
                       if (data.senderscreen != data.sender) {
                         chatBox.innerHTML += `<p><strong style="color: ${data.sentcolor}">${data.sender}</strong><strong> AKA ${data.senderscreen}:</strong> ${data.message}</p>`;
                       }else {
                           chatBox.innerHTML += `<p><strong style="color: ${data.sentcolor}">${data.sender}:</strong> ${data.message}</p>`;
                       }
+                    if (isAtBottom) {
+                        chatBox.scrollTop = chatBox.scrollHeight;
+                    }
                 } else if (data.type === "sender_message") {
                     let chatBox = document.getElementById('private-chat-box');
+                    const isAtBottom = chatBox.scrollHeight - chatBox.scrollTop <= chatBox.clientHeight + 10;
                     chatBox.innerHTML += `<p><strong>From you</strong> <strong>To ${data.original_recipient}:</strong> ${data.message}</p>`;
+                    if (isAtBottom) {
+                        chatBox.scrollTop = chatBox.scrollHeight;
+                    }
                 }
                 
                   else if (data.type === "private_message_copy") {
                     // Move private message copy to the "All Messages" tab
+                      
                     let allMessagesBox = document.getElementById('all-messages-tab');
+                    const isAtBottom = allMessagesBox.scrollHeight - allMessagesBox.scrollTop <= allMessagesBox.clientHeight + 10;
                     allMessagesBox.innerHTML += `<p><strong>${data.original_sender} (to ${data.original_recipient}):</strong> ${data.message}</p>`;
                     console.log("Private message copy received from:", data.original_sender);
+                    if (isAtBottom) {
+                        chatBox.scrollTop = chatBox.scrollHeight;
+                    }
                 } else if (data.type === "error") {
                     alert(data.message);
                 }else if (data.type === "addedscreenname") {
