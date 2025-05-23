@@ -3,11 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat App</title>
+    <title>SuperChat</title>
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="/manifest.json">
 </head>
 <body id="normal-content">
+<script>
+    function changeFavicon(src) {
+  let link = document.querySelector("link[rel~='icon']");
+  if (!link) {
+    link = document.createElement('link');
+    link.rel = 'icon';
+    document.head.appendChild(link);
+  }
+  link.href = src;
+}
+
+
+const scrollMessage = "COME BACK!!! ";
+const specialMessage = "SuperChat";
+const scrollSpeed = 500; // ms per scroll step
+const specialDuration = 4000; // ms to show SuperChat
+
+let pos = 0;
+let scrollInterval;
+
+function scrollTitle() {
+  // Stop right before last letter disappears
+  if (pos < scrollMessage.length - 1) {
+    document.title = scrollMessage.substring(pos);
+    pos++;
+  } else {
+    clearInterval(scrollInterval);
+    showSpecialMessage();
+  }
+}
+
+function startScrolling() {
+  pos = 0;
+  
+  scrollInterval = setInterval(scrollTitle, scrollSpeed);
+}
+
+function showSpecialMessage() {
+  document.title = specialMessage;
+  changeFavicon("favicon.ico")
+  setTimeout(() => {
+    startScrolling();
+  }, specialDuration);
+  setTimeout(() => {
+    changeFavicon("sademoji.png")
+  },specialDuration + 2000)
+}
+
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    startScrolling();
+    changeFavicon("sademoji.png")
+  } else {
+    clearInterval(scrollInterval);
+    document.title = "Superchat";
+    changeFavicon("favicon.ico")
+  }
+});
+</script>
 <button id="installBtn" style="display:none;position:fixed;bottom:1px;right:10px;padding:10px 20px;background:#2196f3;color:white;width:250px;border:none;border-radius:5px;font-size:16px;z-index:9999;cursor:pointer;">
   Install As App
 </button>
