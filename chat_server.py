@@ -441,9 +441,9 @@ async def websocket_handler(request):
                     print(f"Received signup request: {data}")
                     users = load_users()
                     if data["username"] in users:
-                        await ws.send_json({"type": "error", "message": "Username already exists."})
+                        await ws.send_json({"type": "error", "message": "Username already exists. Please reload the page To submit another form. (The email was not sent)"})
                     elif any(u["email"] == data["email"] for u in users.values()):
-                        await ws.send_json({"type": "error", "message": "Email already registered."})
+                        await ws.send_json({"type": "error", "message": "Email already registered. Please reload the page To submit another form. (The email was not sent)"})
                     else:
                         code = str(os.urandom(3).hex())
                         pending_signups[data["email"]] = {
