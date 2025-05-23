@@ -6,9 +6,20 @@ body {
     margin: 0;
     padding: 0;
 }#donateBTN {
-    background-color: orange;
-    
+  background-color: orange;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
+
+#donateBTN:hover {
+  background-color: darkorange;
+}
+
 
 /* Authentication Container */
 #auth-container, #verify {
