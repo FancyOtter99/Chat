@@ -435,9 +435,15 @@ async def websocket_handler(request):
     global main_messages
 
     
+    your_ip = "74.136.173.22" # <-- Replace with your actual IP
+
     origin = request.headers.get('Origin')
+    client_ip = request.remote
+
     if origin not in allowed_origins:
-        return web.Response(text="Forbidden", status=403)
+        # Not from allowed origin — only allow if from your IP
+        if client_ip != your_ip:
+            return web.Response(text="Forbidden", status=403)
 
     
     ws = web.WebSocketResponse()
