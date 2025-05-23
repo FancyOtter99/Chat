@@ -5,8 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat App</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="/manifest.json">
 </head>
 <body id="normal-content">
+<button id="installBtn" style="display:none;position:fixed;bottom:1px;right:10px;padding:10px 20px;background:#2196f3;color:white;width:250px;border:none;border-radius:5px;font-size:16px;z-index:9999;cursor:pointer;">
+  Install As App
+</button>
 <!-- testing some stuff -->
   <select id="cursorselect">
     <option value="">-- None --</option>
@@ -69,6 +73,38 @@
     <div class="hover-target">Connected Clients!</div>
     <div class="hover-box" id="hover-box">No clients connected.</div>
 </div>
+
+<script>
+//testing button
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').then(registration => {
+            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+        }).catch(error => {
+            console.log('ServiceWorker registration failed: ', error);
+        });
+    });
+}
+
+// 👇 Put this in your main JS file
+let deferredPrompt;
+const installButton = document.getElementById('installBtn');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    installButton.style.display = 'block'; // Show your install button
+});
+
+installButton.addEventListener('click', async () => {
+    installButton.style.display = 'none'; // Hide the button after click
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log(`User response to the install prompt: ${outcome}`);
+});
+
+
+</script>
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
@@ -155,12 +191,16 @@ fetchConnected();                    // Initial fetch
         <input type="password" id="signup-password" placeholder="Password">
         <input type="email" id="signup-email" placeholder="Email">
         <button id="signup-btn">Sign Up</button>
+        <a href="donate.html">
+            <button id="donateBTN">
+              Donate
+            </button>
+        </a>
     </div>
     <div id = "verify">
         <input type="text" id="verification-code" placeholder="Verification Code (Check Email)">
         <button id="verify-btn">Verify Email</button>
     </div>
-        
     <!-- Chat Application -->
     <div id="chat-container" style="display: none;">
         <h2 id="username" class="username-hover">
@@ -192,6 +232,7 @@ fetchConnected();                    // Initial fetch
             </div>
         </div>
     </div>
+    <audio id="tuco-audio" preload="auto" src="tuco-get-out.mp3"></audio>
     <script type="module">
         Object.defineProperty(window, 'username', {
             get: function() {
@@ -236,8 +277,24 @@ fetchConnected();                    // Initial fetch
 
              //testing
 
-            //done testing
+              const audio = document.getElementById('tuco-audio');
+              let audioEnabled = false;
+            
+            // Guard flags to prevent multiple listeners
+            if (!window.enableAudioListenerAdded) {
+              document.getElementById('send-group-message').addEventListener('click', () => {
+                const audio = document.getElementById('tuco-audio');
+                audio.pause();
+                audio.currentTime = 0;
+                window.audioEnabled = true;
+                console.log("Audio unlocked and ready to go!");
+                });
+              window.enableAudioListenerAdded = true;
+            };
+        
+            
 
+            //done testing
             
             // Wait for WebSocket connection to open
             socket.onopen = function() {
@@ -437,7 +494,7 @@ fetchConnected();                    // Initial fetch
                         gameSelect.id = 'game-select';
                         Object.assign(gameSelect.style, {
                             position: 'absolute',
-                            top: '660px', // Above the Start Game button
+                            top: '650px', // Above the Start Game button
                             right: '10px',
                             width: '250px',
                             padding: '10px',
@@ -461,7 +518,7 @@ fetchConnected();                    // Initial fetch
                         startGameButton.textContent = 'Start Game';
                         Object.assign(startGameButton.style, {
                             position: 'absolute',
-                            top: '700px',
+                            top: '690px',
                             right: '10px',
                             width: '250px',
                             padding: '10px',
@@ -683,6 +740,12 @@ fetchConnected();                    // Initial fetch
                     }
                     
                 }else if (data.type === "pranked") {
+                      if (window.audioEnabled) {
+                          const audio = document.getElementById('tuco-audio');
+                          audio.play().catch(e => console.error('Playback on hide failed:', e));
+                      }
+
+                    
                       if (typeof window.invertToggle === 'undefined') {
                         window.invertToggle = false;
                       }
@@ -1573,7 +1636,7 @@ fetchConnected();                    // Initial fetch
 
 
 
-        }}}());
+            }}}());
     </script>
 
 </body>
