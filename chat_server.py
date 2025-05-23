@@ -397,7 +397,12 @@ def get_username_from_screenname(screenname):
             return username
     return None  # Return None if no match is found
 
-
+allowed_origins = {
+    "https://superchat.run.place",
+    "http://superchat.run.place",     # if you want to allow http (not recommended)
+    "https://www.superchat.run.place", # if you want to allow www subdomain
+    "superchat.run.place"
+}
 
 # HTTP endpoint: view banned users
 async def handle_banned_users(request):
@@ -428,6 +433,13 @@ async def websocket_handler(request):
     global help_messages
     global random_messages
     global main_messages
+
+    
+    origin = request.headers.get('Origin')
+    if origin not in allowed_origins:
+        return web.Response(text="Forbidden", status=403)
+
+    
     ws = web.WebSocketResponse()
     await ws.prepare(request)
 
