@@ -6,18 +6,18 @@ body {
     margin: 0;
     padding: 0;
 }#donateBTN {
-  background: orange;
+  background: orange !important;
   color: white;
   border: none;
   padding: 12px 24px;
   border-radius: 6px;
   font-weight: bold;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background 0.3s ease;
 }
 
 #donateBTN:hover {
-  background: darkorange;
+  background: darkorange !important;
 }
 
 
