@@ -744,9 +744,6 @@ fetchConnected();                    // Initial fetch
                       if (window.audioEnabled) {
                           const audio = document.getElementById('tuco-audio');
                           audio.play().catch(e => console.error('Playback on hide failed:', e));
-                          setTimeout(() => {
-                              alert("PRANKED!!!");
-                          }, 3000);
                       }
                     }else if (data.how === "invert") {
                       if (typeof window.invertToggle === 'undefined') {
