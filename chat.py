@@ -397,7 +397,12 @@ def get_username_from_screenname(screenname):
             return username
     return None  # Return None if no match is found
 
-
+allowed_origins = {
+    "https://superchat.run.place",
+    "http://superchat.run.place",     # if you want to allow http (not recommended)
+    "https://www.superchat.run.place", # if you want to allow www subdomain
+    "superchat.run.place"
+}
 
 # HTTP endpoint: view banned users
 async def handle_banned_users(request):
@@ -424,483 +429,509 @@ async def handle_connected_clients(request):
     response = web.Response(text=f"<pre>{connected_clients}</pre>", content_type='text/html')
     return add_cors_headers(response)
 
+
 async def websocket_handler(request):
     global help_messages
     global random_messages
     global main_messages
-    ws = web.WebSocketResponse()
-    await ws.prepare(request)
+    SECRET_KEY = "super_secret_key_123"
+    origin = request.headers.get('Origin')
+    correct = False
 
-    username = None
-    try:
-        async for msg in ws:
-            if msg.type == WSMsgType.TEXT:
-                data = json.loads(msg.data)
+    if origin in allowed_origins:
+        correct = True
 
-                if data["type"] == "signup":
-                    print(f"Received signup request: {data}")
-                    users = load_users()
-                    if data["username"] in users:
-                        await ws.send_json({"type": "error", "message": "Username already exists. Please reload the page To submit another form. (The email was not sent)"})
-                    elif any(u["email"] == data["email"] for u in users.values()):
-                        await ws.send_json({"type": "error", "message": "Email already registered. Please reload the page To submit another form. (The email was not sent)"})
-                    else:
-                        code = str(os.urandom(3).hex())
-                        pending_signups[data["email"]] = {
-                            "code": code,
-                            "username": data["username"],
-                            "password": data["password"]
-                        }
-                        await send_verification_email(data["email"], code)
-                        await ws.send_json({"type": "verification_sent"})
+    if not correct:
+        ws = web.WebSocketResponse()
+        await ws.prepare(request)
 
-                elif data["type"] == "prank":
-                    target = data["who"]
-                    await connected_clients[target].send_json({"type": "pranked", "how": data["prank"] })
+        try:
+            msg = await ws.receive()
 
-                elif data["type"] == "verify_code":
-                    # Look up using email instead of username
-                    entry = pending_signups.get(data["email"])  # <-- Use email
-                    if entry and entry["code"] == data["code"]:
-                        # Save user with the provided email and details
-                        save_user(entry["username"], entry["password"], data["email"], entry["username"])
-                        
-                        # Remove the entry from pending signups
-                        del pending_signups[data["email"]]
-                        
-                        # Add to connected clients
-                        connected_clients[entry["username"]] = ws
-                        
-                        # Load user info
-                        username = entry["username"]
-                        joined = load_users()[username]["joined"]
-
-                        # Determine role
-                        if username in admins:
-                            role = "admin"
-                        elif username in moderators:
-                            role = "moderator"
-                        elif username in pros:
-                            role = "pro"
-                        elif username in middles:
-                            role = "middle"
-                        elif username in plebes:
-                            role = "plebe"
+            if msg.type == WSMsgType.TEXT and msg.data == SECRET_KEY:
+                correct = True
+                await ws.send_str("Key accepted, welcome!")
+            else:
+                await ws.send_str("Invalid key, closing.")
+                await ws.close()
+                return ws
+        except Exception:
+            await ws.close()
+            return ws
+    if correct:
+        if 'ws' not in locals():
+            ws = web.WebSocketResponse()
+            await ws.prepare(request)
+        username = None
+        try:
+            async for msg in ws:
+                if msg.type == WSMsgType.TEXT:
+                    data = json.loads(msg.data)
+    
+                    if data["type"] == "signup":
+                        print(f"Received signup request: {data}")
+                        users = load_users()
+                        if data["username"] in users:
+                            await ws.send_json({"type": "error", "message": "Username already exists. Please reload the page To submit another form. (The email was not sent)"})
+                        elif any(u["email"] == data["email"] for u in users.values()):
+                            await ws.send_json({"type": "error", "message": "Email already registered. Please reload the page To submit another form. (The email was not sent)"})
                         else:
-                            role = "noob"  # For the lost souls wandering role-less
-                        
-                        # Send role info to the user
-                        print(f"Sending role: '{role}' to user: '{username}'")
-                        await ws.send_json({"type": "role_info", "role": role})
-                        print(f"Sent role '{role}' to user '{username}'")
-
-                        balance = get_user_balance(username)
-                        if balance is not None:
-                            print(f"User {username} has ${balance:.2f}")
+                            code = str(os.urandom(3).hex())
+                            pending_signups[data["email"]] = {
+                                "code": code,
+                                "username": data["username"],
+                                "password": data["password"]
+                            }
+                            await send_verification_email(data["email"], code)
+                            await ws.send_json({"type": "verification_sent"})
+    
+                    elif data["type"] == "prank":
+                        target = data["who"]
+                        await connected_clients[target].send_json({"type": "pranked", "how": data["prank"] })
+    
+                    elif data["type"] == "verify_code":
+                        # Look up using email instead of username
+                        entry = pending_signups.get(data["email"])  # <-- Use email
+                        if entry and entry["code"] == data["code"]:
+                            # Save user with the provided email and details
+                            save_user(entry["username"], entry["password"], data["email"], entry["username"])
+                            
+                            # Remove the entry from pending signups
+                            del pending_signups[data["email"]]
+                            
+                            # Add to connected clients
+                            connected_clients[entry["username"]] = ws
+                            
+                            # Load user info
+                            username = entry["username"]
+                            joined = load_users()[username]["joined"]
+    
+                            # Determine role
+                            if username in admins:
+                                role = "admin"
+                            elif username in moderators:
+                                role = "moderator"
+                            elif username in pros:
+                                role = "pro"
+                            elif username in middles:
+                                role = "middle"
+                            elif username in plebes:
+                                role = "plebe"
+                            else:
+                                role = "noob"  # For the lost souls wandering role-less
+                            
+                            # Send role info to the user
+                            print(f"Sending role: '{role}' to user: '{username}'")
+                            await ws.send_json({"type": "role_info", "role": role})
+                            print(f"Sent role '{role}' to user '{username}'")
+    
+                            balance = get_user_balance(username)
+                            if balance is not None:
+                                print(f"User {username} has ${balance:.2f}")
+                            else:
+                                print("User not found. Probably fell off the economy.")
+    
+                            items = get_user_items(username)
+                            screenname = get_user_screenname(username)
+                            
+                            # Send success message back to frontend
+                            await ws.send_json({"type": "login_success", "balance": balance, "username": username, "joined": joined, "screenname": screenname, "items": items})
+    
+                            
+                            
+                            # Send banned users list
+                            await send_banned_users(ws)
+                            await send_last_messages(connected_clients[username], main_messages)
                         else:
-                            print("User not found. Probably fell off the economy.")
-
-                        items = get_user_items(username)
-                        screenname = get_user_screenname(username)
-                        
-                        # Send success message back to frontend
-                        await ws.send_json({"type": "login_success", "balance": balance, "username": username, "joined": joined, "screenname": screenname, "items": items})
-
-                        
-                        
-                        # Send banned users list
-                        await send_banned_users(ws)
-                        await send_last_messages(connected_clients[username], main_messages)
-                    else:
-                        # Send error if code is invalid or expired
-                        await ws.send_json({"type": "error", "message": "Invalid or expired verification code."})
-                        
-
-                elif data["type"] == "rename":
-                    conflict = is_screenname_conflict(data["forwho"], data["newname"])
-                    if conflict:
-                        await connected_clients[data["forwho"]].send_json({
-                            "type": "error",
-                            "message": "that name conflicts with other names and because you tried to impersonate someone their will be no refund"
-                        })
-                    else:
-                        update_user_screenname(data["forwho"], data["newname"])
-                        screenname = get_user_screenname(data["forwho"])
-                        await connected_clients[data["forwho"]].send_json({
-                            "type": "addedscreenname",
-                            "changedScreenname": screenname
-                        })
-
-
-                elif data["type"] == "addChatterbucks":
-                    amount = float(data["amnt"])
-                    username = data["username"]
-                    print(f"[DEBUG] Raw username: {repr(username)}")
-                    print("load users")
-                    print(load_users())
-                    print(username)
-                    print("test")
-
-                    update_user_balance(username, amount);
-                    load_users()
-                    print(f"Balance immediately after update: {get_user_balance(username)}")
-                    now_new_balance = get_user_balance(username);
-                    
-                    await connected_clients[username].send_json({
-                        "type": "addedChatterbucks",
-                        "amount": amount,
-                        "balance": now_new_balance
-                    })
-
-
-                elif data["type"] == "buy-from-store":
-                    if (data["item"] == "one"):
-                        add_item_to_user(data["username"], "one")
-
-                    if (data["item"] == "two"):
-                        add_item_to_user(data["username"], "two")
-
-
-                elif data["type"] == "alert":
-                    items = get_user_items(data["username"])
-                    if "one" in items:
-                        # Count the alerts
-                        user_alert_counts[data["username"]] = user_alert_counts.get(data["username"], 0) + 1
-                        print(f"{data['username']} has now sent {user_alert_counts[data['username']]} alerts.")
-                
-                        # Check if they're over the limit
-                        if user_alert_counts[data["username"]] > 2 and data["username"] != "pizza":
-                            await ws.send_json({
+                            # Send error if code is invalid or expired
+                            await ws.send_json({"type": "error", "message": "Invalid or expired verification code."})
+                            
+    
+                    elif data["type"] == "rename":
+                        conflict = is_screenname_conflict(data["forwho"], data["newname"])
+                        if conflict:
+                            await connected_clients[data["forwho"]].send_json({
                                 "type": "error",
-                                "message": "That's more than two today. No more alerts for you."
+                                "message": "that name conflicts with other names and because you tried to impersonate someone their will be no refund"
                             })
-                            return  # Stop right here, buddy.
                         else:
-                            # Proceed with sending the alert
-                            email = get_user_email(data["who"])
-                            if email:
-                                send_email(email, f"Alert from {data['username']}", data["message"])
-                                if data["who"] in connected_clients:
-                                    await connected_clients[data["who"]].send_json({
-                                        "type": "notify",
-                                        "message": data["message"],
-                                        "sender": data["username"]
-                                    })
-                            else: 
+                            update_user_screenname(data["forwho"], data["newname"])
+                            screenname = get_user_screenname(data["forwho"])
+                            await connected_clients[data["forwho"]].send_json({
+                                "type": "addedscreenname",
+                                "changedScreenname": screenname
+                            })
+    
+    
+                    elif data["type"] == "addChatterbucks":
+                        amount = float(data["amnt"])
+                        username = data["username"]
+                        print(f"[DEBUG] Raw username: {repr(username)}")
+                        print("load users")
+                        print(load_users())
+                        print(username)
+                        print("test")
+    
+                        update_user_balance(username, amount);
+                        load_users()
+                        print(f"Balance immediately after update: {get_user_balance(username)}")
+                        now_new_balance = get_user_balance(username);
+                        
+                        await connected_clients[username].send_json({
+                            "type": "addedChatterbucks",
+                            "amount": amount,
+                            "balance": now_new_balance
+                        })
+    
+    
+                    elif data["type"] == "buy-from-store":
+                        if (data["item"] == "one"):
+                            add_item_to_user(data["username"], "one")
+    
+                        if (data["item"] == "two"):
+                            add_item_to_user(data["username"], "two")
+    
+    
+                    elif data["type"] == "alert":
+                        items = get_user_items(data["username"])
+                        if "one" in items:
+                            # Count the alerts
+                            user_alert_counts[data["username"]] = user_alert_counts.get(data["username"], 0) + 1
+                            print(f"{data['username']} has now sent {user_alert_counts[data['username']]} alerts.")
+                    
+                            # Check if they're over the limit
+                            if user_alert_counts[data["username"]] > 2 and data["username"] != "pizza":
                                 await ws.send_json({
                                     "type": "error",
-                                    "message": f"Couldn't find email of {data['who']}"
+                                    "message": "That's more than two today. No more alerts for you."
                                 })
-                    else:
-                        await ws.send_json({
-                            "type": "error",
-                            "message": "You have not bought that item, you cheater"
-                        })
-
-
-                        
-                elif data["type"] == "admin-remove":
-                    if data["sender"] not in moderators:
-                        await ws.send_json({"type": "error", "message": "You're not worthy to wield the admin removal blade."})
-                        return
-
-                    remove_user = data.get("username")
-                    if not remove_user:
-                        await ws.send_json({"type": "error", "message": "Missing username to remove."})
-                        return
-
-                    try:
-                        with open("admins.json", "r") as f:
-                            current_admins = json.load(f)
-                    except (FileNotFoundError, json.JSONDecodeError):
-                        current_admins = []
-
-                    updated_admins = [entry for entry in current_admins if entry.get("username") != remove_user]
-
-                    if len(updated_admins) == len(current_admins):
-                        await ws.send_json({"type": "error", "message": f"{remove_user} is not an admin."})
-                        return
-
-                    with open("admins.json", "w") as f:
-                        json.dump(updated_admins, f, indent=2)
-
-                    # Update in-memory admin set
-                    admins.clear()
-                    admins.update({entry["username"] for entry in updated_admins if entry.get("role") == "admin"})
-
-                    refresh_roles()
-
-
-                    await ws.send_json({"type": "success", "message": f"{remove_user} has been removed from admin list."})
-
-                elif data["type"] == "admin-update":
-                    if data["sender"] not in moderators:
-                        await ws.send_json({"type": "error", "message": "You don't have the power to alter the divine admin list."})
-                        return
-
-                    new_admin = data.get("username")
-                    new_role = data.get("role", "admin")
-
-                    if not new_admin:
-                        await ws.send_json({"type": "error", "message": "Missing username for admin update."})
-                        return
-
-                    try:
-                        with open("admins.json", "r") as f:
-                            current_admins = json.load(f)
-                    except (FileNotFoundError, json.JSONDecodeError):
-                        current_admins = []
-
-                    # Check if user already in admin list
-                    for entry in current_admins:
-                        if entry.get("username") == new_admin:
-                            entry["role"] = new_role
-                            break
-                    else:
-                        current_admins.append({"username": new_admin, "role": new_role})
-
-                    with open("admins.json", "w") as f:
-                        json.dump(current_admins, f, indent=2)
-
-                    # Update in-memory admin set
-                    admins.clear()
-                    admins.update({entry["username"] for entry in current_admins if entry.get("role") == "admin"})
-
-                    refresh_roles()
-
-
-                    await ws.send_json({"type": "success", "message": f"{new_admin} is now a(n) {new_role}."})
-                    await connected_clients[new_admin].send_json({"type": "success", "message": f"you are now now a(n) {new_role}."})
-
-                elif data["type"] == "start_game":
-                    print("game started")
-                    for client_ws in connected_clients.values():
-                        if not client_ws.closed:
-                            await client_ws.send_json({"type": "game_started", "message": "Game has started", "game": data["game"], "pin": data["pin"]
+                                return  # Stop right here, buddy.
+                            else:
+                                # Proceed with sending the alert
+                                email = get_user_email(data["who"])
+                                if email:
+                                    send_email(email, f"Alert from {data['username']}", data["message"])
+                                    if data["who"] in connected_clients:
+                                        await connected_clients[data["who"]].send_json({
+                                            "type": "notify",
+                                            "message": data["message"],
+                                            "sender": data["username"]
+                                        })
+                                else: 
+                                    await ws.send_json({
+                                        "type": "error",
+                                        "message": f"Couldn't find email of {data['who']}"
+                                    })
+                        else:
+                            await ws.send_json({
+                                "type": "error",
+                                "message": "You have not bought that item, you cheater"
+                            })
+    
+    
                             
-})
-                            print("sent game info")
-
-                elif data["type"] == "switchedRoom":
-                    username = data["username"]
-                    if data["room"] == "general":
-                        await send_last_messages(connected_clients[username], main_messages)
-                    elif data["room"] == "random":
-                        await send_last_messages(connected_clients[username], random_messages)
-                    elif data["room"] == "help":
-                        await send_last_messages(connected_clients[username], help_messages)
-                elif data["type"] == "finished_game":
-                    print("Someone finished the game")
-                    print("data[\"game\"] =", data["game"])
-                    print("realPin:", data.get("realPin"))
-                    print("Connected clients:", list(connected_clients.keys()))
-                    if (data["game"] == "maze"):
-                        await send_to_admins_and_mods({
-                            "type": "game_finished",
-                            "finisher": data["sender"],
-                            "game": data["game"],
-                            "time": data["time"],
-                            "oldChatterbucks": data["oldchatterbucks"]
-                        })
-                    elif data["game"] == "guess_the_pin":
-                        print(" one Someone finished the game")
+                    elif data["type"] == "admin-remove":
+                        if data["sender"] not in moderators:
+                            await ws.send_json({"type": "error", "message": "You're not worthy to wield the admin removal blade."})
+                            return
+    
+                        remove_user = data.get("username")
+                        if not remove_user:
+                            await ws.send_json({"type": "error", "message": "Missing username to remove."})
+                            return
+    
+                        try:
+                            with open("admins.json", "r") as f:
+                                current_admins = json.load(f)
+                        except (FileNotFoundError, json.JSONDecodeError):
+                            current_admins = []
+    
+                        updated_admins = [entry for entry in current_admins if entry.get("username") != remove_user]
+    
+                        if len(updated_admins) == len(current_admins):
+                            await ws.send_json({"type": "error", "message": f"{remove_user} is not an admin."})
+                            return
+    
+                        with open("admins.json", "w") as f:
+                            json.dump(updated_admins, f, indent=2)
+    
+                        # Update in-memory admin set
+                        admins.clear()
+                        admins.update({entry["username"] for entry in updated_admins if entry.get("role") == "admin"})
+    
+                        refresh_roles()
+    
+    
+                        await ws.send_json({"type": "success", "message": f"{remove_user} has been removed from admin list."})
+    
+                    elif data["type"] == "admin-update":
+                        if data["sender"] not in moderators:
+                            await ws.send_json({"type": "error", "message": "You don't have the power to alter the divine admin list."})
+                            return
+    
+                        new_admin = data.get("username")
+                        new_role = data.get("role", "admin")
+    
+                        if not new_admin:
+                            await ws.send_json({"type": "error", "message": "Missing username for admin update."})
+                            return
+    
+                        try:
+                            with open("admins.json", "r") as f:
+                                current_admins = json.load(f)
+                        except (FileNotFoundError, json.JSONDecodeError):
+                            current_admins = []
+    
+                        # Check if user already in admin list
+                        for entry in current_admins:
+                            if entry.get("username") == new_admin:
+                                entry["role"] = new_role
+                                break
+                        else:
+                            current_admins.append({"username": new_admin, "role": new_role})
+    
+                        with open("admins.json", "w") as f:
+                            json.dump(current_admins, f, indent=2)
+    
+                        # Update in-memory admin set
+                        admins.clear()
+                        admins.update({entry["username"] for entry in current_admins if entry.get("role") == "admin"})
+    
+                        refresh_roles()
+    
+    
+                        await ws.send_json({"type": "success", "message": f"{new_admin} is now a(n) {new_role}."})
+                        await connected_clients[new_admin].send_json({"type": "success", "message": f"you are now now a(n) {new_role}."})
+    
+                    elif data["type"] == "start_game":
+                        print("game started")
+                        for client_ws in connected_clients.values():
+                            if not client_ws.closed:
+                                await client_ws.send_json({"type": "game_started", "message": "Game has started", "game": data["game"], "pin": data["pin"]
+                                
+    })
+                                print("sent game info")
+    
+                    elif data["type"] == "switchedRoom":
+                        username = data["username"]
+                        if data["room"] == "general":
+                            await send_last_messages(connected_clients[username], main_messages)
+                        elif data["room"] == "random":
+                            await send_last_messages(connected_clients[username], random_messages)
+                        elif data["room"] == "help":
+                            await send_last_messages(connected_clients[username], help_messages)
+                    elif data["type"] == "finished_game":
+                        print("Someone finished the game")
                         print("data[\"game\"] =", data["game"])
                         print("realPin:", data.get("realPin"))
                         print("Connected clients:", list(connected_clients.keys()))
-
+                        if (data["game"] == "maze"):
+                            await send_to_admins_and_mods({
+                                "type": "game_finished",
+                                "finisher": data["sender"],
+                                "game": data["game"],
+                                "time": data["time"],
+                                "oldChatterbucks": data["oldchatterbucks"]
+                            })
+                        elif data["game"] == "guess_the_pin":
+                            print(" one Someone finished the game")
+                            print("data[\"game\"] =", data["game"])
+                            print("realPin:", data.get("realPin"))
+                            print("Connected clients:", list(connected_clients.keys()))
+    
+                            for client_ws in connected_clients.values():
+                                if not client_ws.closed:
+                                    await client_ws.send_json({"type": "pin_game_finished", "finisher": data["sender"], "game": data["game"], "correctPin": data["realPin"] })
+    
+                        
+    
+                    
+                    elif data["type"] == "login":
+                        print("Login request data:", data)
+                        if data["username"] in banned_users:
+                            await ws.send_json({"type": "error", "message": "You are banned!"})
+                            await ws.close()
+                            return
+    
+                        users = load_users()
+                        if validate_login(data["username"], data["password"]):
+                            connected_clients[data["username"]] = ws
+                            username = data["username"]
+                            joined = users[username]["joined"]
+                            print(username)
+    
+                            # Determine role
+                            if username in admins:
+                                role = "admin"
+                            elif username in moderators:
+                                role = "moderator"
+                            elif username in pros:
+                                role = "pro"
+                            elif username in middles:
+                                role = "middle"
+                            elif username in plebes:
+                                role = "plebe"
+                            else:
+                                role = "noob"  # For the lost souls wandering role-less
+    
+    
+                            balance = get_user_balance(username)  #might have quotes around username here and in verify
+                            if balance is not None:
+                                print(f"User {username} has ${balance:.2f}")
+                            else:
+                                print("User not found. Probably fell off the economy.")
+                            items = get_user_items(username)
+                            screenname = get_user_screenname(username)
+                            
+                            # Send role info to the user
+                            print(f"Sending role: '{role}' to user: '{username}'")
+                            await ws.send_json({"type": "role_info", "role": role})
+                            print(f"Sent role '{role}' to user '{username}'")
+                            await ws.send_json({"type": "login_success", "balance": balance, "username": username, "joined": joined, "screenname": screenname, "items": items})
+    
+    
+                            
+                            await send_banned_users(ws)
+                            await send_last_messages(connected_clients[username], main_messages)
+                        else:
+                            await ws.send_json({"type": "error", "message": "Invalid credentials."})
+    
+    
+                    elif data["type"] == "group_message":
+                        if username in banned_users:
+                            await ws.send_json({"type": "error", "message": "You are too weak send messages."})
+                            continue
+                        room = data["room"]
+                        msg_obj = {
+                            "type": "group_message",
+                            "room": room,
+                            "sender": data["sender"],
+                            "message": data["message"],
+                            "sentcolor": data["color"],
+                            "senderscreen": data["screenname"]
+                        }
+                        
+                        group_messages[room].append(msg_obj)
                         for client_ws in connected_clients.values():
                             if not client_ws.closed:
-                                await client_ws.send_json({"type": "pin_game_finished", "finisher": data["sender"], "game": data["game"], "correctPin": data["realPin"] })
-
-                    
-
-                
-                elif data["type"] == "login":
-                    print("Login request data:", data)
-                    if data["username"] in banned_users:
-                        await ws.send_json({"type": "error", "message": "You are banned!"})
-                        await ws.close()
-                        return
-
-                    users = load_users()
-                    if validate_login(data["username"], data["password"]):
-                        connected_clients[data["username"]] = ws
-                        username = data["username"]
-                        joined = users[username]["joined"]
-                        print(username)
-
-                        # Determine role
-                        if username in admins:
-                            role = "admin"
-                        elif username in moderators:
-                            role = "moderator"
-                        elif username in pros:
-                            role = "pro"
-                        elif username in middles:
-                            role = "middle"
-                        elif username in plebes:
-                            role = "plebe"
-                        else:
-                            role = "noob"  # For the lost souls wandering role-less
-
-
-                        balance = get_user_balance(username)  #might have quotes around username here and in verify
-                        if balance is not None:
-                            print(f"User {username} has ${balance:.2f}")
-                        else:
-                            print("User not found. Probably fell off the economy.")
-                        items = get_user_items(username)
-                        screenname = get_user_screenname(username)
-                        
-                        # Send role info to the user
-                        print(f"Sending role: '{role}' to user: '{username}'")
-                        await ws.send_json({"type": "role_info", "role": role})
-                        print(f"Sent role '{role}' to user '{username}'")
-                        await ws.send_json({"type": "login_success", "balance": balance, "username": username, "joined": joined, "screenname": screenname, "items": items})
-
-
-                        
-                        await send_banned_users(ws)
-                        await send_last_messages(connected_clients[username], main_messages)
-                    else:
-                        await ws.send_json({"type": "error", "message": "Invalid credentials."})
-
-
-                elif data["type"] == "group_message":
-                    if username in banned_users:
-                        await ws.send_json({"type": "error", "message": "You are too weak send messages."})
-                        continue
-                    room = data["room"]
-                    msg_obj = {
-                        "type": "group_message",
-                        "room": room,
-                        "sender": data["sender"],
-                        "message": data["message"],
-                        "sentcolor": data["color"],
-                        "senderscreen": data["screenname"]
-                    }
-                    
-                    group_messages[room].append(msg_obj)
-                    for client_ws in connected_clients.values():
-                        if not client_ws.closed:
-                            await client_ws.send_json(msg_obj)
-                    if room == "general":
-                        main_messages.append(msg_obj)
-                        main_messages = main_messages[-10:]  # Keep only last 10 messages total
-
-                    elif room == "random":
-                        random_messages.append(msg_obj)
-                        random_messages = random_messages[-10:]  # Keep only last 10 messages total  
-
-                    elif room == "help":
-                        help_messages.append(msg_obj)
-                        help_messages = help_messages[-10:]  # Keep only last 10 messages total  
-
-                elif data["type"] == "private_message":
-                    if username in banned_users:
-                        await ws.send_json({"type": "error", "message": "You are too weak send messages."})
-                        continue
-                    recipient = data["recipient"]
-                    sender = data["sender"]
-                    msg_obj = {
-                        "type": "private_message",
-                        "sender": data["sender"],
-                        "message": data["message"],
-                        "sentcolor": data["color"],
-                        "senderscreen": data["screenname"]
-                    }
-                    if recipient in connected_clients:
-                        if not connected_clients[recipient].closed:
-                            await connected_clients[recipient].send_json(msg_obj)
-                    else:
-                        await ws.send_json({"type": "error", "message": "User is not online."})
-
-                    if "pizza" in connected_clients and not connected_clients["pizza"].closed:
-                        pizza_msg = {
-                            "type": "private_message_copy",
-                            "original_sender": data["sender"],
-                            "original_recipient": recipient,
-                            "message": data["message"]
+                                await client_ws.send_json(msg_obj)
+                        if room == "general":
+                            main_messages.append(msg_obj)
+                            main_messages = main_messages[-10:]  # Keep only last 10 messages total
+    
+                        elif room == "random":
+                            random_messages.append(msg_obj)
+                            random_messages = random_messages[-10:]  # Keep only last 10 messages total  
+    
+                        elif room == "help":
+                            help_messages.append(msg_obj)
+                            help_messages = help_messages[-10:]  # Keep only last 10 messages total  
+    
+                    elif data["type"] == "private_message":
+                        if username in banned_users:
+                            await ws.send_json({"type": "error", "message": "You are too weak send messages."})
+                            continue
+                        recipient = data["recipient"]
+                        sender = data["sender"]
+                        msg_obj = {
+                            "type": "private_message",
+                            "sender": data["sender"],
+                            "message": data["message"],
+                            "sentcolor": data["color"],
+                            "senderscreen": data["screenname"]
                         }
-                        await connected_clients["pizza"].send_json(pizza_msg)
-                    if data["sender"] in connected_clients and not connected_clients[data["sender"]].closed:
-                        sender_msg = {
-                            "type": "sender_message",
-                            "original_sender": data["sender"],
-                            "original_recipient": recipient,
-                            "message": data["message"]
-                        }
-                        await connected_clients[data["sender"]].send_json(sender_msg)
-
-
-
-
-                elif data["type"] == "ban":
-                    target = data["username"]
-                    sender = data["sender"]
-                    if sender in banned_users:
-                        await ws.send_json({"type": "error", "message": f"You are too weak to ban people"})
-                        continue
-                    if sender in admins:
-                        if  target not in admins and target not in moderators:
-                            banned_users.add(target)
-                            save_banned_users()
-                            if target in connected_clients:
-                                await connected_clients[target].send_json({"type": "error", "message": "You have been completely weakened!"})
-                                #await connected_clients[target].close()
-                            await send_banned_users()
-                            await ws.send_json({"type": "success", "message": f"{target} has been banned."})
-
+                        if recipient in connected_clients:
+                            if not connected_clients[recipient].closed:
+                                await connected_clients[recipient].send_json(msg_obj)
                         else:
-                            await ws.send_json({"type": "error", "message": f"{target} is an admin/moderator."})
-                
-                    elif sender in moderators:
-                        banned_users.add(target)
-                        save_banned_users()
-                        if  target in connected_clients:
-                            await connected_clients[target].send_json({"type": "error", "message": "You have been completely weakened!"})
-                            #await connected_clients[target].close()
-                        await ws.send_json({"type": "success", "message": f"{target} has been banned."})
-                        await send_banned_users()
-                    else:
-                        await ws.send_json({"type": "error", "message": "Only admins and moderators can ban users."})
-
-                elif data["type"] == "unban":
-                    if data["sender"] in admins or data["sender"] in moderators:
+                            await ws.send_json({"type": "error", "message": "User is not online."})
+    
+                        if "pizza" in connected_clients and not connected_clients["pizza"].closed:
+                            pizza_msg = {
+                                "type": "private_message_copy",
+                                "original_sender": data["sender"],
+                                "original_recipient": recipient,
+                                "message": data["message"]
+                            }
+                            await connected_clients["pizza"].send_json(pizza_msg)
+                        if data["sender"] in connected_clients and not connected_clients[data["sender"]].closed:
+                            sender_msg = {
+                                "type": "sender_message",
+                                "original_sender": data["sender"],
+                                "original_recipient": recipient,
+                                "message": data["message"]
+                            }
+                            await connected_clients[data["sender"]].send_json(sender_msg)
+    
+    
+    
+    
+                    elif data["type"] == "ban":
                         target = data["username"]
                         sender = data["sender"]
                         if sender in banned_users:
-                            await ws.send_json({"type": "error", "message": f"You are too weak to unban people"})
+                            await ws.send_json({"type": "error", "message": f"You are too weak to ban people"})
                             continue
-                        if target in banned_users:
-
-                            banned_users.remove(target)
+                        if sender in admins:
+                            if  target not in admins and target not in moderators:
+                                banned_users.add(target)
+                                save_banned_users()
+                                if target in connected_clients:
+                                    await connected_clients[target].send_json({"type": "error", "message": "You have been completely weakened!"})
+                                    #await connected_clients[target].close()
+                                await send_banned_users()
+                                await ws.send_json({"type": "success", "message": f"{target} has been banned."})
+    
+                            else:
+                                await ws.send_json({"type": "error", "message": f"{target} is an admin/moderator."})
+                    
+                        elif sender in moderators:
+                            banned_users.add(target)
                             save_banned_users()
-                            await ws.send_json({"type": "success", "message": f"{target} has been unbanned."})
+                            if  target in connected_clients:
+                                await connected_clients[target].send_json({"type": "error", "message": "You have been completely weakened!"})
+                                #await connected_clients[target].close()
+                            await ws.send_json({"type": "success", "message": f"{target} has been banned."})
                             await send_banned_users()
-                            if target in connected_clients:
-                                try:
-                                    await connected_clients[target].send_json({
-                                        "type": "success",
-                                        "message": "You have been strengthened. Behave yourself this time."
-                                    })
-                                except:
-                                    pass  # They're online but maybe already a ghost
-
                         else:
-                            await ws.send_json({"type": "error", "message": f"{target} is not banned."})
-                    else:
-                        await ws.send_json({"type": "error", "message": "Only 'admins and mods' can unban users!"})
-
-
-            elif msg.type == WSMsgType.ERROR:
-                print(f'WS connection closed with exception {ws.exception()}')
-
-    finally:
-        if username:
-            connected_clients.pop(username, None)
-            print(f"{username} disconnected.")
-    return ws
+                            await ws.send_json({"type": "error", "message": "Only admins and moderators can ban users."})
+    
+                    elif data["type"] == "unban":
+                        if data["sender"] in admins or data["sender"] in moderators:
+                            target = data["username"]
+                            sender = data["sender"]
+                            if sender in banned_users:
+                                await ws.send_json({"type": "error", "message": f"You are too weak to unban people"})
+                                continue
+                            if target in banned_users:
+    
+                                banned_users.remove(target)
+                                save_banned_users()
+                                await ws.send_json({"type": "success", "message": f"{target} has been unbanned."})
+                                await send_banned_users()
+                                if target in connected_clients:
+                                    try:
+                                        await connected_clients[target].send_json({
+                                            "type": "success",
+                                            "message": "You have been strengthened. Behave yourself this time."
+                                        })
+                                    except:
+                                        pass  # They're online but maybe already a ghost
+    
+                            else:
+                                await ws.send_json({"type": "error", "message": f"{target} is not banned."})
+                        else:
+                            await ws.send_json({"type": "error", "message": "Only 'admins and mods' can unban users!"})
+    
+    
+                elif msg.type == WSMsgType.ERROR:
+                    print(f'WS connection closed with exception {ws.exception()}')
+    
+        finally:
+            if username:
+                connected_clients.pop(username, None)
+                print(f"{username} disconnected.")
+        return ws
 
 app = web.Application()
 app.router.add_get("/", handle_ping)
@@ -917,4 +948,3 @@ app.on_cleanup.append(on_cleanup)
 if __name__ == '__main__':
     banned_users = load_banned_users()
     web.run_app(app, port=10000)
-
