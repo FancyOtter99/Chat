@@ -1,14 +1,13 @@
 name: Update Files from URLs
 
 on:
-  workflow_dispatch: # Manual trigger in Actions tab
+  workflow_dispatch:
   schedule:
-    - cron: '0 * * * *' # Every hour (adjust as you like)
+    - cron: '0 * * * *'
 
 jobs:
   update-files:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -25,5 +24,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python3 update_files.py
+
 
 
