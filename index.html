@@ -46,28 +46,28 @@ fetch("https://api.ipify.org?format=json")
 </script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  let mode = "normal"; // default
+  let mode = "decode"; // default
 
   document.addEventListener('keydown', function(event) {
     if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === 'y') {
       event.preventDefault();
       console.log('Ctrl+Shift+Y pressed.');
 
-      mode = prompt("normal or story")?.toLowerCase() || "normal";
+      mode = prompt("decode or story")?.toLowerCase() || "decode";
 
-      if (mode === "normal") {
-        startNormal();
+      if (mode === "decode") {
+        startdecode();
       } else if (mode === "story") {
         startStory();
       } else {
-        alert("Invalid mode! Using normal.");
-        startNormal();
+        alert("Invalid mode! Using decode.");
+        startdecode();
       }
     }
   });
 
-  // --- Normal mode: Flickering SuperChat title ---
-  function startNormal() {
+  // --- decode mode: Flickering SuperChat title ---
+  function startdecode() {
     const target = "SuperChat";
     const weirdChars = "!@#$%^&*()-_=+[]{}|;:',.<>/?~`±§•ªº";
 
