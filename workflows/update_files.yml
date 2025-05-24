@@ -1,0 +1,29 @@
+name: Update Files from Render
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # Runs every hour (adjust as needed)
+  workflow_dispatch:     # Allows manual triggering
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests beautifulsoup4
+
+      - name: Run update script
+        run: |
+          python update_script.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
