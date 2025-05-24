@@ -47,27 +47,36 @@ fetch("https://api.ipify.org?format=json")
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   let mode = "decode"; // default
+  let stopTitleAnimation = false; // new!
+  startDecode()
 
   document.addEventListener('keydown', function(event) {
     if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === 'y') {
       event.preventDefault();
       console.log('Ctrl+Shift+Y pressed.');
 
-      mode = prompt("decode or story")?.toLowerCase() || "decode";
+      // Stop any ongoing animations
+      stopTitleAnimation = true;
 
-      if (mode === "decode") {
-        startdecode();
-      } else if (mode === "story") {
-        startStory();
-      } else {
-        alert("Invalid mode! Using decode.");
-        startdecode();
-      }
+      // Give time for any pending timeouts to see the stop signal
+      setTimeout(() => {
+        stopTitleAnimation = false;
+        let mode = prompt("decode or story")?.toLowerCase() || "decode";
+
+        if (mode === "decode") {
+          startDecode();
+        } else if (mode === "story") {
+          startStory();
+        } else {
+          alert("Invalid mode! Using decode.");
+          startDecode();
+        }
+      }, 50);
     }
   });
 
-  // --- decode mode: Flickering SuperChat title ---
-  function startdecode() {
+  // --- Decode mode: Flickering SuperChat title ---
+  function startDecode() {
     const target = "SuperChat";
     const weirdChars = "!@#$%^&*()-_=+[]{}|;:',.<>/?~`±§•ªº";
 
@@ -92,6 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function decodeTitle() {
+      if (stopTitleAnimation) return; // new!
       if (currentIndex >= target.length) {
         flashCount = 0;
         flashTitle();
@@ -101,6 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
       let count = 0;
 
       function cycle() {
+        if (stopTitleAnimation) return; // new!
         if (count < totalCycles) {
           let decodedPart = target.slice(0, currentIndex).toUpperCase();
           let currentChar = randomWeirdChar();
@@ -119,6 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function flashTitle() {
+      if (stopTitleAnimation) return; // new!
       if (flashCount < maxFlashes) {
         document.title = (flashCount % 2 === 0)
           ? target.toUpperCase()
@@ -137,159 +149,204 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // --- Story mode: Hero vs Villain animation in title ---
-  function startStory() {
-    const hero = "🧍";
-    const villain = "👹";
-    const dot = ".";
+function startStory() {
+  const hero = "🧍";
+  const villain = "👹";
+  const dot = ".";
+  const cloud = "☁️";
+  const sparkle = "✨";
 
-    const length = 15;
-    let heroPos = 0;
-    let phase = "walk";   // walk, attack, explode, burn, fireFade, villainSpawn, reset
-    let attackPos = 0;
-    let explosionCount = 0;
+  const length = 15;
+  let heroPos = 0;
+  let phase = "walk";   // walk, attack, explode, burn, fireToCloud, cloudFade, sparkle, villainSpawn, reset
+  let attackPos = 0;
+  let explosionCount = 0;
 
-    const stopDistance = 3;
-    const explosionDuration = 5;
+  const stopDistance = 3;
+  const explosionDuration = 5;
 
-    let fireTrail = [];
-    let fadeIndex = 0;
+  let fireTrail = [];
+  let cloudTrail = [];
+  let transformIndex = length - 1;
+  let fadeIndex = 0;
+  let sparkleCount = 0;   // New variable
+const sparkleDuration = 5;  // Number of update cycles to hold the sparkle
 
-    let villainPos = length; // Start OFF the right end
 
-    function buildTitle() {
-      let titleArr = Array(length).fill(dot);
+  let villainPos = length; // Start OFF the right end
 
-      switch (phase) {
-        case "walk":
-          titleArr[heroPos] = hero;
-          titleArr[length - 1] = villain;
-          break;
+  function buildTitle() {
+    let titleArr = Array(length).fill(dot);
 
-        case "attack":
-          titleArr[heroPos] = hero;
-          if (attackPos < length) {
-            titleArr[attackPos] = "👊";
+    switch (phase) {
+      case "walk":
+        titleArr[heroPos] = hero;
+        titleArr[length - 1] = villain;
+        break;
+
+      case "attack":
+        titleArr[heroPos] = hero;
+        if (attackPos < length) {
+          titleArr[attackPos] = "👊";
+        }
+        titleArr[length - 1] = villain;
+        break;
+
+      case "explode":
+        titleArr.fill(dot);
+        titleArr[length - 2] = "💥";
+        titleArr[length - 1] = "💥";
+        break;
+
+      case "burn":
+        titleArr[heroPos] = hero;
+        const firePos = heroPos + 1;
+        if (firePos < length) {
+          for (let i = firePos; i < length; i++) {
+            titleArr[i] = "🔥";
           }
-          titleArr[length - 1] = villain;
-          break;
+        }
+        break;
 
-        case "explode":
-          titleArr.fill(dot);
-          titleArr[length - 2] = "💥";
-          titleArr[length - 1] = "💥";
-          break;
-
-        case "burn":
-          titleArr[heroPos] = hero;
-          const firePos = heroPos + 1;
-          if (firePos < length) {
-            for (let i = firePos; i < length; i++) {
-              titleArr[i] = "🔥";
-            }
+      case "fireToCloud":
+        titleArr[heroPos] = hero;
+        for (let i = heroPos + 1; i < length; i++) {
+          if (i >= transformIndex) {
+            titleArr[i] = cloud;
+          } else {
+            titleArr[i] = "🔥";
           }
-          break;
+        }
+        break;
 
-        case "fireFade":
-          titleArr[heroPos] = hero;
-          for (let i = 0; i < length; i++) {
-            if (fireTrail[i]) {
-              titleArr[i] = "🔥";
-            }
+      case "cloudFade":
+        titleArr[heroPos] = hero;
+        for (let i = 0; i < length; i++) {
+          if (cloudTrail[i]) {
+            titleArr[i] = cloud;
           }
-          break;
+        }
+        break;
 
-        case "villainSpawn":
-          titleArr[heroPos] = hero;
-          if (villainPos >= 0 && villainPos < length) {
-            titleArr[villainPos] = villain;
-          }
-          break;
+      case "sparkle":
+        titleArr[heroPos] = hero;
+        titleArr[length - 1] = sparkle;
+        break;
 
-        case "reset":
-          titleArr[heroPos] = hero;
-          titleArr[length - 1] = villain;
-          break;
-      }
+      case "villainSpawn":
+        titleArr[heroPos] = hero;
+        if (villainPos >= 0 && villainPos < length) {
+          titleArr[villainPos] = villain;
+        }
+        break;
 
-      return titleArr.join(" ");
+      case "reset":
+        titleArr[heroPos] = hero;
+        titleArr[length - 1] = villain;
+        break;
     }
 
-    function updateTitle() {
-      switch (phase) {
-        case "walk":
-          if (heroPos < length - 1 - stopDistance) {
-            heroPos++;
-          } else {
-            phase = "attack";
-            attackPos = Math.max(0, heroPos - 1);
-          }
-          break;
+    return titleArr.join(" ");
+  }
 
-        case "attack":
-          if (attackPos < length - 1) {
-            attackPos++;
-          } else {
-            phase = "explode";
-            explosionCount = 0;
-          }
-          break;
+  function updateTitle() {
+    if (stopTitleAnimation) return;
 
-        case "explode":
-          explosionCount++;
-          if (explosionCount >= explosionDuration) {
-            phase = "burn";
-          }
-          break;
+    switch (phase) {
+      case "walk":
+        if (heroPos < length - 1 - stopDistance) {
+          heroPos++;
+        } else {
+          phase = "attack";
+          attackPos = Math.max(0, heroPos - 1);
+        }
+        break;
 
-        case "burn":
-          if (heroPos > 0) {
-            heroPos--;
-          } else {
-            phase = "fireFade";
-            fireTrail = Array(length).fill(false);
-            for (let i = heroPos + 1; i < length; i++) {
-              fireTrail[i] = true;
-            }
-            fadeIndex = length - 1;
-          }
-          break;
+      case "attack":
+        if (attackPos < length - 1) {
+          attackPos++;
+        } else {
+          phase = "explode";
+          explosionCount = 0;
+        }
+        break;
 
-        case "fireFade":
-          if (fadeIndex >= heroPos + 1) {
-            fireTrail[fadeIndex] = false;
-            fadeIndex--;
-          } else {
+      case "explode":
+        explosionCount++;
+        if (explosionCount >= explosionDuration) {
+          phase = "burn";
+        }
+        break;
+
+      case "burn":
+        if (heroPos > 0) {
+          heroPos--;
+        } else {
+          phase = "fireToCloud";
+          transformIndex = length - 1;
+        }
+        break;
+
+      case "fireToCloud":
+        if (transformIndex > heroPos) {
+          transformIndex--;
+        } else {
+          phase = "cloudFade";
+          cloudTrail = Array(length).fill(false);
+          for (let i = heroPos + 1; i < length; i++) {
+            cloudTrail[i] = true;
+          }
+          fadeIndex = length - 1;
+        }
+        break;
+
+      case "cloudFade":
+        if (fadeIndex >= heroPos + 1) {
+          cloudTrail[fadeIndex] = false;
+          fadeIndex--;
+        } else {
+          phase = "sparkle";
+        }
+        break;
+
+        case "sparkle":
+        sparkleCount++;
+        if (sparkleCount >= sparkleDuration) {
             phase = "villainSpawn";
             villainPos = length;
-          }
-          break;
+        }
+        break;
 
-        case "villainSpawn":
-          villainPos--;
-          if (villainPos <= length - 1) {
-            phase = "walk";
-            heroPos = 0;
-          }
-          break;
-
-        case "reset":
-          heroPos = 0;
+      case "villainSpawn":
+        villainPos--;
+        if (villainPos <= length - 1) {
           phase = "walk";
-          break;
-      }
+          heroPos = 0;
+        }
+        break;
 
-      document.title = buildTitle();
-
-      let delay = 600;
-      if (phase === "explode") delay = 400;
-      if (phase === "fireFade") delay = 300;
-      if (phase === "villainSpawn") delay = 400;
-
-      setTimeout(updateTitle, delay);
+      case "reset":
+        heroPos = 0;
+        phase = "walk";
+        break;
     }
 
-    updateTitle();
+    document.title = buildTitle();
+
+    let delay = 600;
+    if (phase === "explode") delay = 400;
+    if (phase === "fireToCloud" || phase === "cloudFade" || phase === "sparkle") delay = 300;
+    if (phase === "villainSpawn") delay = 400;
+
+    setTimeout(updateTitle, delay);
   }
+
+  updateTitle();
+}
+
+
+
+
 });
 </script>
 <button id="installBtn" style="display:none;position:fixed;bottom:1px;right:10px;padding:10px 20px;background:#2196f3;color:white;width:250px;border:none;border-radius:5px;font-size:16px;z-index:9999;cursor:pointer;">
