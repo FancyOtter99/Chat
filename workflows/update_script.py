@@ -4,7 +4,7 @@ import base64
 import os
 
 # Shared GitHub config
-GITHUB_TOKEN = os.environ.get('GITHUB_TOKEN')
+GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN")
 OWNER = 'fancyotter99'
 REPO = 'Chat'
 
