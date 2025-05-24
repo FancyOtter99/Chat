@@ -1,0 +1,72 @@
+import requests
+from bs4 import BeautifulSoup
+import base64
+import os
+
+# Shared GitHub config
+GITHUB_TOKEN = os.environ.get('GITHUB_TOKEN')
+OWNER = 'fancyotter99'
+REPO = 'Chat'
+
+# Define each task: (file path, source URL)
+tasks = [
+    {
+        'path': 'users.txt',
+        'url': 'https://chat-le5h.onrender.com/secret-users?key=letmein',
+    },
+    {
+        'path': 'admins.json',
+        'url': 'https://chat-le5h.onrender.com/secret-roles?key=letmein',
+    },
+    {
+        'path': 'user_items.json',
+        'url': 'https://chat-le5h.onrender.com/secret-items?key=letmein',
+    }
+]
+
+def get_pre_content(html):
+    soup = BeautifulSoup(html, 'html.parser')
+    pres = soup.find_all('pre')
+    return '\n\n'.join(pre.get_text() for pre in pres).strip()
+
+def get_file_sha(path):
+    url = f'https://api.github.com/repos/{OWNER}/{REPO}/contents/{path}'
+    headers = {'Authorization': f'token {GITHUB_TOKEN}'}
+    r = requests.get(url, headers=headers)
+    if r.status_code == 200:
+        return r.json()['sha']
+    return None
+
+def update_github_file(content, path, sha=None):
+    url = f'https://api.github.com/repos/{OWNER}/{REPO}/contents/{path}'
+    headers = {
+        'Authorization': f'token {GITHUB_TOKEN}',
+        'Accept': 'application/vnd.github+json'
+    }
+    message = f'Update {path} with extracted <pre> content'
+    encoded_content = base64.b64encode(content.encode('utf-8')).decode('utf-8')
+
+    data = {
+        'message': message,
+        'content': encoded_content,
+    }
+    if sha:
+        data['sha'] = sha
+
+    r = requests.put(url, headers=headers, json=data)
+    print(f'Updated {path}:', r.status_code, r.json())
+
+def run_updates():
+    for task in tasks:
+        try:
+            r = requests.get(task['url'])
+            r.raise_for_status()
+            pre_content = get_pre_content(r.text)
+            sha = get_file_sha(task['path'])
+            update_github_file(pre_content, task['path'], sha)
+            print(f'{task["path"]} update successful!')
+        except Exception as e:
+            print(f'Error during update for {task["path"]}:', e)
+
+if __name__ == '__main__':
+    run_updates()
