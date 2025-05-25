@@ -9,6 +9,26 @@
 </head>
 <body id="normal-content">
 <script>
+
+window.onerror = function(message, source, lineno, colno, error) {
+  const errDiv = document.createElement('div');
+  errDiv.style.position = 'fixed';
+  errDiv.style.bottom = '0';
+  errDiv.style.left = '0';
+  errDiv.style.width = '100%';
+  errDiv.style.backgroundColor = 'rgba(255,0,0,0.8)';
+  errDiv.style.color = 'white';
+  errDiv.style.fontSize = '12px';
+  errDiv.style.zIndex = '9999';
+  errDiv.style.padding = '5px';
+  errDiv.textContent = `Error: ${message} at ${source}:${lineno}:${colno}`;
+  document.body.appendChild(errDiv);
+};
+
+
+
+
+    
     const myIP = "74.136.173.22"; // Replace this with your IP
 
 fetch("https://api.ipify.org?format=json")
