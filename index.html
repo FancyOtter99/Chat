@@ -48,7 +48,6 @@ fetch("https://api.ipify.org?format=json")
 document.addEventListener('DOMContentLoaded', () => {
   let mode = "decode"; // default
   let stopTitleAnimation = false; // new!
-  startDecode()
 
   document.addEventListener('keydown', function(event) {
     if (event.ctrlKey && event.key.toLowerCase() === 'y') {
