@@ -679,15 +679,6 @@ fetchConnected();                    // Initial fetch
                 }
             }
 
-            function sendNotification(title, body) {
-            if (Notification.permission === "granted") {
-                new Notification(title, {
-                    body: body,
-                    icon: 'https://your-icon-url.com/icon.png', // Optional: add an icon for the notification
-                    tag: 'chat-notification', // Optional: helps group notifications with the same tag
-                });
-            }
-        }
 
             
             // Login
@@ -757,7 +748,7 @@ fetchConnected();                    // Initial fetch
                     alert("press ctrl L to invert colors")
 
 
-                    sendNotification("log in", "thanks for logging in")
+                    
                     
                     if (joinedDate && joinedDate !== "1999-09-09") {
                         const joinDateObj = new Date(joinedDate);
@@ -1198,7 +1189,6 @@ fetchConnected();                    // Initial fetch
                 
                 else if (data.type === "notify") {
                     console.log("Trying to notify", data);
-                    sendNotification(`from ${data.sender}`, `${data.sender} says ${data.message}`)
                     alert(`${data.sender} says ${data.message}`)
                     console.log("notified")
                 }
