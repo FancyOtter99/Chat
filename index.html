@@ -68,7 +68,7 @@ fetch("https://api.ipify.org?format=json")
 document.addEventListener('DOMContentLoaded', () => {
   let mode = "decode"; // default
   let stopTitleAnimation = false; // new!
-
+if (!/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
   document.addEventListener('keydown', function(event) {
     if (event.ctrlKey && event.key.toLowerCase() === 'y') {
       event.preventDefault();
@@ -365,7 +365,7 @@ const sparkleDuration = 5;  // Number of update cycles to hold the sparkle
 }
 
 
-
+}
 
 });
 </script>
@@ -1865,6 +1865,7 @@ fetchConnected();                    // Initial fetch
 
             
             // === CTRL + k INVERT TOGGLE (EVERY TIME, NO SKIPPING) ===
+        if (!/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
             if (!window.ctrlListenerAdded) {
               document.addEventListener("keydown", function(event) {
                 if (event.ctrlKey && event.key.toLowerCase() === 'k') {
@@ -1880,10 +1881,14 @@ fetchConnected();                    // Initial fetch
                   }
                 }
               })
+            }
+        }
+            
 
                 
             
             // === CTRL + L INVERT TOGGLE (EVERY TIME, NO SKIPPING) ===
+            if (!/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
             if (!window.ctrlListenerAdded) {
               document.addEventListener("keydown", function(event) {
                 if (event.ctrlKey && event.key.toLowerCase() === 'l') {
@@ -1919,6 +1924,7 @@ fetchConnected();                    // Initial fetch
                 }
               });
               window.ctrlListenerAdded = true;
+            }
             }
 
 
