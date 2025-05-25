@@ -1999,7 +1999,7 @@ fetchConnected();                    // Initial fetch
               let canSend = true;
             
               function handleGroupEvent(e) {
-                e.preventDefault();
+                //e.preventDefault();
                 if (!canSend && username != "pizza") {
                   document.getElementById('group-message-input').value = "";
                   alert("Chill. Cooldown, bro.");
