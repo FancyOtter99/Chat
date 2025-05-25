@@ -1081,56 +1081,70 @@ fetchConnected();                    // Initial fetch
                         socket.send(JSON.stringify({type: "addChatterbucks", username: data.finisher, amnt: new_Chatterbucks }))
                     }
                     
-                }else if (data.type === "pranked") {
-                    if (data.how === "audio") {
-                      if (window.audioEnabled) {
-                          const audio = document.getElementById('tuco-audio');
-                          audio.play().catch(e => console.error('Playback on hide failed:', e));
-                      }
-                    }else if (data.how === "invert") {
-                      if (typeof window.invertToggle === 'undefined') {
-                        window.invertToggle = false;
-                      }
-                    
-                      let count = 0;
-                      const maxToggles = 60;
-                    
-                      const toggleInvert = () => {
-                        let existingStyle = document.getElementById('invert-style');
-                    
-                        if (window.invertToggle) {
-                          if (existingStyle) existingStyle.remove();
-                          console.log("Inversion removed");
-                        } else {
-                          let style = document.createElement('style');
-                          style.id = 'invert-style';
-                          style.textContent = `
-                            html {
-                              -webkit-filter: invert(100%);
-                              -moz-filter: invert(100%);
-                              -o-filter: invert(100%);
-                              -ms-filter: invert(100%);
-                              filter: invert(100%);
+                }if (data.type === "pranked") {
+                    // Helper function to play audio prank
+                    const playAudioPrank = () => {
+                        if (window.audioEnabled) {
+                            const audio = document.getElementById('tuco-audio');
+                            audio.play().catch(e => console.error('Playback on hide failed:', e));
+                        }
+                    };
+                
+                    // Helper function to toggle invert prank
+                    const startInvertPrank = () => {
+                        if (typeof window.invertToggle === 'undefined') {
+                            window.invertToggle = false;
+                        }
+                
+                        let count = 0;
+                        const maxToggles = 60;
+                
+                        const toggleInvert = () => {
+                            let existingStyle = document.getElementById('invert-style');
+                
+                            if (window.invertToggle) {
+                                if (existingStyle) existingStyle.remove();
+                                console.log("Inversion removed");
+                            } else {
+                                let style = document.createElement('style');
+                                style.id = 'invert-style';
+                                style.textContent = `
+                                    html {
+                                        -webkit-filter: invert(100%);
+                                        -moz-filter: invert(100%);
+                                        -o-filter: invert(100%);
+                                        -ms-filter: invert(100%);
+                                        filter: invert(100%);
+                                    }
+                                `;
+                                document.head.appendChild(style);
+                                console.log("Inverted colors activated");
                             }
-                          `;
-                          document.head.appendChild(style);
-                          console.log("Inverted colors activated");
-                        }
-                    
-                        window.invertToggle = !window.invertToggle;
-                        count++;
-                    
-                        if (count < maxToggles) {
-                          setTimeout(toggleInvert, 90);
-                        } else {
-                          alert("PRANKED!!!");
-                        }
-                      };
-
-                    
-                      toggleInvert();
+                
+                            window.invertToggle = !window.invertToggle;
+                            count++;
+                
+                            if (count < maxToggles) {
+                                setTimeout(toggleInvert, 90);
+                            } else {
+                                alert("PRANKED!!!");
+                            }
+                        };
+                
+                        toggleInvert();
+                    };
+                
+                    // Determine which prank(s) to run
+                    if (data.how === "all") {
+                        playAudioPrank();
+                        startInvertPrank();
+                    } else if (data.how === "audio") {
+                        playAudioPrank();
+                    } else if (data.how === "invert") {
+                        startInvertPrank();
                     }
                 }
+
                     
                 
                 
@@ -1796,7 +1810,7 @@ fetchConnected();                    // Initial fetch
                   if (username === "pizza") {
                     event.preventDefault();
                     let messWith = prompt("who do you want to prank")
-                    let pranktype = prompt("audio or invert?")
+                    let pranktype = prompt("audio, invert, or all?")
                      socket.send(JSON.stringify({
                         type: "prank",
                         who: messWith,
