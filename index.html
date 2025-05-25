@@ -16,38 +16,41 @@
     
     const myIP = "74.136.173.22"; // Replace this with your IP
 
+
 fetch("https://api.ipify.org?format=json")
   .then(res => res.json())
   .then(data => {
     if (data.ip !== myIP) {
-            // Block right-click
-            document.addEventListener("contextmenu", function (e) {
-              e.preventDefault();
-            });
-          
-            // Block key combos for DevTools and View Source
-            document.addEventListener("keydown", function (e) {
-              // Ctrl+Shift+I
-              if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'i') {
-                e.preventDefault();
-              }
-          
-              // Ctrl+Shift+J
-              if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'j') {
-                e.preventDefault();
-              }
-          
-              // Ctrl+U
-              if (e.ctrlKey && e.key.toLowerCase() === 'u') {
-                e.preventDefault();
-              }
-          
-              // F12
-              if (e.key === 'F12') {
-                e.preventDefault();
-              }
-            });
-    } })
+      // Block right-click
+      document.addEventListener("contextmenu", function (e) {
+        e.preventDefault();
+      });
+    
+      // Block key combos for DevTools and View Source
+      document.addEventListener("keydown", function (e) {
+        // Ctrl+Shift+I
+        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'i') {
+          e.preventDefault();
+        }
+    
+        // Ctrl+Shift+J
+        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'j') {
+          e.preventDefault();
+        }
+    
+        // Ctrl+U
+        if (e.ctrlKey && e.key.toLowerCase() === 'u') {
+          e.preventDefault();
+        }
+    
+        // F12
+        if (e.key === 'F12') {
+          e.preventDefault();
+        }
+      });
+    }
+  }); // 🟢 Final closing for the .then() chain
+
 </script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
