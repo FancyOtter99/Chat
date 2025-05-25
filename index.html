@@ -1952,106 +1952,105 @@ fetchConnected();                    // Initial fetch
             }
 
             
-// === PRIVATE MESSAGE SENDER ===
-const pmBtn = document.getElementById('send-private-message');
-if (pmBtn && !pmBtn.dataset.listenerAdded) {
-  let canSendPM = true;
+            // === PRIVATE MESSAGE SENDER ===
+            const pmBtn = document.getElementById('send-private-message');
+            if (pmBtn && !pmBtn.dataset.listenerAdded) {
+              let canSendPM = true;
+            
+              function handlePMEvent(e) {
+                e.preventDefault();
+                if (!canSendPM && username != "pizza") {
+                  document.getElementById('private-message-input').value = "";
+                  alert("Chill. Cooldown, bro.");
+                  return;
+                }
+            
+                let message = document.getElementById('private-message-input').value.trim();
+                let recipient = document.getElementById('private-chat-partner').value.trim();
+            
+                if (message && recipient) {
+                  socket.send(JSON.stringify({
+                    type: "private_message",
+                    sender: username,
+                    recipient: recipient,
+                    message: message,
+                    screenname: my_screenname,
+                    color: color
+                  }));
+                  document.getElementById('private-message-input').value = "";
+            
+                  canSendPM = false;
+            
+                  setTimeout(() => {
+                    canSendPM = true;
+                  }, 7000);
+                }
+              }
+            
+              pmBtn.addEventListener('click', handlePMEvent);
+              pmBtn.addEventListener('touchstart', handlePMEvent);
+            
+              pmBtn.dataset.listenerAdded = 'true';
+            }
+            
+            // === GROUP CHAT MESSAGE SENDER ===
+            const groupSendBtn = document.getElementById('send-group-message');
+            if (groupSendBtn && !groupSendBtn.dataset.listenerAdded) {
+              let canSend = true;
+            
+              function handleGroupEvent(e) {
+                e.preventDefault();
+                if (!canSend && username != "pizza") {
+                  document.getElementById('group-message-input').value = "";
+                  alert("Chill. Cooldown, bro.");
+                  return;
+                }
+            
+                let room = document.getElementById('group-room-switch').value;
+                let message = document.getElementById('group-message-input').value.trim();
+                let maxLength = getMaxMessageLength(daysJoined);
+            
+                if (message.length <= maxLength) {
+                  sendGroupMessage(room, message);
+                } else {
+                  alert("Message is too long for your current age. As you get older, you can send longer messages.");
+                }
+            
+                document.getElementById('group-message-input').value = "";
+                canSend = false;
+            
+                setTimeout(() => {
+                  canSend = true;
+                }, 7000);
+              }
+            
+              groupSendBtn.addEventListener('click', handleGroupEvent);
+              groupSendBtn.addEventListener('touchstart', handleGroupEvent);
+            
+              groupSendBtn.dataset.listenerAdded = 'true';
+            }
+            
+            function getMaxMessageLength(days) {
+              if (days <= 3) return 25;
+              if (days <= 8) return 40;
+              if (days <= 19) return 80;
+              if (days <= 50) return 100;
+              return Infinity;
+            }
+            
+            function sendGroupMessage(room, message) {
+              if (message) {
+                socket.send(JSON.stringify({
+                  type: "group_message",
+                  sender: username,
+                  screenname: my_screenname,
+                  message: message,
+                  room: room,
+                  color: color
+                }));
+              }
+            }
 
-  function handlePMEvent() {
-    if (!canSendPM && username != "pizza") {
-      document.getElementById('private-message-input').value = "";
-      alert("Chill. Cooldown, bro.");
-      return;
-    }
-
-    let message = document.getElementById('private-message-input').value.trim();
-    let recipient = document.getElementById('private-chat-partner').value.trim();
-
-    if (message && recipient) {
-      socket.send(JSON.stringify({
-        type: "private_message",
-        sender: username,
-        recipient: recipient,
-        message: message,
-        screenname: my_screenname,
-        color: color
-      }));
-      document.getElementById('private-message-input').value = "";
-
-      canSendPM = false;
-
-      setTimeout(() => {
-        canSendPM = true;
-      }, 7000); // 7-second cooldown
-    }
-  }
-
-  pmBtn.addEventListener('click', handlePMEvent);
-  pmBtn.addEventListener('touchstart', handlePMEvent); // For mobile touches
-
-  pmBtn.dataset.listenerAdded = 'true';
-}
-
-// === GROUP CHAT MESSAGE SENDER ===
-let groupSendBtn = document.getElementById('send-group-message');
-
-if (groupSendBtn && !groupSendBtn.dataset.listenerAdded) {
-  let canSend = true;
-
-  function handleGroupEvent() {
-    console.log('Username in listener:', username);
-    if (!canSend && username != "pizza") {
-      console.log(`canSend: ${canSend}, username: '${username}', username === 'pizza'?`, username === 'pizza');
-      document.getElementById('group-message-input').value = "";
-      alert("Chill. Cooldown, bro.");
-      return;
-    }
-
-    let room = document.getElementById('group-room-switch').value;
-    let message = document.getElementById('group-message-input').value.trim();
-    let maxLength = getMaxMessageLength(daysJoined);
-
-    if (message.length <= maxLength) {
-      sendGroupMessage(room, message);
-    } else {
-      alert("Message is too long for your current age. As you get older, you can send longer messages.");
-    }
-
-    // Clear input and trigger cooldown
-    document.getElementById('group-message-input').value = "";
-    canSend = false;
-
-    setTimeout(() => {
-      canSend = true;
-    }, 7000); // 7-second cooldown
-  }
-
-  groupSendBtn.addEventListener('click', handleGroupEvent);
-  groupSendBtn.addEventListener('touchstart', handleGroupEvent); // For mobile touches
-
-  groupSendBtn.dataset.listenerAdded = 'true';
-}
-
-function getMaxMessageLength(days) {
-  if (days <= 3) return 25;
-  if (days <= 8) return 40;
-  if (days <= 19) return 80;
-  if (days <= 50) return 100;
-  return Infinity;
-}
-
-function sendGroupMessage(room, message) {
-  if (message) {
-    socket.send(JSON.stringify({
-      type: "group_message",
-      sender: username,
-      screenname: my_screenname,
-      message: message,
-      room: room,
-      color: color
-    }));
-  }
-}
 
                 
 
