@@ -1,4 +1,4 @@
-pizza:aGVsbG8=:nathan.huff@chesschristian.com:1999-09-09:1000100.0:pizza
+pizza:aGVsbG8=:nathan.huff@chesschristian.com:1999-09-09:999600.0:p
 Kasyn:S2FzeW4xMTI0IQ==:kasyn.houseworth@chesschristian.com:1999-09-09:1000000000000000000000000000000000000000:Kasyn
 deafkiddie:MTIz:oliver.fullam@chesschristian.com:1999-09-09:0.0:deafkiddie
 Jmagoto:QnVja2V5ZTc2:james.magoto@chesschristian.com:2025-05-01:1000000:Jmagoto
